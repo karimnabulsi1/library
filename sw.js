@@ -1,5 +1,5 @@
 // App shell cache so the library opens without internet. Book data offline is handled by Firestore's own cache.
-const CACHE = "shelves-v1";
+const CACHE = "shelves-v2";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => {
@@ -13,12 +13,18 @@ self.addEventListener("fetch", e => {
   if (url.hostname.endsWith("googleapis.com")) return;
   // Pages: network first, so updates show up straight away; cached copy when offline.
   if (req.mode === "navigate"){
-    e.respondWith(fetch(req).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put("./index.html", copy)); return r; })
+    e.respondWith(fetch(req, {cache: "no-cache"}).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put("./index.html", copy)); return r; })
       .catch(() => caches.match("./index.html")));
     return;
   }
   // Same-site files, Firebase SDK and fonts: cache first, refresh in the background.
-  if (url.origin === location.origin || url.hostname === "www.gstatic.com" || url.hostname.startsWith("fonts.")){
+  // The app's own small files: network first too, so updates are never stuck behind an old copy.
+  if (url.origin === location.origin){
+    e.respondWith(fetch(req, {cache: "no-cache"}).then(r => { if (r.ok){ const copy = r.clone(); caches.open(CACHE).then(c => c.put(req, copy)); } return r; })
+      .catch(() => caches.match(req)));
+    return;
+  }
+  if (url.hostname === "www.gstatic.com" || url.hostname.startsWith("fonts.")){
     e.respondWith(caches.match(req).then(hit => {
       const net = fetch(req).then(r => { if (r && (r.ok || r.type === "opaque")) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(req, copy)); } return r; }).catch(() => hit);
       return hit || net;
