@@ -77,10 +77,10 @@ h2{font-size:1.25rem}
 .banner{background:var(--maple-soft);border-radius:10px;padding:10px 12px;font-size:.85rem;margin-bottom:12px}
 
 /* ---------- wall map ---------- */
-.wall{display:grid;grid-template-columns:6.2fr 2.7fr 1.7fr;grid-template-rows:1fr 1fr 1fr 1.9fr 1.4fr 2.3fr;gap:5px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px;aspect-ratio:3/3.6;max-height:560px;width:100%;box-shadow:0 6px 18px var(--shelf-shadow)}
+.wall{display:grid;grid-template-columns:1fr .56fr .44fr;grid-template-rows:1fr 1fr 1fr 1.6fr 1.25fr 1.9fr;gap:5px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px;aspect-ratio:3/3.6;max-height:560px;width:100%;box-shadow:0 6px 18px var(--shelf-shadow)}
 .wall.small{aspect-ratio:auto;height:150px;max-width:150px;gap:2px;padding:3px;box-shadow:none}
-.cell{position:relative;border:0;background:var(--bg);border-radius:2px;display:flex;align-items:flex-end;gap:1px;padding:3px 3px 0;overflow:hidden;cursor:pointer;min-width:0;box-shadow:inset 0 -3px 0 var(--line)}
-.wall.small .cell{padding:1px 1px 0;gap:0;box-shadow:inset 0 -1px 0 var(--line)}
+.cell{position:relative;border:0;background:var(--bg);border-radius:2px;display:flex;align-items:flex-end;justify-content:flex-start;gap:1px;padding:16px 3px 0;overflow:hidden;cursor:pointer;min-width:0;box-shadow:inset 0 -3px 0 var(--line)}
+.wall.small .cell{padding:2px 1px 0;gap:0;box-shadow:inset 0 -1px 0 var(--line)}
 .cell .lbl{position:absolute;top:3px;left:4px;font-family:var(--font-code);font-size:.68rem;color:var(--muted);background:color-mix(in srgb,var(--bg) 80%,transparent);padding:0 3px;border-radius:3px;z-index:1}
 .wall.small .cell .lbl{display:none}
 .cell.cubby{background:var(--maple-soft);box-shadow:inset 0 0 0 3px var(--maple)}
@@ -88,8 +88,8 @@ h2{font-size:1.25rem}
 .cell.hl{box-shadow:inset 0 0 0 3px var(--glow);animation:pulse 1.6s ease-in-out 3}
 .cell.dim{opacity:.45}
 @keyframes pulse{50%{box-shadow:inset 0 0 0 5px var(--glow)}}
-.mini{flex:0 0 auto;border-radius:1px 1px 0 0}
-.mini-stack{display:flex;flex-direction:column;justify-content:flex-end;gap:0;flex:0 0 auto;margin-right:2px}
+.mini{min-width:0;border-radius:1px 1px 0 0}
+.mini-stack{display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:0;min-width:0;margin-right:2px}
 .mini-stack i{display:block;height:3px;border-radius:1px}
 .wall.small .mini-stack i{height:1.5px}
 
@@ -467,10 +467,16 @@ const AREAS = {
 function miniCell(spot, small, hl){
   if (spot === "B6") return `<div class="cell empty" style="grid-area:${AREAS[spot]}">${small?"":"cushions"}</div>`;
   const s = shelfStructure(spot);
-  const scale = small ? .35 : .9;
+  const H = {lg:100, hc:86, pb:76, mg:72, th:70};
+  const barH = small ? 1.5 : 3;
   let inner = "";
-  for (const p of s.stacks.concat(s.tops)) inner += `<span class="mini-stack">${p.books.map(b => `<i style="background:${b.color};width:${Math.round(flatDims(b).w*scale*.32)}px"></i>`).join("")}</span>`;
-  inner += s.row.map(b => { const d = dims(b); return `<span class="mini" style="background:${b.color};width:${Math.max(1,Math.round(d.w*scale*.32))}px;height:${Math.round(d.h*(small?.16:.42))}px"></span>`; }).join("");
+  // flat piles: each pile takes room in proportion to its widest book; bars keep their relative lengths
+  for (const p of s.stacks.concat(s.tops)){
+    const wmax = Math.max(...p.books.map(b => flatDims(b).w));
+    inner += `<span class="mini-stack" style="flex:${(wmax/9).toFixed(1)} 1 0">${p.books.map(b => `<i style="background:${b.color};width:${Math.round(flatDims(b).w/wmax*100)}%;height:${barH}px"></i>`).join("")}</span>`;
+  }
+  // upright spines: widths share the shelf in proportion to thickness, heights follow the format
+  inner += s.row.map(b => { const d = dims(b); return `<span class="mini" style="flex:${d.w} 1 0;background:${b.color};height:${H[b.size]||76}%"></span>`; }).join("");
   const cls = ["cell", spot==="A-cubby"?"cubby":"", hl===spot?"hl":"", hl && hl!==spot && small ? "dim":""].join(" ");
   return `<button class="${cls}" style="grid-area:${AREAS[spot]}" data-shelf="${spot}" aria-label="Shelf ${spot}, ${s.books.length} books"><span class="lbl">${spot==="A-cubby"?"cubby":spot}</span>${inner}</button>`;
 }
@@ -640,7 +646,7 @@ function renderSheet(){
   const meta = [b.genre, LANGS[b.lang]||"", b.year ? (b.year<0? `${-b.year} BC` : b.year) : "", b.pages ? `~${b.pages} pages` : "", ...(b.tags||[]).map(t=>MOODS[t]||t)].filter(Boolean);
   const edit = S.sheetMode === "edit";
   const rtl = isAr(b.title);
-  L.innerHTML = `<div class="scrim" data-act="close"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(b.title)}">
+  L.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(b.title)}">
     <div class="grab"></div>
     <div class="hero"><div class="cover" style="background:${b.color};color:${inkOn(b.color)}"${rtl?' dir="rtl"':''}>${esc(unknown(b)?"?":b.title)}</div>
       <div style="min-width:0"><h2${rtl?' dir="rtl" style="text-align:left"':''}>${esc(b.title)}</h2><div class="muted">${esc(b.author||"Author unknown")}</div><div class="meta">${meta.map(m=>`<span class="tag">${esc(m)}</span>`).join("")}</div></div></div>
@@ -697,7 +703,7 @@ function editForm(b){
 }
 function renderPicker(){
   const L = document.getElementById("layer");
-  L.innerHTML = `<div class="scrim" data-act="close"><div class="sheet" role="dialog" aria-modal="true" aria-label="Who is using the app">
+  L.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Who is using the app">
     <div class="grab"></div><h2>Who's using the app?</h2>
     <p class="muted" style="margin:6px 0 12px">Your name goes on the books you read, rate, borrow or add notes to. This phone remembers it.</p>
     <div class="people">${S.family.map(n=>`<button class="chip" aria-pressed="${S.me===n}" data-me="${esc(n)}">${esc(n)}</button>`).join("")}</div>
@@ -713,7 +719,7 @@ function finishPicker(){
 }
 function renderAdd(){
   const L = document.getElementById("layer");
-  L.innerHTML = `<div class="scrim" data-act="close"><div class="sheet" role="dialog" aria-modal="true" aria-label="Add a book">
+  L.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Add a book">
     <div class="grab"></div><h2>Add a book</h2>
     <div class="stack-v" style="margin-top:12px">
     <label class="f">Title<input type="text" id="a-title"></label>
