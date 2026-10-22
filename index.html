@@ -275,6 +275,23 @@ mark{background:#ffe2a8;color:#1c2629;border-radius:2px;padding:0 1px}
   .soon{max-width:820px;margin-inline:auto}
   .sheet{max-width:680px}
 }
+
+/* ---------- selected states, sheet handle, theme button ---------- */
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.chip.on::before,.kopt.on span::before{content:"✓ ";font-weight:700}
+.chip.sug.on{background:var(--accent)}
+.kopt.on{background:var(--accent);border:2px solid var(--accent);color:var(--accent-ink);font-weight:600}
+.kopt.on em{color:inherit;opacity:.85}
+.seg2 button.on{background:var(--accent);color:var(--accent-ink);box-shadow:none}
+.grabzone{position:sticky;top:-10px;z-index:3;margin:-10px calc(-1 * max(18px,env(safe-area-inset-right,0px))) 6px calc(-1 * max(18px,env(safe-area-inset-left,0px)));padding:12px 0 10px;background:var(--surface);cursor:grab;touch-action:none;display:flex;justify-content:center;border-radius:18px 18px 0 0}
+.grabzone .grab{width:48px;height:5px;margin:0}
+.grabzone:active{cursor:grabbing}
+.sheetx{position:absolute;right:max(14px,env(safe-area-inset-right,0px));top:6px;width:32px;height:32px;border-radius:50%;border:0;background:var(--bg);color:var(--ink);font-size:.95rem;cursor:pointer}
+.sheet.dragging{transition:none;animation:none}
+.sheet.settle{transition:transform .2s ease}
+.themebtn{flex-shrink:0;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center}
+.themebtn svg{width:18px;height:18px}
+.topright{display:flex;gap:8px;align-items:center;flex-shrink:0}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 
@@ -529,6 +546,7 @@ function flatDims(b){
   return {w: {lg:210,hc:172,pb:150,th:140,mg:150}[b.size] || 150, h: Math.max(9, Math.min(28, d.w*0.75))};
 }
 function toast(msg){
+  document.querySelectorAll(".toast").forEach(x => x.remove());
   const t = document.createElement("div"); t.className="toast"; t.textContent = msg; t.setAttribute("role","status");
   document.body.appendChild(t); setTimeout(() => t.remove(), 2600);
 }
@@ -566,7 +584,7 @@ function wallMap(small, hl){
 function header(title, sub){
   const me = S.me;
   return `<div class="topbar"><div><div class="eyebrow">${esc(sub)}</div><h1>${esc(title)}</h1></div>
-  <button class="who" data-act="picker" aria-label="Change who is using the app"><span class="avatar">${me?esc(me[0].toUpperCase()):"?"}</span><span>${me?esc(me):"Who are you?"}</span></button></div>` + syncBanner();
+  <div class="topright">${themeButton()}<button class="who" data-act="picker" aria-label="Change who is using the app"><span class="avatar">${me?esc(me[0].toUpperCase()):"?"}</span><span>${me?esc(me):"Who are you?"}</span></button></div></div>` + syncBanner();
 }
 function viewShelves(){
   if (S.shelf) return viewShelf(S.shelf);
@@ -787,7 +805,7 @@ function renderFilters(){
   const toggles = (field, opts) => opts.map(([v,l,c]) => `<button class="chip ${d[field].includes(v)?"on":""}" data-draftm="${field}" data-val="${esc(v)}">${esc(l)}${c!=null?` <em>${c}</em>`:""}</button>`).join("");
   const prevTop = L.querySelector(".sheet")?.scrollTop || 0;
   L.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Filters">
-    <div class="grab"></div>
+    <div class="grabzone" data-grab><div class="grab"></div><button class="sheetx" data-act="close" aria-label="Close">✕</button></div>
     <div class="row" style="justify-content:space-between"><h2>Filters</h2><button class="linkbtn" data-act="dreset">Reset</button></div>
     <div class="fsec"><div class="eyebrow">Kind of book</div><div class="kgrid">${Object.entries(kindCounts).sort((a,b)=>b[1]-a[1]).map(([k,c]) => `<button class="kopt ${d.kinds.includes(k)?"on":""}" data-draftm="kinds" data-val="${esc(k)}"><span>${esc(k)}</span><em>${c}</em></button>`).join("")}</div></div>
     <div class="fsec"><div class="eyebrow">Set in or about</div><div class="chips wrap">${toggles("places", PLACE_OPTS.map(p => [p, p, books.filter(b=>placeMatch(b,p)).length]).filter(x=>x[2]))}</div></div>
@@ -869,7 +887,7 @@ function renderSheet(){
   const edit = S.sheetMode === "edit";
   const rtl = isAr(b.title);
   L.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(b.title)}">
-    <div class="grab"></div>
+    <div class="grabzone" data-grab><div class="grab"></div><button class="sheetx" data-act="close" aria-label="Close">✕</button></div>
     <div class="hero"><div class="cover" style="background:${b.color};color:${inkOn(b.color)}"${rtl?' dir="rtl"':''}>${esc(unknown(b)?"?":b.title)}</div>
       <div style="min-width:0"><h2${rtl?' dir="rtl" style="text-align:left"':''}>${esc(b.title)}</h2><div class="muted" style="font-size:.9rem">${esc(metaLine)}</div><div class="meta">${chipsHtml}</div></div></div>
     ${b.desc?`<p class="desc">${esc(b.desc)}</p>`:""}
@@ -934,7 +952,7 @@ function editForm(b){
 function renderPicker(){
   const L = document.getElementById("layer");
   L.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Who is using the app">
-    <div class="grab"></div><h2>Who's using the app?</h2>
+    <div class="grabzone" data-grab><div class="grab"></div><button class="sheetx" data-act="close" aria-label="Close">✕</button></div><h2>Who's using the app?</h2>
     <p class="muted" style="margin:6px 0 12px">Your name goes on the books you read, rate, borrow or add notes to. This phone remembers it.</p>
     <div class="people">${S.family.map(n=>`<button class="chip" aria-pressed="${S.me===n}" data-me="${esc(n)}">${esc(n)}</button>`).join("")}</div>
     <div class="row" style="margin-top:14px;flex-wrap:nowrap"><input type="text" id="newname" placeholder="Add a name" aria-label="Your name"><button class="btn primary" data-act="addname">Add</button></div>
@@ -950,7 +968,7 @@ function finishPicker(){
 function renderAdd(){
   const L = document.getElementById("layer");
   L.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Add a book">
-    <div class="grab"></div><h2>Add a book</h2>
+    <div class="grabzone" data-grab><div class="grab"></div><button class="sheetx" data-act="close" aria-label="Close">✕</button></div><h2>Add a book</h2>
     <div class="stack-v" style="margin-top:12px">
     <label class="f">Title<input type="text" id="a-title"></label>
     <label class="f">Author<input type="text" id="a-author"></label>
@@ -973,6 +991,56 @@ function posForIndex(spot, idx, exceptId){
 }
 const KINDS = ["Fiction","Poetry & Plays","History","Memoir & Biography","Politics & Society","Religion & Philosophy","Arts & Photography","Textiles & Crafts","Travel & Places","Mind, Body & Spirit","Business & Economics","Science & Nature","Reference & Other"];
 const PALETTE = ["#2f6f6a","#7a2433","#1f4fa8","#c9a3a3","#e9c95a","#3b6b3a","#5a2a4a","#d8742a","#1d1d1d","#efe9db","#2a8fbf","#8a7a3a"];
+
+
+/* ---------------- light / dark ---------------- */
+S.theme = store.get("fs-theme", "auto");
+function applyTheme(){
+  const r = document.documentElement;
+  if (S.theme === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", S.theme);
+  const dark = S.theme === "dark" || (S.theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute("content", dark ? "#121718" : "#eef1f0"));
+}
+function themeButton(){
+  const icons = {
+    auto:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 4v16" /><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>',
+    light:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+    dark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>'};
+  const label = {auto:"Theme: matches your device", light:"Theme: light", dark:"Theme: dark"}[S.theme];
+  return `<button class="themebtn" data-act="theme" aria-label="${label}" title="${label}">${icons[S.theme]}</button>`;
+}
+applyTheme();
+try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme); }catch(e){}
+
+/* ---------------- drag the sheet handle down to close ---------------- */
+(function(){
+  let drag = null;
+  document.addEventListener("pointerdown", e => {
+    const zone = e.target.closest("[data-grab]");
+    if (!zone || e.target.closest(".sheetx")) return;
+    const sheet = zone.closest(".sheet");
+    drag = {sheet, y0: e.clientY, t0: performance.now(), dy: 0, id: e.pointerId};
+    sheet.classList.add("dragging"); sheet.classList.remove("settle");
+    try{ zone.setPointerCapture(e.pointerId); }catch(err){}
+  });
+  document.addEventListener("pointermove", e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    drag.dy = Math.max(0, e.clientY - drag.y0);
+    drag.sheet.style.transform = `translateY(${drag.dy}px)`;
+  });
+  const end = e => {
+    if (!drag || (e && e.pointerId !== drag.id)) return;
+    const d = drag; drag = null;
+    const speed = d.dy / Math.max(1, performance.now() - d.t0);
+    d.sheet.classList.remove("dragging"); d.sheet.classList.add("settle");
+    if (d.dy > 110 || (d.dy > 30 && speed > 0.6)){
+      d.sheet.style.transform = "translateY(100%)";
+      setTimeout(() => { if (S.sheet === "__picker" && S.returnTo){ S.after = null; finishPicker(); } else closeSheet(); }, 180);
+    } else d.sheet.style.transform = "";
+  };
+  document.addEventListener("pointerup", end);
+  document.addEventListener("pointercancel", end);
+})();
 
 /* ---------------- main render ---------------- */
 function syncBanner(){
@@ -1038,7 +1106,8 @@ document.addEventListener("click", e => {
   if (!act) return;
   const id = S.sheet;
   switch(act){
-    case "close": closeSheet(); break;
+    case "close": if (S.sheet==="__picker" && S.returnTo){ S.after=null; finishPicker(); } else closeSheet(); break;
+    case "theme": { const order = ["auto","dark","light"]; S.theme = order[(order.indexOf(S.theme)+1)%3]; store.set("fs-theme", S.theme); applyTheme(); render(); toast({auto:"Theme matches your device", dark:"Dark mode", light:"Light mode"}[S.theme]); break; }
     case "wall": S.shelf=null; S.focus=null; render(); break;
     case "picker": openPicker(); break;
     case "pick": pickForMe(); break;
