@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+
+    // Each account remembers which library it belongs to. Only that person can read it.
+    match /users/{uid} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+
+    match /libraries/nabulsi-shelves-4817 {
+      // Shelves, borrowing, edits and added books: anyone in the family.
+      match /state/{id} { allow read, write: if signedIn(); }
+      match /added/{id} { allow read, write: if signedIn(); }
+      match /meta/{id}  { allow read, write: if signedIn(); }
+
+      // Names: everyone can see, each person changes only their own.
+      match /people/{uid} {
+        allow read: if signedIn();
+        allow write: if signedIn() && request.auth.uid == uid;
+      }
+
+      // Reading lists, ratings and notes: visible to others only when switched on.
+      match /sections/{sid} {
+        allow read: if signedIn() && (resource == null || resource.data.uid == request.auth.uid || resource.data.visible == true);
+        allow create, update: if signedIn()
+          && request.resource.data.uid == request.auth.uid
+          && sid.matches(request.auth.uid + '__(want|reading|read|notes)');
+        allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+      }
+    }
+  }
+}

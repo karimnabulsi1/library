@@ -174,7 +174,7 @@ h2{font-size:1.25rem}
 .stars button.on{color:var(--glow)}
 .note{background:var(--bg);border-radius:8px;padding:8px 10px;font-size:.9rem}
 .note small{color:var(--muted);display:block}
-textarea,input[type=text],input[type=number],select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%}
+textarea,input[type=text],input[type=email],input[type=password],input[type=number],select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%}
 textarea{min-height:64px;resize:vertical}
 label.f{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -292,6 +292,29 @@ mark{background:#ffe2a8;color:#1c2629;border-radius:2px;padding:0 1px}
 .themebtn{flex-shrink:0;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center}
 .themebtn svg{width:18px;height:18px}
 .topright{display:flex;gap:8px;align-items:center;flex-shrink:0}
+
+/* ---------- accounts, my books, privacy ---------- */
+.switch{position:relative;flex-shrink:0;width:50px;height:30px;border-radius:15px;border:0;background:var(--line);cursor:pointer;transition:background .15s}
+.switch i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .15s}
+.switch.on{background:var(--accent)}
+.switch.on i{left:23px}
+.privrow{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--line)}
+.privrow:last-child{border-bottom:0}
+.privrow b{display:block;font-weight:600;font-size:.92rem}
+.privrow small{color:var(--muted);font-size:.8rem}
+.privline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:12px 0 12px;font-size:.85rem;color:var(--muted)}
+.pdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-right:7px;vertical-align:1px}
+.pdot.on{background:var(--good)}
+.minetabs button em{font-style:normal;opacity:.7;font-size:.78rem;margin-left:2px}
+.listseg button{font-weight:600}
+.famline{font-size:.85rem;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.peoplegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.person{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px;cursor:pointer;min-width:0}
+.person b{display:block;font-size:.92rem}
+.person small{color:var(--muted);font-size:.76rem}
+.gate .seg2 button{padding:10px 4px;font-size:.9rem}
+.gate input{font-size:16px}
+.tab{padding:6px 8px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 
@@ -301,6 +324,7 @@ mark{background:#ffe2a8;color:#1c2629;border-radius:2px;padding:0 1px}
 <nav class="tabs" aria-label="Sections"><div>
   <button class="tab" data-tab="shelves"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="1.5"/><path d="M3 9h18M3 15h18M7 5v3M9 5v3M12 11v3M14 11v3M16 11v3M6 17v3M8 17v3"/></svg>Shelves</button>
   <button class="tab" data-tab="find"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>Find</button>
+  <button class="tab" data-tab="mine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h12v18l-6-4-6 4z"/></svg>My books</button>
   <button class="tab" data-tab="family"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9" r="2.6"/><path d="M3 20c.6-3.6 3-5.5 6-5.5s5.4 1.9 6 5.5M15 15c2.8-.4 5 1 5.8 4.6"/></svg>Family</button>
 </div></nav>
 <div id="layer"></div>
@@ -320,6 +344,7 @@ const MOODS = {light:"Light",deep:"Deep",gripping:"Gripping",moving:"Moving",fun
 const usd = n => "$" + Math.round(n).toLocaleString("en-US");
 const jod = n => Math.round(n*0.709).toLocaleString("en-US") + " JOD";
 const today = () => new Date().toISOString().slice(0,10);
+const niceDate = d => { try{ return new Date(d + "T12:00:00").toLocaleDateString("en-GB", {day:"numeric", month:"short", year:"numeric"}); }catch(e){ return d; } };
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const isAr = s => /[؀-ۿ]/.test(s||"");
 const store = {get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -399,81 +424,130 @@ function locate(b){
   return i < n/2 ? `${ord(i+1)} from the left` : (n-i===1 ? "Last on the right" : `${ord(n-i)} from the right`);
 }
 
-/* ---------------- statuses ---------------- */
+/* ---------------- people, lists & privacy ----------------
+   Each person's lists live in libraries/{code}/sections/{uid}__{want|reading|read|notes}.
+   Every section doc carries `visible`; the database rules only let others read it when visible is true. */
+const LISTS = ["want","reading","read"];
+const SECTION_INFO = {
+  read:    {title:"Read",              ask:"Others can see what I've read"},
+  want:    {title:"Want to read",      ask:"Others can see what I want to read"},
+  reading: {title:"Reading now",       ask:"Others can see what I'm reading now"},
+  notes:   {title:"Ratings and notes", ask:"Others can see my ratings and notes"},
+};
+S.mySecs = {}; S.pubSecs = {}; S.people = {};
+let IDX = null;
+const secId = (uid, s) => uid + "__" + s;
+function allSections(){ return Object.assign({}, S.pubSecs, S.mySecs); }
+function mySec(s){
+  if (!S.user) return {books:{}, ratings:{}, notes:{}, visible:true};
+  return S.mySecs[secId(S.user.uid, s)] || {uid:S.user.uid, name:S.me||"", section:s, visible:true, books:{}, ratings:{}, notes:{}};
+}
+function buildIndex(){
+  IDX = {};
+  const get = id => IDX[id] || (IDX[id] = {reads:{}, reading:[], ratings:{}, notes:[], want:false, last:null});
+  for (const d of Object.values(allSections())){
+    const mine = !!(S.user && d.uid === S.user.uid);
+    if (!mine && !d.visible) continue;
+    const name = mine ? (S.me || d.name || "Me") : ((S.people[d.uid] && S.people[d.uid].name) || d.name || "Someone");
+    if (d.section === "read") for (const [id, date] of Object.entries(d.books||{})){ const x = get(id); x.reads[name] = date; if (!x.last || date > x.last.at) x.last = {by:name, at:date}; }
+    if (d.section === "reading") for (const id of Object.keys(d.books||{})) get(id).reading.push(name);
+    if (d.section === "want" && mine) for (const id of Object.keys(d.books||{})) get(id).want = true;
+    if (d.section === "notes"){
+      for (const [id, n] of Object.entries(d.ratings||{})) get(id).ratings[name] = n;
+      for (const [id, arr] of Object.entries(d.notes||{})) for (const n of (arr||[])) get(id).notes.push({by:name, at:n.at, text:n.text, mine});
+    }
+  }
+}
 function statusOf(b){
+  if (!IDX) buildIndex();
+  const x = IDX[b.id] || {reads:{}, reading:[], ratings:{}, notes:[], want:false, last:null};
   const st = b.st || {};
   return {
-    reading: st.readingBy || null,
+    reading: x.reading.includes(S.me) ? S.me : (x.reading[0] || null),
+    readingAll: x.reading,
     borrowed: st.borrowedBy || null,
     lent: st.lentTo || null,
-    reads: st.reads || {},
-    ratings: st.ratings || {},
-    notes: st.notes || [],
-    last: st.lastRead || null,
+    reads: x.reads, ratings: x.ratings,
+    notes: x.notes.slice().sort((a,c) => (a.at||"").localeCompare(c.at||"")),
+    last: x.last, want: x.want,
   };
 }
+const myList = id => { for (const s of LISTS) if ((mySec(s).books||{})[id]) return s; return null; };
 
-/* ---------------- db ---------------- */
-/* Firestore layout: libraries/{familyCode}/state/{bookId}, .../added/{id}, .../meta/family.
-   Security rules only allow paths whose {familyCode} matches the real code. */
+/* ---------------- firebase ---------------- */
 const FB_VERSION = "10.12.2";
-const FB = {};          // loaded Firebase functions
-S.code = store.get("fs-code", null);
+const FB = {};
 S.online = navigator.onLine;
 S.pendingWrites = 0;
+S.authMode = "signin";
 const base = () => "libraries/" + S.code;
+const subs = [];
+function stopSubs(){ while (subs.length) { try{ subs.pop()(); }catch(e){} } }
 
 async function loadFirebase(){
   if (FB.ready) return;
   const app = await import(`https://www.gstatic.com/firebasejs/${FB_VERSION}/firebase-app.js`);
   const fs  = await import(`https://www.gstatic.com/firebasejs/${FB_VERSION}/firebase-firestore.js`);
-  Object.assign(FB, fs);
+  const au  = await import(`https://www.gstatic.com/firebasejs/${FB_VERSION}/firebase-auth.js`);
+  Object.assign(FB, fs); FB.A = au;
   const fbApp = app.initializeApp(FIREBASE_CONFIG);
-  try{
-    FB.db = fs.initializeFirestore(fbApp, {localCache: fs.persistentLocalCache({tabManager: fs.persistentMultipleTabManager()})});
-  }catch(e){
-    FB.db = fs.getFirestore(fbApp);   // private browsing: falls back to memory cache
-  }
+  try{ FB.db = fs.initializeFirestore(fbApp, {localCache: fs.persistentLocalCache({tabManager: fs.persistentMultipleTabManager()})}); }
+  catch(e){ FB.db = fs.getFirestore(fbApp); }
+  FB.auth = au.getAuth(fbApp);
   FB.ready = true;
 }
-async function checkCode(code){
-  // true = correct, false = wrong, null = could not check (offline)
-  await loadFirebase();
-  try{
-    await FB.getDocFromServer(FB.doc(FB.db, "libraries", code, "meta", "family"));
-    return true;
-  }catch(e){
-    if (e && e.code === "permission-denied") return false;
-    return null;
-  }
-}
-async function initDb(){
-  if (!S.code){ render(); return; }
+async function boot(){
   try{ await loadFirebase(); }
-  catch(e){ S.dbFailed = true; S.offlineStart = true; render(); return; }
-  S.db = FB.db;
+  catch(e){ S.authReady = true; S.offlineStart = true; render(); return; }
+  FB.A.onAuthStateChanged(FB.auth, async u => {
+    if (S.signingUp) return;            // the sign-up handler finishes setting things up itself
+    S.user = u; S.authReady = true;
+    if (!u){ stopSubs(); S.code = null; S.me = null; S.mySecs = {}; S.pubSecs = {}; S.people = {}; IDX = null; render(); return; }
+    S.me = u.displayName || store.get("fs-me-" + u.uid, "") || "";
+    let code = store.get("fs-code-" + u.uid, null);
+    if (!code){ try{ const s = await FB.getDoc(FB.doc(FB.db, "users", u.uid)); code = s.exists() ? s.data().code : null; }catch(e){} }
+    if (!code){ S.authMode = "code"; render(); return; }
+    enterLibrary(code);
+  });
+}
+function enterLibrary(code){
+  S.code = code; store.set("fs-code-" + S.user.uid, code);
+  S.authMode = "signin"; stopSubs();
+  const uid = S.user.uid;
   const onErr = name => e => {
     console.warn(name, e);
-    if (e && e.code === "permission-denied"){ store.set("fs-code", null); S.code = null; S.codeError = "That family code no longer works. Enter the current one."; render(); }
+    if (e && e.code === "permission-denied" && name === "state"){ store.set("fs-code-" + uid, null); S.code = null; S.authMode = "code"; S.authError = "The family code has changed. Enter the new one."; render(); }
   };
-  FB.onSnapshot(FB.collection(FB.db, base(), "state"), {includeMetadataChanges:true}, snap => {
+  subs.push(FB.onSnapshot(FB.collection(FB.db, base(), "state"), {includeMetadataChanges:true}, snap => {
     const m = {}; snap.forEach(d => { m[d.id] = d.data(); });
-    S.bookState = m; S.dbReady = true; S.fromCache = snap.metadata.fromCache; S.pendingWrites = snap.metadata.hasPendingWrites ? 1 : 0; render();
-  }, onErr("state"));
-  FB.onSnapshot(FB.collection(FB.db, base(), "added"), snap => {
+    S.bookState = m; S.dbReady = true; S.fromCache = snap.metadata.fromCache; render();
+  }, onErr("state")));
+  subs.push(FB.onSnapshot(FB.collection(FB.db, base(), "added"), snap => {
     const m = {}; snap.forEach(d => { m[d.id] = d.data(); }); S.added = m; render();
-  }, onErr("added"));
-  FB.onSnapshot(FB.doc(FB.db, base(), "meta", "family"), snap => {
-    const d = snap.exists() ? snap.data() : null; S.family = (d && Array.isArray(d.names)) ? d.names : S.family; render();
-  }, onErr("family"));
+  }, onErr("added")));
+  subs.push(FB.onSnapshot(FB.collection(FB.db, base(), "people"), snap => {
+    const m = {}; snap.forEach(d => { m[d.id] = d.data(); }); S.people = m;
+    if (m[uid] && m[uid].name && m[uid].name !== S.me){ S.me = m[uid].name; store.set("fs-me-" + uid, S.me); }
+    IDX = null; render();
+  }, onErr("people")));
+  for (const s of [...LISTS, "notes"]){
+    subs.push(FB.onSnapshot(FB.doc(FB.db, base(), "sections", secId(uid, s)), snap => {
+      const id = secId(uid, s);
+      if (snap.exists()) S.mySecs = {...S.mySecs, [id]: snap.data()};
+      else { const m = {...S.mySecs}; delete m[id]; S.mySecs = m; }
+      IDX = null; render();
+    }, onErr("mine")));
+  }
+  subs.push(FB.onSnapshot(FB.query(FB.collection(FB.db, base(), "sections"), FB.where("visible", "==", true)), snap => {
+    const m = {}; snap.forEach(d => { m[d.id] = d.data(); }); S.pubSecs = m; IDX = null; render();
+  }, onErr("public")));
+  render();
 }
 function writeDoc(path, data){
-  if (!S.db) return Promise.resolve();
-  // setDoc resolves when the server confirms; offline it stays pending and syncs later,
-  // so we never block the interface on it.
+  if (!S.code || !FB.db) return Promise.resolve();
   const p = FB.setDoc(FB.doc(FB.db, path), data);
   p.catch(e => {
-    if (e && e.code === "permission-denied") toast("This phone isn't allowed to save. Check the family code.");
+    if (e && e.code === "permission-denied") toast("That change wasn't allowed. Try signing out and back in.");
     else toast("Couldn't save that change. It will retry when you're back online.");
   });
   return p;
@@ -487,10 +561,28 @@ function patchBook(id, fn){
   writeChains[id] = prev.then(() => writeDoc(base() + "/state/" + id, next)).catch(() => {});
   return writeChains[id];
 }
-async function saveFamily(names){
-  S.family = names; render();
-  writeDoc(base() + "/meta/family", {names});
+function writeSection(s, fn){
+  if (!S.user) return;
+  const id = secId(S.user.uid, s);
+  const cur = JSON.parse(JSON.stringify(mySec(s)));
+  const next = fn(cur) || cur;
+  next.uid = S.user.uid; next.name = S.me || ""; next.section = s;
+  if (typeof next.visible !== "boolean") next.visible = true;
+  next.books = next.books || {}; next.ratings = next.ratings || {}; next.notes = next.notes || {};
+  S.mySecs = {...S.mySecs, [id]: next}; IDX = null; render();
+  const prev = writeChains[id] || Promise.resolve();
+  writeChains[id] = prev.then(() => writeDoc(base() + "/sections/" + id, next)).catch(() => {});
 }
+/* put a book on one of my lists (or take it off all of them with null) */
+function setList(bookId, list){
+  const d = today();
+  for (const s of LISTS){
+    const has = !!(mySec(s).books || {})[bookId];
+    const should = s === list;
+    if (has !== should) writeSection(s, sec => { sec.books = {...(sec.books||{})}; if (should) sec.books[bookId] = d; else delete sec.books[bookId]; return sec; });
+  }
+}
+async function saveFamily(){ /* family names now come from accounts */ }
 async function saveAdded(id, data){
   S.added = {...S.added, [id]: data}; render();
   writeDoc(base() + "/added/" + id, data);
@@ -498,31 +590,113 @@ async function saveAdded(id, data){
 window.addEventListener("online", () => { S.online = true; render(); });
 window.addEventListener("offline", () => { S.online = false; render(); });
 
-/* ---------------- family code gate ---------------- */
+/* ---------------- sign in / create account ---------------- */
+const authErr = e => ({
+  "auth/invalid-credential":"That email and password don't match. Check them and try again.",
+  "auth/wrong-password":"That password isn't right.",
+  "auth/user-not-found":"There's no account with that email yet. Create one instead.",
+  "auth/email-already-in-use":"There's already an account with that email. Sign in instead.",
+  "auth/weak-password":"Use a password of at least 6 characters.",
+  "auth/invalid-email":"That email address doesn't look right.",
+  "auth/too-many-requests":"Too many tries. Wait a minute, then try again.",
+  "auth/network-request-failed":"You're offline. Connect to the internet and try again.",
+  "auth/operation-not-allowed":"Sign-in isn't switched on in Firebase yet.",
+}[e && e.code] || "Something went wrong. Try again.");
 function viewGate(){
-  return `<div class="gate">
-    <div class="gate-mark" aria-hidden="true">${["#167a8b","#c88a45","#7a2433","#2f6f6a","#e9c95a","#1f4fa8","#efe9db"].map((c,i)=>`<i style="background:${c};height:${[70,84,62,90,76,66,80][i]}px"></i>`).join("")}</div>
-    <h1>The Family Shelves</h1>
-    <p class="muted">Enter the family code to open the library. You only need to do this once on each phone.</p>
-    <form id="gateform" class="stack-v" autocomplete="off">
-      <input type="text" id="code" placeholder="Family code" aria-label="Family code" autocapitalize="none" autocorrect="off" spellcheck="false" value="">
-      ${S.codeError?`<div class="flagnote">${esc(S.codeError)}</div>`:""}
-      <button class="btn primary" type="submit" id="gatebtn" ${S.checking?"disabled":""}>${S.checking?"Checking…":"Open the library"}</button>
-    </form></div>`;
+  const m = S.authMode;
+  const mark = `<div class="gate-mark" aria-hidden="true">${["#167a8b","#c88a45","#7a2433","#2f6f6a","#e9c95a","#1f4fa8","#efe9db"].map((c,i)=>`<i style="background:${c};height:${[70,84,62,90,76,66,80][i]}px"></i>`).join("")}</div>`;
+  if (!S.authReady) return `<div class="gate">${mark}<h1>The Family Shelves</h1><p class="muted">Opening the library…</p></div>`;
+  const err = S.authError ? `<div class="flagnote" role="alert">${esc(S.authError)}</div>` : "";
+  const note = S.authNote ? `<div class="banner">${esc(S.authNote)}</div>` : "";
+  const busy = S.checking;
+  if (m === "code") return `<div class="gate">${mark}<h1>One more step</h1>
+    <p class="muted">Enter the family code to connect your account to the library. You only need to do this once.</p>
+    <form id="codeform" class="stack-v" autocomplete="off">
+      <input type="text" id="code" placeholder="Family code" aria-label="Family code" autocapitalize="none" autocorrect="off" spellcheck="false">
+      ${err}<button class="btn primary" type="submit" id="gatebtn" ${busy?"disabled":""}>${busy?"Checking…":"Open the library"}</button>
+      <button class="linkbtn" type="button" data-act="signout">Use a different account</button></form></div>`;
+  if (m === "reset") return `<div class="gate">${mark}<h1>Reset your password</h1>
+    <p class="muted">We'll email you a link to choose a new password.</p>
+    <form id="resetform" class="stack-v">
+      <input type="email" id="email" placeholder="Email" aria-label="Email" autocomplete="email" value="${esc(S.lastEmail||"")}">
+      ${err}${note}<button class="btn primary" type="submit" ${busy?"disabled":""}>${busy?"Sending…":"Send reset link"}</button>
+      <button class="linkbtn" type="button" data-auth="signin">Back to sign in</button></form></div>`;
+  const up = m === "signup";
+  return `<div class="gate">${mark}<h1>The Family Shelves</h1>
+    <div class="seg2" role="tablist" style="margin-top:4px"><button type="button" class="${up?"":"on"}" data-auth="signin">Sign in</button><button type="button" class="${up?"on":""}" data-auth="signup">Create account</button></div>
+    <form id="${up?"signupform":"signinform"}" class="stack-v">
+      ${up?`<input type="text" id="name" placeholder="Your first name" aria-label="Your first name" autocomplete="given-name" maxlength="30">`:""}
+      <input type="email" id="email" placeholder="Email" aria-label="Email" autocomplete="email" value="${esc(S.lastEmail||"")}">
+      <input type="password" id="password" placeholder="${up?"Choose a password (6+ characters)":"Password"}" aria-label="Password" autocomplete="${up?"new-password":"current-password"}">
+      ${up?`<input type="text" id="code" placeholder="Family code" aria-label="Family code" autocapitalize="none" autocorrect="off" spellcheck="false">`:""}
+      ${err}${note}
+      <button class="btn primary" type="submit" id="gatebtn" ${busy?"disabled":""}>${busy?"One moment…":(up?"Create my account":"Sign in")}</button>
+      ${up?"":`<button class="linkbtn" type="button" data-auth="reset">Forgot your password?</button>`}
+    </form>
+    <p class="muted" style="font-size:.82rem">${up?"Ask whoever set up the library for the family code.":"New here? Choose “Create account”."}</p></div>`;
+}
+async function joinLibrary(user, code, name){
+  // writing your own person record only succeeds when the family code is right
+  await FB.setDoc(FB.doc(FB.db, "libraries", code, "people", user.uid), {name, joined: today()});
+  await FB.setDoc(FB.doc(FB.db, "users", user.uid), {code});
+  for (const s of [...LISTS, "notes"]){
+    const ref = FB.doc(FB.db, "libraries", code, "sections", secId(user.uid, s));
+    const ex = await FB.getDoc(ref).catch(() => null);
+    if (!ex || !ex.exists()) await FB.setDoc(ref, {uid:user.uid, name, section:s, visible:true, books:{}, ratings:{}, notes:{}});
+  }
 }
 document.addEventListener("submit", async e => {
-  if (e.target.id !== "gateform") return;
+  const id = e.target.id;
+  if (!["signinform","signupform","resetform","codeform"].includes(id)) return;
   e.preventDefault();
-  const code = (document.getElementById("code").value || "").trim();
-  if (!code){ S.codeError = "Type the family code first."; render(); return; }
-  if (!/^[A-Za-z0-9_\-.~]{3,60}$/.test(code)){ S.codeError = "The code can use letters, numbers, dashes and dots, with no spaces."; render(); return; }
-  S.checking = true; S.codeError = ""; render();
-  let ok;
-  try{ ok = await checkCode(code); }catch(err){ ok = null; }
-  S.checking = false;
-  if (ok === false){ S.codeError = "That code isn't right. Check with whoever set up the library."; render(); return; }
-  if (ok === null){ S.codeError = "Couldn't check the code. Make sure you're online, then try again."; render(); return; }
-  S.code = code; store.set("fs-code", code); render(); initDb();
+  const v = k => (document.getElementById(k)?.value || "").trim();
+  S.authError = ""; S.authNote = "";
+  if (id === "resetform"){
+    const email = v("email"); S.lastEmail = email;
+    if (!email){ S.authError = "Type your email first."; render(); return; }
+    S.checking = true; render();
+    try{ await FB.A.sendPasswordResetEmail(FB.auth, email); S.authNote = "Check your inbox for the reset link (and your spam folder)."; }
+    catch(err){ S.authError = authErr(err); }
+    S.checking = false; render(); return;
+  }
+  if (id === "signinform"){
+    const email = v("email"), pw = document.getElementById("password").value; S.lastEmail = email;
+    if (!email || !pw){ S.authError = "Type your email and password."; render(); return; }
+    S.checking = true; render();
+    try{ await FB.A.signInWithEmailAndPassword(FB.auth, email, pw); }
+    catch(err){ S.authError = authErr(err); }
+    S.checking = false; render(); return;
+  }
+  if (id === "signupform"){
+    const name = v("name"), email = v("email"), pw = document.getElementById("password").value, code = v("code"); S.lastEmail = email;
+    if (!name){ S.authError = "Add your first name so the family knows who you are."; render(); return; }
+    if (!email || !pw){ S.authError = "Type an email and a password."; render(); return; }
+    if (!/^[A-Za-z0-9_\-.~]{3,60}$/.test(code)){ S.authError = "Type the family code. It has no spaces."; render(); return; }
+    S.checking = true; S.signingUp = true; render();
+    let cred;
+    try{ cred = await FB.A.createUserWithEmailAndPassword(FB.auth, email, pw); }
+    catch(err){ S.checking = false; S.signingUp = false; S.authError = authErr(err); render(); return; }
+    try{
+      await FB.A.updateProfile(cred.user, {displayName: name});
+      await joinLibrary(cred.user, code, name);
+    }catch(err){
+      const wrong = err && err.code === "permission-denied";
+      try{ await cred.user.delete(); }catch(x){}
+      S.checking = false; S.signingUp = false;
+      S.authError = wrong ? "That family code isn't right. Check with whoever set up the library." : "Couldn't finish creating your account. Check your connection and try again.";
+      render(); return;
+    }
+    S.checking = false; S.signingUp = false;
+    S.user = cred.user; S.authReady = true; S.me = name; store.set("fs-me-" + cred.user.uid, name);
+    enterLibrary(code); toast(`Welcome, ${name}`); return;
+  }
+  if (id === "codeform"){
+    const code = v("code");
+    if (!/^[A-Za-z0-9_\-.~]{3,60}$/.test(code)){ S.authError = "Type the family code. It has no spaces."; render(); return; }
+    S.checking = true; render();
+    try{ await joinLibrary(S.user, code, S.user.displayName || S.me || "Family member"); S.checking = false; enterLibrary(code); }
+    catch(err){ S.checking = false; S.authError = err && err.code === "permission-denied" ? "That family code isn't right." : "Couldn't check the code. Make sure you're online."; render(); }
+  }
 });
 
 /* ---------------- helpers ---------------- */
@@ -551,9 +725,10 @@ function toast(msg){
   document.body.appendChild(t); setTimeout(() => t.remove(), 2600);
 }
 function needMe(then){
-  if (S.me) return then();
-  openPicker(then);
+  if (S.user) return then();
+  toast("Sign in first.");
 }
+
 
 /* ---------------- rendering: wall map ---------------- */
 const AREAS = {
@@ -584,7 +759,7 @@ function wallMap(small, hl){
 function header(title, sub){
   const me = S.me;
   return `<div class="topbar"><div><div class="eyebrow">${esc(sub)}</div><h1>${esc(title)}</h1></div>
-  <div class="topright">${themeButton()}<button class="who" data-act="picker" aria-label="Change who is using the app"><span class="avatar">${me?esc(me[0].toUpperCase()):"?"}</span><span>${me?esc(me):"Who are you?"}</span></button></div></div>` + syncBanner();
+  <div class="topright">${themeButton()}<button class="who" data-act="account" aria-label="Your account and privacy"><span class="avatar">${me?esc(me[0].toUpperCase()):"?"}</span><span>${me?esc(me):"Account"}</span></button></div></div>` + syncBanner();
 }
 function viewShelves(){
   if (S.shelf) return viewShelf(S.shelf);
@@ -711,7 +886,8 @@ function hl(text, words){
 const shelfLabel = s => s === "A-cubby" ? "Cubby" : s;
 function coverCard(b, words){
   const st = statusOf(b);
-  const badge = st.reading ? "Reading" : (st.borrowed||st.lent) ? "Out" : (S.me && st.reads[S.me]) ? "Read" : "";
+  const ml = myList(b.id);
+  const badge = (st.borrowed||st.lent) ? "Out" : ml === "reading" ? "Reading" : ml === "read" ? "Read" : ml === "want" ? "Want" : st.reading ? "Being read" : "";
   return `<button class="ccard" data-book="${esc(b.id)}"><span class="cover2" style="background:${b.color};color:${inkOn(b.color)}"><span class="loc2">${esc(shelfLabel(b.spot))}</span>${badge?`<span class="badge2">${badge}</span>`:""}<span class="ct" ${isAr(b.title)?'dir="rtl"':''}>${esc(unknown(b)?"?":b.title)}</span></span>
     <span class="cap2"><b ${isAr(b.title)?'dir="rtl"':''}>${hl(b.title, words)}</b><span>${hl(b.author||b.kind, words)}</span></span></button>`;
 }
@@ -818,22 +994,62 @@ function renderFilters(){
   </div></div>`;
   const sh = L.querySelector(".sheet"); if (sh){ sh.style.animation = prevTop ? "none" : ""; sh.scrollTop = prevTop; }
 }
+/* ---------------- my books ---------------- */
+S.mineTab = store.get("fs-minetab", "want");
+function listBooks(sec){
+  const books = Object.entries(sec.books || {}).sort((a,b) => (b[1]||"").localeCompare(a[1]||""));
+  const all = new Map(allBooks().map(b => [b.id, b]));
+  return books.map(([id]) => all.get(id)).filter(Boolean);
+}
+function privacyLine(s, mine){
+  const on = mySec(s).visible !== false;
+  return `<div class="privline"><span><i class="pdot ${on?"on":""}"></i>${on ? "The family can see this list" : "Only you can see this list"}</span><button class="linkbtn" data-priv="${s}">${on ? "Make private" : "Share with family"}</button></div>`;
+}
+function viewMine(){
+  const tabs = LISTS.map(s => [s, listBooks(mySec(s))]);
+  const cur = LISTS.includes(S.mineTab) ? S.mineTab : "want";
+  const list = tabs.find(x => x[0] === cur)[1];
+  const empty = {
+    want: "Nothing here yet. Open any book and tap “Want to read” to save it for later.",
+    reading: "When you start a book, open it and tap “Reading now”.",
+    read: "Books you finish show up here. Open a book and tap “Read”.",
+  }[cur];
+  return header("My books", S.me ? `${S.me}'s lists` : "Your lists") + `
+    <div class="seg2 minetabs" role="tablist">${tabs.map(([s,l]) => `<button class="${s===cur?"on":""}" data-minetab="${s}" role="tab" aria-selected="${s===cur}">${SECTION_INFO[s].title} <em>${l.length}</em></button>`).join("")}</div>
+    ${privacyLine(cur)}
+    ${list.length ? bookBlock(list, []) : `<div class="card muted" style="margin-top:12px">${empty}</div><div style="margin-top:12px"><button class="btn" data-goto="find">Find a book</button></div>`}
+    <div class="muted" style="font-size:.82rem;margin-top:18px">Your ratings and notes are ${mySec("notes").visible!==false?"visible to the family":"private"}. Change this and more under <button class="linkbtn" data-act="account">your account</button>.</div>`;
+}
+
 /* ---------------- family ---------------- */
+function personView(uid){
+  const p = S.people[uid] || {}; const name = p.name || "Someone";
+  const secs = ["reading","read","want"].map(s => [s, allSections()[secId(uid, s)]]);
+  return `<button class="back" data-act="backfamily">‹ Family</button>
+    <div class="row" style="flex-wrap:nowrap;gap:12px;margin:6px 0 4px"><span class="avatar" style="width:44px;height:44px;font-size:1.1rem">${esc(name[0].toUpperCase())}</span><h1>${esc(name)}</h1></div>
+    ${secs.map(([s, d]) => `<div class="sec2"><span class="eyebrow">${SECTION_INFO[s].title}${d && d.visible ? ` · ${Object.keys(d.books||{}).length}` : ""}</span></div>
+      ${d && d.visible ? (Object.keys(d.books||{}).length ? bookBlock(listBooks(d), []) : `<div class="card muted">Nothing here yet.</div>`) : `<div class="card muted">${esc(name)} keeps this private.</div>`}`).join("")}`;
+}
 function viewFamily(){
+  if (S.person && S.person !== S.user?.uid && S.people[S.person]) return personView(S.person);
   const books = allBooks();
   const tot = k => books.reduce((s,b)=>s+(b[k]||0),0);
-  const reading = books.filter(b => statusOf(b).reading);
+  const reading = books.filter(b => statusOf(b).readingAll.length);
   const out = books.filter(b => { const s=statusOf(b); return s.borrowed||s.lent; });
   const recent = books.filter(b => statusOf(b).last).sort((a,b)=>statusOf(b).last.at.localeCompare(statusOf(a).last.at)).slice(0,8);
   const genres = {}; for (const b of books) genres[b.kind]=(genres[b.kind]||0)+1;
   const max = Math.max(...Object.values(genres));
-  const counts = {}; for (const b of books) for (const n of Object.keys(statusOf(b).reads)) counts[n]=(counts[n]||0)+1;
   const check = books.filter(b => b.flag || unknown(b)).length;
+  const secs = allSections();
+  const people = Object.entries(S.people).sort((a,b) => (a[1].name||"").localeCompare(b[1].name||""));
+  const countOf = (uid, s) => { const d = secs[secId(uid,s)]; return d && (d.visible || uid === S.user?.uid) ? Object.keys(d.books||{}).length : null; };
   return header("Family", "Who's reading what") +
   `<div class="stack-v">
-    <div class="card stack-v"><div class="eyebrow">Using the app as</div>
-      <div class="people">${S.family.map(n=>`<button class="chip" aria-pressed="${S.me===n}" data-me="${esc(n)}">${esc(n)}${counts[n]?` · ${counts[n]} read`:""}</button>`).join("")}<button class="chip" data-act="picker">+ Add a person</button></div></div>
-    <div class="stack-v"><div class="eyebrow">Reading now</div>${reading.length?`<div class="list">${reading.map(itemRow).join("")}</div>`:`<div class="card muted">Nobody has marked a book as reading yet. Open a book and tap "I'm reading this".</div>`}</div>
+    <div class="stack-v"><div class="eyebrow">People</div>
+      <div class="peoplegrid">${people.map(([uid,p]) => { const me = uid === S.user?.uid; const r = countOf(uid,"read"), w = countOf(uid,"want");
+        return `<button class="person" ${me?'data-goto="mine"':`data-person="${esc(uid)}"`}><span class="avatar">${esc((p.name||"?")[0].toUpperCase())}</span><span><b>${esc(p.name||"Someone")}${me?" (you)":""}</b><small>${r==null?"Read list private":`${r} read`} · ${w==null?"wishlist private":`${w} to read`}</small></span></button>`; }).join("")}</div>
+      <div class="muted" style="font-size:.82rem">To add someone, send them the link and the family code. They create their own account.</div></div>
+    <div class="stack-v"><div class="eyebrow">Reading now</div>${reading.length?`<div class="list">${reading.map(itemRow).join("")}</div>`:`<div class="card muted">Nobody is reading anything they've shared yet.</div>`}</div>
     <div class="stack-v"><div class="eyebrow">Borrowed or lent out</div>${out.length?`<div class="list">${out.map(itemRow).join("")}</div>`:`<div class="card muted">Every book is on its shelf.</div>`}</div>
     ${recent.length?`<div class="stack-v"><div class="eyebrow">Recently finished</div><div class="list">${recent.map(itemRow).join("")}</div></div>`:""}
     <div class="eyebrow" style="margin-top:6px">The collection, Wall 1</div>
@@ -848,7 +1064,7 @@ function viewFamily(){
     <button class="card" style="text-align:left;cursor:pointer" data-act="needcheck"><b>${check} books need checking</b><div class="muted" style="font-size:.88rem">Titles or authors Claude couldn't read from the photos. Open one and use "Edit details" to fix it.</div></button>
   </div>`;
 }
-
+function renderSheetIfOpen(){ if (S.sheet === "__account") renderAccount(); else if (S.sheet && !String(S.sheet).startsWith("__")) renderSheet(); }
 /* ---------------- sheet ---------------- */
 function similarTo(b){
   if (unknown(b)) return [];
@@ -869,7 +1085,7 @@ function openSheet(id, mode){ S.sheet = id; S.sheetMode = mode||"view"; S.moreOp
 function closeSheet(){ S.sheet = null; document.getElementById("layer").innerHTML = ""; }
 function renderSheet(){
   const L = document.getElementById("layer");
-  if (S.sheet === "__picker") return renderPicker();
+  if (S.sheet === "__picker" || S.sheet === "__account") return renderAccount();
   if (S.sheet === "__add") return renderAdd();
   if (S.sheet === "__filters") return renderFilters();
   if (!S.sheet){ L.innerHTML=""; return; }
@@ -877,6 +1093,9 @@ function renderSheet(){
   const st = statusOf(b);
   const me = S.me;
   const myRating = me ? (st.ratings[me]||0) : 0;
+  const myL = myList(b.id);
+  const otherReaders = Object.entries(st.reads).filter(([n]) => n !== me);
+  const otherReading = (st.readingAll||[]).filter(n => n !== me);
   const others = Object.entries(st.ratings).filter(([n])=>n!==me);
   const readers = Object.entries(st.reads);
   const yearTxt = b.year ? (b.year<0? `${-b.year} BC` : b.year) : "";
@@ -903,15 +1122,14 @@ function renderSheet(){
     </div>
     ${edit ? editForm(b) : `
     <div class="section">
-      <div class="eyebrow">${me?`You (${esc(me)})`:"Your reading"}</div>
-      <div class="row">
-        <button class="btn small ${st.reading===me&&me?"on":""}" data-act="reading">${st.reading && st.reading!==me ? `${esc(st.reading)} is reading it` : (st.reading===me&&me ? "Reading now ✓" : "I'm reading this")}</button>
-        <button class="btn small ${me&&st.reads[me]?"on":""}" data-act="read">${me&&st.reads[me]?`Read ✓ ${esc(st.reads[me])}`:"Mark as read"}</button>
-      </div>
+      <div class="eyebrow">My lists</div>
+      <div class="seg2 listseg" role="group" aria-label="Put this book on a list">${[["want","Want to read"],["reading","Reading now"],["read","Read"]].map(([k,l]) => `<button class="${myL===k?"on":""}" data-list="${k}" aria-pressed="${myL===k}">${myL===k?"✓ ":""}${l}</button>`).join("")}</div>
+      ${myL ? `<div class="muted" style="font-size:.82rem">On your ${esc(SECTION_INFO[myL].title.toLowerCase())} list since ${esc(niceDate((mySec(myL).books||{})[b.id]||""))}. Tap it again to take it off.</div>` : ""}
       <div class="row"><span class="muted" style="font-size:.85rem">Your rating</span><span class="stars">${[1,2,3,4,5].map(n=>`<button class="${n<=myRating?"on":""}" data-rate="${n}" aria-label="${n} star${n>1?"s":""}">★</button>`).join("")}</span></div>
-      ${others.length?`<div class="muted" style="font-size:.85rem">${others.map(([n,r])=>`${esc(n)} ${"★".repeat(r)}`).join(" · ")}</div>`:""}
-      ${st.last?`<div class="muted" style="font-size:.85rem">Last read by ${esc(st.last.by)} on ${esc(st.last.at)}</div>`:""}
-      ${readers.length?`<div class="muted" style="font-size:.85rem">Read by ${readers.map(([n])=>esc(n)).join(", ")}</div>`:""}
+      ${(otherReaders.length || others.length || otherReading.length) ? `<div class="famline">
+        ${otherReading.length ? `<div>Reading now: ${otherReading.map(esc).join(", ")}</div>` : ""}
+        ${otherReaders.length ? `<div>Read by ${otherReaders.map(([n,d])=>esc(n)).join(", ")}</div>` : ""}
+        ${others.length ? `<div>${others.map(([n,r])=>`${esc(n)} ${"★".repeat(r)}`).join(" · ")}</div>` : ""}</div>` : ""}
     </div>
     <div class="section">
       <div class="eyebrow">Borrowing</div>
@@ -922,7 +1140,7 @@ function renderSheet(){
     </div>
     <div class="section">
       <div class="eyebrow">Notes</div>
-      ${st.notes.map(n=>`<div class="note">${esc(n.text)}<small>${esc(n.by)}, ${esc(n.at)}</small></div>`).join("")}
+      ${st.notes.map(n=>`<div class="note">${esc(n.text)}<small>${n.mine?"You":esc(n.by)}, ${esc(niceDate(n.at))}${n.mine && mySec("notes").visible===false ? " · only you can see this" : ""}</small></div>`).join("")}
       <textarea id="note" placeholder="Add a note, a favourite line, or who recommended it" aria-label="New note"></textarea>
       <div><button class="btn small" data-act="note">Add note</button></div>
     </div>
@@ -949,21 +1167,22 @@ function editForm(b){
     <div class="row"><button class="btn primary" data-act="saveedit">Save</button><button class="btn" data-act="canceledit">Cancel</button><button class="btn" style="color:var(--warn);margin-left:auto" data-act="remove">Remove from library</button></div>
     <div id="rmconfirm"></div></div>`;
 }
-function renderPicker(){
+function openPicker(){ openAccount(); }
+function finishPicker(){ closeSheet(); }
+function openAccount(){ S.sheet = "__account"; renderSheet(); }
+function renderAccount(){
   const L = document.getElementById("layer");
-  L.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Who is using the app">
-    <div class="grabzone" data-grab><div class="grab"></div><button class="sheetx" data-act="close" aria-label="Close">✕</button></div><h2>Who's using the app?</h2>
-    <p class="muted" style="margin:6px 0 12px">Your name goes on the books you read, rate, borrow or add notes to. This phone remembers it.</p>
-    <div class="people">${S.family.map(n=>`<button class="chip" aria-pressed="${S.me===n}" data-me="${esc(n)}">${esc(n)}</button>`).join("")}</div>
-    <div class="row" style="margin-top:14px;flex-wrap:nowrap"><input type="text" id="newname" placeholder="Add a name" aria-label="Your name"><button class="btn primary" data-act="addname">Add</button></div>
+  const sw = s => { const on = mySec(s).visible !== false; return `<div class="privrow"><div><b>${esc(SECTION_INFO[s].ask)}</b><small>${on ? "Visible to the family" : "Only you can see this"}</small></div><button class="switch ${on?"on":""}" role="switch" aria-checked="${on}" aria-label="${esc(SECTION_INFO[s].ask)}" data-priv="${s}"><i></i></button></div>`; };
+  L.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Your account">
+    <div class="grabzone" data-grab><div class="grab"></div><button class="sheetx" data-act="close" aria-label="Close">✕</button></div>
+    <div class="row" style="flex-wrap:nowrap;gap:12px"><span class="avatar" style="width:44px;height:44px;font-size:1.1rem">${esc((S.me||"?")[0].toUpperCase())}</span><div style="min-width:0"><h2>${esc(S.me||"Your account")}</h2><div class="muted" style="font-size:.88rem;overflow-wrap:anywhere">${esc(S.user?.email||"")}</div></div></div>
+    <div class="section"><div class="eyebrow">Your name in the family</div>
+      <div class="row" style="flex-wrap:nowrap"><input type="text" id="acc-name" value="${esc(S.me||"")}" maxlength="30" aria-label="Your name"><button class="btn small" data-act="savename">Save</button></div></div>
+    <div class="section"><div class="eyebrow">Privacy</div>
+      <p class="muted" style="margin:0;font-size:.85rem">Choose what the rest of the family can see. Borrowing always stays visible so everyone knows where a book is.</p>
+      ${["read","want","reading","notes"].map(sw).join("")}</div>
+    <div class="section"><div class="row"><button class="btn small" data-act="resetpw">Email me a password reset link</button><button class="btn small" data-act="signout">Sign out</button></div></div>
   </div></div>`;
-}
-function openPicker(then){ S.after = then || null; S.returnTo = (S.sheet && !String(S.sheet).startsWith("__")) ? S.sheet : null; S.sheet = "__picker"; renderSheet(); }
-function finishPicker(){
-  const after = S.after, back = S.returnTo; S.after = null; S.returnTo = null;
-  if (back){ S.sheet = back; S.sheetMode = "view"; } else { S.sheet = null; document.getElementById("layer").innerHTML = ""; }
-  render(); if (back) renderSheet();
-  if (after) after();
 }
 function renderAdd(){
   const L = document.getElementById("layer");
@@ -1054,10 +1273,15 @@ function render(){
   const scrollX = document.getElementById("scroller")?.scrollLeft;
   const qFocused = document.activeElement && document.activeElement.id === "q";
   const caret = qFocused ? document.activeElement.selectionStart : null;
-  const gated = !S.code;
+  const gated = !S.code || !S.user;
   document.querySelector(".tabs").hidden = gated;
-  if (gated){ const typed = document.getElementById("code")?.value || ""; app.innerHTML = viewGate(); const c=document.getElementById("code"); if (c){ c.value = typed; } return; }
-  app.innerHTML = S.tab==="find" ? viewFind() : S.tab==="family" ? viewFamily() : viewShelves();
+  if (gated){
+    const keep = {}; for (const k of ["name","email","code"]){ const el = document.getElementById(k); if (el) keep[k] = el.value; }
+    app.innerHTML = viewGate();
+    for (const [k,v] of Object.entries(keep)){ const el = document.getElementById(k); if (el && v) el.value = v; }
+    return;
+  }
+  app.innerHTML = S.tab==="find" ? viewFind() : S.tab==="family" ? viewFamily() : S.tab==="mine" ? viewMine() : viewShelves();
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-current", t.dataset.tab===S.tab ? "page" : "false"));
   if (qFocused){ const q = document.getElementById("q"); q.focus(); try{ q.setSelectionRange(caret,caret); }catch(e){} }
   const sc = document.getElementById("scroller");
@@ -1077,14 +1301,12 @@ function render(){
 function go(tab){ S.tab = tab; if (tab!=="shelves"){ S.focus=null; } window.scrollTo(0,0); render(); }
 
 /* ---------------- events ---------------- */
-document.addEventListener("click", e => {
+document.addEventListener("click", async e => {
   const t = e.target;
-  const tab = t.closest(".tab"); if (tab){ if (tab.dataset.tab==="shelves" && S.tab==="shelves"){ S.shelf=null; S.focus=null; } go(tab.dataset.tab); return; }
+  const tab = t.closest(".tab"); if (tab){ if (tab.dataset.tab==="family") S.person = null; if (tab.dataset.tab==="shelves" && S.tab==="shelves"){ S.shelf=null; S.focus=null; } go(tab.dataset.tab); return; }
   const scrim = t.closest(".scrim");
   if (scrim && t === scrim){ if (S.sheet==="__picker" && S.returnTo){ S.after=null; finishPicker(); } else closeSheet(); return; }
   const actEl = t.closest("[data-act]"); const act = actEl && actEl.dataset.act;
-  const meEl = t.closest("[data-me]");
-  if (meEl){ S.me = meEl.dataset.me; store.set("fs-me", S.me); if (S.sheet==="__picker") finishPicker(); else render(); return; }
   const shelfEl = t.closest("[data-shelf]");
   if (shelfEl && !t.closest(".wall.small") || (shelfEl && t.closest(".wall.small"))){ S.shelf = shelfEl.dataset.shelf; S.focus=null; S.tab="shelves"; window.scrollTo(0,0); render(); return; }
   const bookEl = t.closest("[data-book]");
@@ -1092,7 +1314,20 @@ document.addEventListener("click", e => {
   const simEl = t.closest("[data-sim]");
   if (simEl){ openSheet(simEl.dataset.sim); return; }
   const rate = t.closest("[data-rate]");
-  if (rate){ const n = +rate.dataset.rate; needMe(() => patchBook(S.sheet, s => { s.ratings = {...(s.ratings||{})}; if (s.ratings[S.me]===n) delete s.ratings[S.me]; else s.ratings[S.me]=n; return s; })); return; }
+  if (rate){ const n = +rate.dataset.rate, bid = S.sheet; writeSection("notes", s => { s.ratings = {...(s.ratings||{})}; if (s.ratings[bid]===n) delete s.ratings[bid]; else s.ratings[bid]=n; return s; }); return; }
+  const gt = t.closest("[data-goto]");
+  if (gt){ closeSheet(); go(gt.dataset.goto); return; }
+  const li = t.closest("[data-list]");
+  if (li){ const v = li.dataset.list, bid = S.sheet, cur = myList(bid); setList(bid, cur === v ? null : v);
+    toast(cur === v ? "Taken off your list" : v === "read" ? "Moved to Read" : v === "reading" ? "Added to Reading now" : "Added to Want to read"); return; }
+  const pv = t.closest("[data-priv]");
+  if (pv){ const s = pv.dataset.priv, on = mySec(s).visible !== false; writeSection(s, sec => { sec.visible = !on; return sec; }); renderSheetIfOpen(); toast(on ? `${SECTION_INFO[s].title}: only you` : `${SECTION_INFO[s].title}: visible to family`); return; }
+  const tabm = t.closest("[data-minetab]");
+  if (tabm){ S.mineTab = tabm.dataset.minetab; store.set("fs-minetab", S.mineTab); render(); return; }
+  const per = t.closest("[data-person]");
+  if (per){ S.person = per.dataset.person; S.tab = "family"; window.scrollTo(0,0); render(); return; }
+  const au = t.closest("[data-auth]");
+  if (au){ S.authMode = au.dataset.auth; S.authError = ""; S.authNote = ""; render(); return; }
   const un = t.closest("[data-unfilter]");
   if (un){ const k=un.dataset.unfilter, v=un.dataset.val; if (Array.isArray(S.f[k])) S.f[k]=S.f[k].filter(x=>x!==v); else S.f[k]=""; store.set("fs-f2",S.f); render(); return; }
   const add = t.closest("[data-addfilter]");
@@ -1121,12 +1356,21 @@ document.addEventListener("click", e => {
     case "needcheck": S.q=""; S.f=Object.assign(FDEF(),{status:"check",view:S.f.view}); store.set("fs-f2",S.f); go("find"); break;
     case "add": S.sheet="__add"; renderSheet(); break;
     case "show": { const b = byId(actEl.dataset.id); closeSheet(); S.tab="shelves"; S.shelf=b.spot; S.focus=b.id; S.pendingScroll=true; window.scrollTo(0,0); render(); break; }
-    case "reading": needMe(() => patchBook(id, s => { if (s.readingBy===S.me){ delete s.readingBy; } else { s.readingBy=S.me; } return s; })); break;
-    case "read": needMe(() => patchBook(id, s => { s.reads={...(s.reads||{})}; if (s.reads[S.me]) delete s.reads[S.me]; else { s.reads[S.me]=today(); s.lastRead={by:S.me,at:today()}; if (s.readingBy===S.me) delete s.readingBy; } return s; })); break;
+    case "account": openAccount(); break;
+    case "savename": { const v=(document.getElementById("acc-name").value||"").trim().slice(0,30); if(!v){ toast("Type a name."); break; }
+      S.me = v; store.set("fs-me-"+S.user.uid, v); writeDoc(base()+"/people/"+S.user.uid, {...(S.people[S.user.uid]||{}), name:v});
+      for (const s of [...LISTS,"notes"]) if (S.mySecs[secId(S.user.uid,s)]) writeSection(s, sec => sec);
+      try{ FB.A.updateProfile(S.user, {displayName:v}); }catch(e){} IDX=null; renderAccount(); render(); toast("Name saved"); break; }
+    case "signout": closeSheet(); stopSubs(); try{ await FB.A.signOut(FB.auth); }catch(e){} S.user=null; S.code=null; S.authMode="signin"; render(); break;
+    case "resetpw": try{ await FB.A.sendPasswordResetEmail(FB.auth, S.user.email); toast("Reset link sent to " + S.user.email); }catch(e){ toast(authErr(e)); } break;
+    case "backfamily": S.person = null; window.scrollTo(0,0); render(); break;
+
     case "borrow": needMe(() => patchBook(id, s => { s.borrowedBy=S.me; return s; })); break;
     case "lend": { const v=(document.getElementById("lendto").value||"").trim(); if(!v){ toast("Type who you're lending it to."); break; } needMe(() => patchBook(id, s => { s.lentTo=v; s.lentBy=S.me; return s; })); break; }
     case "return": patchBook(id, s => { delete s.borrowedBy; delete s.lentTo; delete s.lentBy; return s; }); toast("Marked as back on the shelf"); break;
-    case "note": { const v=(document.getElementById("note").value||"").trim(); if(!v){ toast("Write something first."); break; } needMe(() => { patchBook(id, s => { s.notes=[...(s.notes||[]), {by:S.me,at:today(),text:v.slice(0,1000)}]; return s; }); const n=document.getElementById("note"); if(n) n.value=""; renderSheet(); }); break; }
+    case "note": { const v=(document.getElementById("note").value||"").trim(); if(!v){ toast("Write something first."); break; } const bid=id;
+      writeSection("notes", s => { s.notes = {...(s.notes||{})}; s.notes[bid] = [...(s.notes[bid]||[]), {at:today(), text:v.slice(0,1000)}]; return s; });
+      const n=document.getElementById("note"); if(n) n.value=""; renderSheet(); break; }
     case "edit": S.sheetMode="edit"; renderSheet(); break;
     case "canceledit": S.sheetMode="view"; renderSheet(); break;
     case "saveedit": {
@@ -1141,7 +1385,6 @@ document.addEventListener("click", e => {
       S.sheetMode="view"; toast(moved?`Moved to ${spot}`:"Saved"); renderSheet(); break; }
     case "remove": document.getElementById("rmconfirm").innerHTML = `<div class="flagnote row" style="margin-top:8px">Remove this book from the app? <button class="btn small" data-act="rmyes">Yes, remove</button></div>`; break;
     case "rmyes": { const b=byId(id); if (b.added){ const a={...S.added[id], removed:true}; saveAdded(id,a); } else patchBook(id, s => { s.removed=true; return s; }); closeSheet(); toast("Removed"); break; }
-    case "addname": { const v=(document.getElementById("newname").value||"").trim().slice(0,30); if(!v) break; if(!S.family.includes(v)) saveFamily([...S.family, v]); S.me=v; store.set("fs-me",v); finishPicker(); break; }
     case "saveadd": {
       const val = k => document.getElementById(k).value;
       const title = val("a-title").trim(); if(!title){ toast("Add a title first."); break; }
@@ -1163,7 +1406,7 @@ document.addEventListener("keydown", e => {
 });
 
 render();
-initDb();
+boot();
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
