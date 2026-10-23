@@ -329,6 +329,43 @@ mark{background:#ffe2a8;color:#1c2629;border-radius:2px;padding:0 1px}
 .rlinks{display:flex;flex-wrap:wrap;gap:6px}
 .rlinks a{font-size:.82rem;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--accent);text-decoration:none;font-weight:600}
 
+/* ---------- recognition filters ---------- */
+.chip.gold{background:#fff1cf;border-color:#f0dca8;color:#6b4a06}
+.chip.gold em{color:#8a6a2a}
+.chip.gold.on{background:#b88412;border-color:#b88412;color:#fff}
+.chip.gold.on em{color:#fff;opacity:.85}
+:root[data-theme="dark"] .chip.gold:not(.on){background:#3a2f17;border-color:#5a4720;color:#f1d79a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.gold:not(.on){background:#3a2f17;border-color:#5a4720;color:#f1d79a}}
+.fnote{font-size:.8rem;color:var(--muted);margin:-2px 0 8px}
+.subeye{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:10px 0 6px}
+button.award{border:0;cursor:pointer;font:inherit;font-size:.78rem}
+.award.sl{background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+:root[data-theme="dark"] .award:not(.sl){background:#3a2f17;color:#f1d79a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .award:not(.sl){background:#3a2f17;color:#f1d79a}}
+.hitwrap{margin:6px 0 4px}
+.hitwrap .eyebrow{margin-bottom:6px}
+.hitmap{display:grid;grid-template-columns:1fr .56fr .44fr;grid-template-rows:1fr 1fr 1fr 1.3fr 1fr 1fr;gap:4px;height:170px;max-width:420px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:5px}
+.hcell{position:relative;border:0;border-radius:4px;background:var(--bg);font-family:var(--font-code);font-size:.66rem;color:var(--muted);text-align:left;padding:3px 5px;cursor:default}
+.hcell.empty{background:transparent}
+.hcell.hit{background:#fff4d6;box-shadow:inset 0 0 0 2px #e2a81e;color:#6b4a06;cursor:pointer}
+.hcell.sel{background:#e2a81e;color:#fff}
+.hcell em{position:absolute;right:4px;bottom:3px;font:700 .68rem var(--font-ui,system-ui);font-style:normal;background:#e2a81e;color:#fff;border-radius:8px;padding:0 6px}
+.hcell.sel em{background:#fff;color:#8a5f00}
+:root[data-theme="dark"] .hcell.hit:not(.sel){background:#3a2f17;color:#f1d79a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hcell.hit:not(.sel){background:#3a2f17;color:#f1d79a}}
+.acclaim{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.atile{border:0;border-radius:14px;padding:12px;min-height:78px;display:flex;flex-direction:column;justify-content:space-between;gap:6px;text-align:left;cursor:pointer;font:inherit}
+.atile b{font-size:.92rem;line-height:1.25}.atile small{font-size:.76rem;opacity:.8}
+.atile.gold{background:#fff1cf;color:#6b4a06}.atile.green{background:#dff0e6;color:#1f5c3a}.atile.amber{background:#f6ecd6;color:#7a5410}.atile.blue{background:#e5eef7;color:#24446b}
+@media (min-width:1000px){
+  .acclaim{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .findwide{display:grid;grid-template-columns:300px minmax(0,1fr);gap:28px;align-items:start}
+  .fpanel{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .fpanel .kgrid{grid-template-columns:1fr 1fr;gap:6px}
+  .fpanel .kopt{padding:7px 8px;font-size:.8rem}
+  .findwide .cgrid{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .findwide .fbtn2{display:none}
+}
 /* ---------- compare ---------- */
 .verdict{background:var(--ink);color:var(--surface);border-radius:14px;padding:12px 14px;margin:10px 0 14px;display:flex;flex-direction:column;gap:4px;font-size:.9rem}
 .verdict b{color:#ffcf7a;font-weight:600}
@@ -1007,6 +1044,9 @@ const CATALOG = [
     "summary": "The culture of informers and moral compromise comes vividly to life in Funder's racy account.",
     "url": "https://www.theguardian.com/books/2003/jun/07/guardianfirstbookaward2003.biography"
    }
+  ],
+  "shortlists": [
+   "Guardian First Book Award, 2003"
   ]
  },
  {
@@ -4935,7 +4975,7 @@ const CATALOG = [
   "places": [
    "India & South Asia"
   ],
-  "about": "Pi Patel, the son of a zookeeper in Pondicherry, India, grows up practising Hinduism, Christianity and Islam all at once. When his family emigrates to Canada with their animals in 1977, their ship sinks in the Pacific and Pi is left in a lifeboat with a hyena, a zebra, an orangutan and a 450-pound Bengal tiger called Richard Parker. He survives 227 days at sea. At the end, Pi tells a second, very different version of his story and asks which one we prefer.",
+  "about": "Pi Patel, the son of a zookeeper in Pondicherry, India, grows up practising Hinduism, Christianity and Islam all at once. When his family emigrates to Canada with their animals in 1977, their ship sinks in the Pacific, and Pi finds himself adrift in a lifeboat with a hyena, a zebra, an orangutan and a 450-pound Bengal tiger called Richard Parker. Martel promised his readers 'a story that will make you believe in God'.",
   "why": "An extraordinary adventure that becomes a question about faith and storytelling.",
   "bio": "Canadian writer, born in Spain in 1963 to diplomat parents. Life of Pi won the Booker Prize in 2002 and was filmed by Ang Lee.",
   "awards": [
@@ -4998,6 +5038,9 @@ const CATALOG = [
     "summary": "A writer of great promise and a strong storyteller, with a wonderful blend of past, present and imagined future.",
     "url": "https://www.theguardian.com/books/2011/may/14/city-bohane-kevin-barry-review"
    }
+  ],
+  "shortlists": [
+   "Costa First Novel Award, 2011"
   ]
  },
  {
@@ -5072,7 +5115,7 @@ const CATALOG = [
   "places": [
    "Europe"
   ],
-  "about": "Four girlfriends grow up together in a courtyard in Tbilisi in the late 1980s, as the Soviet Union collapses and Georgia falls into civil war, crime and darkness: the electricity cuts give the book its title. Decades later, in 2019, three of them meet again in Brussels at an exhibition of photographs by the fourth, who has died, and the pictures bring back everything that happened. Published in English as The Lack of Light.",
+  "about": "Four girlfriends grow up together in a courtyard in Tbilisi in the late 1980s, as the Soviet Union collapses and Georgia falls into civil war, crime and darkness: the electricity cuts give the book its title. Decades later, in 2019, three of them meet again in Brussels at an exhibition of photographs by the fourth, and the pictures bring back everything that happened to them. Published in English as The Lack of Light.",
   "why": "A powerful, immersive novel about friendship and a country's collapse, from the author of The Eighth Life.",
   "bio": "Georgian-German novelist and theatre director, born in Tbilisi in 1983, who writes in German. Her epic family saga The Eighth Life became an international best-seller.",
   "awards": [],
@@ -5251,7 +5294,7 @@ const CATALOG = [
    "India & South Asia",
    "Americas"
   ],
-  "about": "Two brothers grow up inseparable in Calcutta in the 1950s and 60s. Udayan, the charismatic younger one, joins the violent Naxalite Maoist movement; Subhash, the cautious one, goes to study in Rhode Island. When Udayan is killed by the police in the lowland behind the family home, Subhash marries his pregnant widow, Gauri, and brings her to America, but she cannot let go of the past, with consequences for three generations.",
+  "about": "Two brothers grow up inseparable in Calcutta in the 1950s and 60s. Udayan, the charismatic younger one, is swept up in the Naxalite Maoist movement; Subhash, the cautious older one, leaves to study in Rhode Island. A decision made in those years ties both brothers, and the woman between them, to consequences that reach across three generations and two continents.",
   "why": "A quiet, beautifully written family saga about grief, politics and what we owe each other.",
   "bio": "American writer, born in London in 1967 to Bengali parents and raised in Rhode Island. Her first book, Interpreter of Maladies, won the Pulitzer Prize in 2000; she later moved to Rome and now also writes in Italian.",
   "awards": [],
@@ -5280,6 +5323,10 @@ const CATALOG = [
     "summary": "Felt neat resolutions and an overwrought final third undermined the novel.",
     "url": "http://articles.latimes.com/2013/sep/26/entertainment/la-ca-jc-jhumpa-lahiri-20130929"
    }
+  ],
+  "shortlists": [
+   "Booker Prize, 2013",
+   "National Book Award for Fiction, 2013"
   ]
  },
  {
@@ -5310,7 +5357,7 @@ const CATALOG = [
   "places": [
    "Europe"
   ],
-  "about": "Michael Holme is the second violinist of a London string quartet. Ten years earlier, as a student in Vienna, he walked out on Julia, the pianist he loved. Now he sees her again, on a London bus. She is married with a child, and has a secret: she is going deaf. The novel follows their rekindled love against the rehearsals, tours and tensions of the quartet, with long, beautiful passages about music.",
+  "about": "Michael Holme is the second violinist of a London string quartet. Ten years earlier, as a student in Vienna, he walked out on Julia, the pianist he loved, and has never got over her. Now he glimpses her again, on a London bus. The novel follows their reawakened love against the rehearsals, tours and tensions of the quartet, with some of the most beautiful writing about making music in any novel.",
   "why": "For music lovers above all: some of the best writing about playing music in any novel.",
   "bio": "Indian novelist and poet, born in Calcutta in 1952, who studied at Oxford, Stanford and Nanjing. His first novel, The Golden Gate, is written entirely in verse; A Suitable Boy took him nearly ten years to write.",
   "awards": [],
@@ -5404,6 +5451,9 @@ const CATALOG = [
     "summary": "Called it a splendid, searing story.",
     "url": "https://www.tampabay.com/features/books/review-lily-kings-euphoria-a-splendid-searing-story/2184924/"
    }
+  ],
+  "shortlists": [
+   "National Book Critics Circle Award, 2014"
   ]
  },
  {
@@ -5541,7 +5591,7 @@ const CATALOG = [
   "places": [
    "Iran & Afghanistan"
   ],
-  "about": "In 11th-century Persia, the young poet and astronomer Omar Khayyam receives a blank book from a judge in Samarkand, in which he writes his famous quatrains, the Rubaiyat. He crosses paths with Nizam al-Mulk, the powerful vizier, and Hassan Sabbah, founder of the sect of the Assassins. Centuries later, an American, Benjamin Lesage, searches for the lost manuscript in Persia during its 1905–11 constitutional revolution, and finally takes it aboard the Titanic.",
+  "about": "In 11th-century Persia, the young poet and astronomer Omar Khayyam receives a blank book from a judge in Samarkand, in which he begins to write his famous quatrains, the Rubaiyat. He crosses paths with Nizam al-Mulk, the powerful vizier, and Hassan Sabbah, future founder of the sect of the Assassins. Centuries later, an American, Benjamin Lesage, sets out to find the lost manuscript in Persia during the constitutional revolution of 1905–11.",
   "why": "A gorgeous historical adventure that brings medieval Persia to life.",
   "bio": "Lebanese-French writer, born in Beirut in 1949, who worked as a journalist before moving to Paris during the Lebanese civil war in 1976. He won the Prix Goncourt for The Rock of Tanios and was elected to the Académie française, becoming its permanent secretary in 2023.",
   "awards": [],
@@ -5821,7 +5871,7 @@ const CATALOG = [
   "places": [
    "India & South Asia"
   ],
-  "about": "An Australian heroin addict and bank robber escapes from a maximum-security prison and flees to Bombay on a false passport in the 1980s. Known as Lin, he lives in a slum where he runs a free clinic, learns Marathi, spends time in a brutal prison, falls in love with the mysterious Karla, and becomes part of the Bombay mafia under the philosophical gangster Khader Khan, eventually fighting in Afghanistan. The novel draws heavily on the author's own life, though how much is true is debated.",
+  "about": "An Australian heroin addict and bank robber escapes from a maximum-security prison and flees to Bombay on a false passport in the 1980s. Known as Lin, he finds himself living in a vast slum, running a free clinic, learning Marathi, falling in love with the mysterious Karla, and drawn into the orbit of Khader Khan, a philosophical mafia boss. The novel draws heavily on the author's own life, though how much is true is debated.",
   "why": "A huge, exuberant adventure and a love letter to Bombay.",
   "bio": "Australian author, born in 1952, who was sentenced for armed robberies, escaped from prison in 1980, and spent ten years as a fugitive, mainly in Bombay, before being recaptured and serving his sentence. He wrote Shantaram in prison.",
   "awards": [],
@@ -6005,7 +6055,10 @@ const CATALOG = [
   "awards": [],
   "approach": "Thriller",
   "depth": 1,
-  "legacy": "A finalist for the 2014 Pulitzer Prize for Fiction."
+  "legacy": "A finalist for the 2014 Pulitzer Prize for Fiction.",
+  "shortlists": [
+   "Pulitzer Prize for Fiction, 2014"
+  ]
  },
  {
   "id": "A4-32",
@@ -6035,11 +6088,12 @@ const CATALOG = [
   "places": [
    "Americas"
   ],
-  "about": "Thirteen-year-old Theo Decker survives a terrorist bombing at the Metropolitan Museum of Art in New York that kills his mother. In the chaos, he takes a small 17th-century painting, The Goldfinch by Carel Fabritius. The painting becomes his secret through a lonely adolescence in Las Vegas with his drunken father and his wild Ukrainian friend Boris, then in an antiques shop in New York, and finally a criminal underworld in Amsterdam.",
+  "about": "Thirteen-year-old Theo Decker survives a terrorist bombing at the Metropolitan Museum of Art in New York that kills his mother. In the chaos, he walks out with a small 17th-century painting, The Goldfinch by Carel Fabritius. The painting becomes his secret, and his link to his mother, as he grows up lonely and adrift, from Park Avenue to the empty suburbs of Las Vegas and the back rooms of an antiques shop in Greenwich Village.",
   "why": "An enormous, gripping, Dickensian novel about grief, art and fate.",
   "bio": "American novelist, born in Mississippi in 1963, who publishes about one novel a decade. Her first, The Secret History, became a cult classic.",
   "awards": [
-   "Pulitzer Prize for Fiction, 2014"
+   "Pulitzer Prize for Fiction, 2014",
+   "Andrew Carnegie Medal for Fiction, 2014"
   ],
   "approach": "Novel",
   "depth": 2,
@@ -6109,6 +6163,9 @@ const CATALOG = [
     "summary": "A gripping plot, credible characters and real spiritual depth.",
     "url": "https://www.kirkusreviews.com/book-reviews/ann-patchett/state-wonder/"
    }
+  ],
+  "shortlists": [
+   "Orange Prize for Fiction, 2012"
   ]
  },
  {
@@ -6218,7 +6275,7 @@ const CATALOG = [
   "places": [
    "Iran & Afghanistan"
   ],
-  "about": "Mariam, the illegitimate daughter of a wealthy man, is married off at fifteen to Rasheed, a much older shoemaker in Kabul. Years later, Laila, a bright girl from the neighbourhood whose family is killed by a rocket during the civil war, is forced to become Rasheed's second wife. At first rivals, the two women form a deep bond as Afghanistan passes through Soviet occupation, civil war and Taliban rule. The title comes from a 17th-century Persian poem about Kabul.",
+  "about": "Mariam, the illegitimate daughter of a wealthy man, is married off at fifteen to Rasheed, a much older shoemaker in Kabul. Years later, war brings a bright young girl from the neighbourhood, Laila, into the same household. At first rivals, the two women are slowly drawn together as Afghanistan passes through Soviet occupation, civil war and Taliban rule. The title comes from a 17th-century Persian poem about Kabul.",
   "why": "Heartbreaking and unforgettable; a tribute to the courage of Afghan women.",
   "bio": "Afghan-American novelist and physician, born in Kabul in 1965. His family received asylum in the United States in 1980; he practised medicine in California until The Kite Runner's success. He is a Goodwill Envoy for the UN refugee agency.",
   "awards": [],
@@ -8649,7 +8706,7 @@ const CATALOG = [
   "places": [
    "Americas"
   ],
-  "about": "A man and his son ride a motorcycle from Minnesota to California with two friends. Along the way the narrator works through a long philosophical inquiry into what 'quality' is, and slowly reveals his own past as Phaedrus, a brilliant teacher whose obsession with the question led to a mental breakdown and electroshock treatment. The book contrasts a 'romantic' approach to life, about how things feel, with a 'classical' approach, about how they work, and argues that care is what joins them. Pirsig received over a hundred rejections before William Morrow published it in 1974.",
+  "about": "A man and his eleven-year-old son set out on a motorcycle from Minnesota to California with two friends. As the miles pass, the narrator's thoughts turn into a long, gripping inquiry into what we mean by 'quality', and into the haunting presence of someone called Phaedrus, a figure from his own past whom he must finally face. Part road trip, part family story, part philosophy, it contrasts a 'romantic' way of seeing the world, about how things feel, with a 'classical' one, about how they work. Pirsig received over a hundred rejections before William Morrow published it in 1974.",
   "why": "An unusual mix of road trip, family story and philosophy that has made many people think differently about their work and attention.",
   "bio": "American writer and philosopher (1928–2017) who worked as a technical writer and taught university rhetoric before a mental breakdown in the 1960s. Zen and the Art of Motorcycle Maintenance made him famous; he published only one other book, Lila.",
   "awards": [],
@@ -8697,7 +8754,7 @@ const CATALOG = [
   "why": "Hard going, but it is the foundation of existentialism; dip into the famous passages on bad faith and 'the look'.",
   "bio": "French philosopher, novelist and playwright (1905–1980), the leading figure of existentialism, and the lifelong partner of Simone de Beauvoir. He was awarded the Nobel Prize in Literature in 1964 and declined it, saying a writer should not become an institution.",
   "awards": [
-   "Author was awarded the Nobel Prize in Literature, 1964 (declined)"
+   "Author won the Nobel Prize in Literature, 1964 (declined)"
   ],
   "approach": "Philosophy",
   "depth": 3,
@@ -9047,7 +9104,7 @@ const CATALOG = [
   "why": "For readers who want to follow Sartre's turn from philosophy to politics.",
   "bio": "French philosopher, novelist and playwright (1905–1980), the leading figure of existentialism, and the lifelong partner of Simone de Beauvoir. He was awarded the Nobel Prize in Literature in 1964 and declined it, saying a writer should not become an institution.",
   "awards": [
-   "Author was awarded the Nobel Prize in Literature, 1964 (declined)"
+   "Author won the Nobel Prize in Literature, 1964 (declined)"
   ],
   "approach": "Ideas & argument",
   "depth": 3
@@ -9115,7 +9172,7 @@ const CATALOG = [
   "places": [
    "Americas"
   ],
-  "about": "The decline of the Compson family of Mississippi, told in four sections: first through the mind of Benjy, an intellectually disabled man for whom past and present are the same; then his brother Quentin on the day of his suicide at Harvard in 1910; then the bitter, scheming Jason; and finally from outside, centring on the family's Black servant Dilsey. At the heart of it is their lost sister, Caddy. The title comes from Macbeth's speech about life as 'a tale told by an idiot, full of sound and fury'.",
+  "about": "The decline of the once-proud Compson family of Mississippi, told in four sections by four different voices: first Benjy, an intellectually disabled man for whom past and present are the same; then his brother Quentin, a Harvard student tormented by memory; then the bitter, scheming Jason; and finally from outside, through the family's Black servant Dilsey. At the heart of it all is their sister Caddy. The title comes from Macbeth's speech about life as 'a tale told by an idiot, full of sound and fury'.",
   "why": "Famously difficult at first, but one of the great experiments of modern fiction; it rewards patience and rereading.",
   "bio": "American novelist (1897–1962) from Mississippi, who set most of his work in the fictional Yoknapatawpha County. His experimental novels about the American South, its families, race and history won him the Nobel Prize in Literature in 1949 and two Pulitzer Prizes.",
   "awards": [
@@ -9191,7 +9248,7 @@ const CATALOG = [
   "places": [
    "Europe"
   ],
-  "about": "On the Yorkshire moors, the orphan Heathcliff is taken in by the Earnshaw family and grows up alongside Catherine Earnshaw. Their passionate bond is broken when she marries the gentle Edgar Linton, and Heathcliff spends the rest of his life taking revenge on both families, into the next generation. The story is told through layered narrators, the visitor Lockwood and the housekeeper Nelly Dean. Emily Brontë published it in 1847 under the name Ellis Bell and died a year later.",
+  "about": "On the wild Yorkshire moors, a mysterious orphan, Heathcliff, is taken in by the Earnshaw family and grows up alongside the headstrong Catherine Earnshaw. The bond between them is fierce and strange, and when it is threatened, its consequences reach across two families and two generations. The story is told through layered narrators, a visitor called Lockwood and the housekeeper Nelly Dean. Emily Brontë published it in 1847 under the name Ellis Bell.",
   "why": "Wild, strange and intense, quite unlike any other Victorian novel.",
   "bio": "English novelist and poet (1818–1848), one of the three Brontë sisters who grew up in the Yorkshire village of Haworth. Wuthering Heights was her only novel; she died of tuberculosis a year after it was published.",
   "awards": [],
@@ -9514,7 +9571,7 @@ const CATALOG = [
   "places": [
    "Russia"
   ],
-  "about": "Rodion Raskolnikov, a poor former student in St Petersburg, convinces himself that an extraordinary man has the right to commit a crime for a greater good, and murders an old pawnbroker. The rest of the novel follows his feverish guilt, his cat-and-mouse duel with the clever investigator Porfiry Petrovich, and his relationship with Sonya, a young woman forced into prostitution, whose faith points him towards redemption. It was serialised in 1866.",
+  "about": "Rodion Raskolnikov, a desperately poor former student in St Petersburg, convinces himself that an extraordinary man has the right to commit a crime for a greater good, and murders an old pawnbroker. What follows is a feverish psychological drama: his guilt and delirium, a cat-and-mouse game with the clever investigator Porfiry Petrovich, and his meetings with Sonya, a young woman forced into prostitution to support her family. It was serialised in 1866.",
   "why": "A psychological thriller and a moral drama at once; the best place to start with Dostoevsky.",
   "bio": "Russian novelist (1821–1881) whose books wrestle with faith, guilt and freedom. In 1849 he was sentenced to death for belonging to a radical discussion circle; the sentence was changed at the last moment to four years of hard labour in Siberia, an experience that shaped everything he wrote afterwards. His major novels include Crime and Punishment, The Idiot, Demons and The Brothers Karamazov.",
   "awards": [],
@@ -9728,7 +9785,7 @@ const CATALOG = [
   "places": [
    "Europe"
   ],
-  "about": "A collection of four tragedies by Sophocles: Ajax, about the great warrior's madness and suicide after he is denied Achilles' armour; Electra, in which Electra waits for her brother Orestes to return and avenge their father Agamemnon; Women of Trachis, about the death of Heracles; and Philoctetes, about a wounded archer abandoned on an island whose bow the Greeks need to win at Troy.",
+  "about": "A collection of four tragedies by Sophocles: Ajax, about the great warrior's rage and shame after he is denied Achilles' armour; Electra, in which Electra waits for her brother Orestes to return and avenge their father Agamemnon; Women of Trachis, about the death of Heracles; and Philoctetes, about a wounded archer abandoned on an island whose bow the Greeks need to win at Troy.",
   "why": "The less famous Sophocles plays, every bit as gripping as the Theban ones.",
   "bio": "Athenian playwright (c. 497–406 BC), one of the three great writers of Greek tragedy, along with Aeschylus and Euripides. He wrote over 120 plays and won first prize at the Athens drama festival around two dozen times; only seven complete plays survive.",
   "awards": [],
@@ -9800,7 +9857,7 @@ const CATALOG = [
   "places": [
    "Americas"
   ],
-  "about": "Two stories told in alternating chapters. In 'Wild Palms', set in 1937, Harry Wilbourne, a young doctor, runs away with a married woman, Charlotte Rittenmeyer, and their love affair ends in disaster. In 'Old Man', set during the great Mississippi flood of 1927, a convict is sent out in a boat to rescue a pregnant woman and drifts for weeks. The two stories never meet but comment on each other. Faulkner's preferred title, If I Forget Thee, Jerusalem, was restored in later editions.",
+  "about": "Two stories told in alternating chapters. In 'Wild Palms', set in 1937, Harry Wilbourne, a young doctor, runs away with a married woman, Charlotte Rittenmeyer, risking everything for a love that society won't allow. In 'Old Man', set during the great Mississippi flood of 1927, a convict is sent out in a small boat to rescue a pregnant woman and is swept away into the flood. The two stories never meet but comment on each other. Faulkner's preferred title, If I Forget Thee, Jerusalem, was restored in later editions.",
   "why": "One of Faulkner's most experimental books, and 'Old Man' is a wonderful adventure in its own right.",
   "bio": "American novelist (1897–1962) from Mississippi, who set most of his work in the fictional Yoknapatawpha County. His experimental novels about the American South, its families, race and history won him the Nobel Prize in Literature in 1949 and two Pulitzer Prizes.",
   "awards": [
@@ -9837,7 +9894,7 @@ const CATALOG = [
   "places": [
    "Americas"
   ],
-  "about": "A young college student, Temple Drake, is stranded at a bootlegger's hideout in Mississippi and falls into the hands of the gangster Popeye, while the lawyer Horace Benbow tries and fails to save an innocent man accused of murder. Faulkner later claimed he wrote it to make money, as a deliberately shocking story; its violence caused a scandal in 1931 and made it his first commercial success.",
+  "about": "A young college student, Temple Drake, finds herself stranded at a bootlegger's hideout in rural Mississippi, among dangerous men led by the chilling gangster Popeye. Meanwhile Horace Benbow, an idealistic lawyer, takes on the defence of a man accused of murder. Faulkner later claimed he wrote it to make money, as a deliberately shocking story; its violence caused a scandal in 1931 and made it his first commercial success.",
   "why": "Dark, lurid and powerful; Faulkner's most gripping plot.",
   "bio": "American novelist (1897–1962) from Mississippi, who set most of his work in the fictional Yoknapatawpha County. His experimental novels about the American South, its families, race and history won him the Nobel Prize in Literature in 1949 and two Pulitzer Prizes.",
   "awards": [
@@ -9875,7 +9932,7 @@ const CATALOG = [
   "places": [
    "Egypt & North Africa"
   ],
-  "about": "After their father dies suddenly in 1930s Cairo, a lower-middle-class family is left close to poverty. The widow and her four children, Hassan, Hussein, Hassanein and the daughter Nefisa, each try to survive: the eldest drifts into crime, the middle son gives up his education to support the family, the youngest chases status as an army officer, and Nefisa works as a seamstress and is drawn into a secret affair. Mahfouz shows how poverty and the hunger for respectability push the family towards tragedy.",
+  "about": "After their father dies suddenly in 1930s Cairo, a lower-middle-class family is left close to poverty. The widow and her four children, the reckless eldest son Hassan, the dutiful Hussein, the ambitious youngest Hassanein, and their sister Nefisa, must each find a way to survive and keep up appearances in a society that judges them by class and respectability. Mahfouz follows each of them as pride, love and money pull the family in different directions.",
   "why": "Mahfouz's most powerful early novel, a gripping family drama about pride and class.",
   "bio": "Egyptian novelist (1911–2006) and the first Arabic-language writer to win the Nobel Prize in Literature, in 1988. His Cairo Trilogy follows a family across two generations of Egyptian history. In 1994 he survived a stabbing by an extremist angered by his novel Children of the Alley.",
   "awards": [
@@ -9930,6 +9987,9 @@ const CATALOG = [
     "summary": "Admired how Barry braids psychology, religion, family and Irish politics into one layered story.",
     "url": "https://www.kirkusreviews.com/book-reviews/sebastian-barry/the-secret-scripture/"
    }
+  ],
+  "shortlists": [
+   "Booker Prize, 2008"
   ]
  },
  {
@@ -10149,7 +10209,7 @@ const CATALOG = [
   "places": [
    "Europe"
   ],
-  "about": "In 1975 Archie Jones, a middle-aged Englishman, fails to kill himself on New Year's Day and soon marries Clara, a young Jamaican woman. His oldest friend Samad Iqbal, a Bangladeshi Muslim he served with in the war, struggles to keep his sons true to their roots: one twin is sent to Bangladesh and comes back a rationalist scientist, the other becomes a militant in North London. Over three generations the families collide with the Chalfens, an intellectual Jewish family, and a genetic-engineering project called FutureMouse. Smith wrote much of it while still a student at Cambridge.",
+  "about": "In 1975 Archie Jones, a middle-aged Englishman, fails to end his life on New Year's Day and soon marries Clara, a young Jamaican woman. His oldest friend Samad Iqbal, a Bangladeshi Muslim he served with in the war, worries that his twin sons are growing up too English. Over three generations, the two families collide with the Chalfens, an intellectual Jewish family, and a scientific project called FutureMouse, in a big, funny portrait of multicultural North London. Smith wrote much of it while still a student at Cambridge.",
   "why": "Funny, warm and bursting with life; a brilliant portrait of multicultural London.",
   "bio": "British novelist and essayist, born in 1975 in north-west London to an English father and a Jamaican mother. White Teeth, published when she was 24, made her famous; On Beauty won the Orange Prize in 2006. She also teaches creative writing at New York University.",
   "awards": [
@@ -10176,6 +10236,9 @@ const CATALOG = [
     "summary": "A largely hostile review that coined the term 'hysterical realism' for this kind of big, busy novel.",
     "url": "https://newrepublic.com/article/61361/human-inhuman"
    }
+  ],
+  "shortlists": [
+   "Orange Prize for Fiction, 2001"
   ]
  },
  {
@@ -10418,6 +10481,9 @@ const CATALOG = [
     "summary": "Called it one of his finest, a summary of everything Auster does, with gripping mysteries.",
     "url": "https://www.kirkusreviews.com/book-reviews/paul-auster/the-book-of-illusions/"
    }
+  ],
+  "shortlists": [
+   "International Dublin Literary Award, 2004"
   ]
  },
  {
@@ -10699,7 +10765,7 @@ const CATALOG = [
   "places": [
    "Iraq"
   ],
-  "about": "Andy McNab's account of an eight-man SAS patrol dropped behind Iraqi lines during the 1991 Gulf War to destroy Scud missile launchers and cut communication lines. Discovered almost immediately, the patrol tried to escape on foot to Syria; three men died, four, including McNab, were captured and tortured, and one escaped.",
+  "about": "Andy McNab's account of an eight-man SAS patrol dropped deep behind Iraqi lines during the 1991 Gulf War, with orders to destroy Scud missile launchers and cut communication lines. Almost as soon as they land, things start to go wrong, and the patrol must fight its way across the desert towards the Syrian border in freezing winter weather.",
   "why": "A gripping, brutal war story; read it alongside the debates about what really happened.",
   "bio": "Pen name of a former British SAS soldier, decorated for his service, who led the Bravo Two Zero patrol in the Gulf War. He later became a best-selling thriller writer.",
   "awards": [],
@@ -10784,7 +10850,7 @@ const CATALOG = [
   "places": [
    "Americas"
   ],
-  "about": "Nick Carraway rents a cottage on Long Island in the summer of 1922, next door to the mysterious millionaire Jay Gatsby, who throws lavish parties for crowds of strangers. Gatsby, it turns out, has built his whole life around winning back Daisy Buchanan, Nick's cousin, whom he loved before the war and who is now married to the rich, brutal Tom. In fewer than 200 pages, Fitzgerald paints the glamour and emptiness of the Jazz Age and the American dream.",
+  "about": "Nick Carraway rents a cottage on Long Island in the summer of 1922, next door to the mysterious millionaire Jay Gatsby, who throws lavish parties for crowds of strangers but seems to belong nowhere. Across the bay live Nick's cousin Daisy and her rich, brutal husband Tom, and Gatsby, it turns out, has a particular interest in Daisy. In fewer than 200 pages, Fitzgerald paints the glamour and emptiness of the Jazz Age and the American dream.",
   "why": "Short, beautifully written and endlessly rereadable; the great American novel for many.",
   "bio": "American writer (1896–1940) who named and chronicled the Jazz Age with his wife Zelda. Famous after his first novel, he fell out of fashion in the 1930s and died in Hollywood at 44, believing himself a failure; The Great Gatsby is now among the most-read American novels.",
   "awards": [],
@@ -10866,6 +10932,9 @@ const CATALOG = [
     "summary": "A top-notch satirical novel taking aim at nearly every part of Thatcher's Britain.",
     "url": "https://www2.publishersweekly.com/9780140133967"
    }
+  ],
+  "shortlists": [
+   "Booker Prize, 1988"
   ]
  },
  {
@@ -11273,7 +11342,7 @@ const CATALOG = [
   "places": [
    "Europe"
   ],
-  "about": "In a West German city in the late 1950s, fifteen-year-old Michael Berg begins a secret affair with Hanna Schmitz, a tram conductor more than twice his age, who asks him to read aloud to her before they make love. One day she vanishes. Years later, as a law student watching a war-crimes trial, Michael sees Hanna in the dock, accused as a former SS guard of letting hundreds of women prisoners burn to death. He realises she is hiding a secret she finds more shameful than the crime, and must decide what he owes her. The book asks how Germans of the postwar generation could love, judge and understand those who took part in the Holocaust.",
+  "about": "In a West German city in the late 1950s, fifteen-year-old Michael Berg begins a secret affair with Hanna Schmitz, a tram conductor more than twice his age, who asks him to read aloud to her before they make love. Then one day she disappears. Years later, as a law student, Michael encounters Hanna again in circumstances he could never have imagined, and must decide what he owes her. A short, unsettling novel about love, guilt and how Germans of the postwar generation came to terms with their parents' past.",
   "why": "Short, gripping and morally unsettling; it leaves you arguing with yourself.",
   "bio": "German law professor and judge, born in 1944, who wrote detective novels before The Reader made him internationally famous. His work often deals with how postwar Germans have lived with the legacy of the Nazi past.",
   "awards": [],
@@ -11319,7 +11388,7 @@ const CATALOG = [
    "Americas"
   ],
   "about": "In the gilded high society of 1870s New York, Newland Archer, a young lawyer, is engaged to the lovely, conventional May Welland. Then May's cousin, Countess Ellen Olenska, returns from Europe after leaving her unfaithful husband, and her freedom and honesty scandalise society and enchant Newland. Torn between duty and passion, he discovers how quietly and completely his world enforces its rules. Wharton wrote it after the First World War, looking back at the vanished New York of her childhood.",
-  "why": "An elegant, heartbreaking love story with one of the great endings in American fiction.",
+  "why": "An elegant, heartbreaking love story, and one of the finest American novels.",
   "bio": "American novelist (1862–1937), born into New York's wealthy old families, whose novels, including The House of Mirth and Ethan Frome, dissect the society she grew up in. She lived in France from 1907 and was awarded the Légion d'honneur for her relief work during the First World War.",
   "awards": [
    "Pulitzer Prize for the Novel, 1921"
@@ -11465,7 +11534,7 @@ const CATALOG = [
   "places": [
    "India & South Asia"
   ],
-  "about": "The story of Bahadur Shah Zafar II, the last Mughal emperor, a gentle poet and mystic in his eighties, and of the uprising of 1857, when Indian soldiers of the East India Company rebelled, seized Delhi and made him their reluctant leader. Dalrymple follows the four-month siege of the city and its brutal recapture by the British, who killed thousands, exiled Zafar to Rangoon and ended the Mughal dynasty. He drew on the 'Mutiny Papers', thousands of Urdu and Persian documents in Delhi's National Archives, largely unused before.",
+  "about": "The story of Bahadur Shah Zafar II, the last Mughal emperor, a gentle poet and mystic in his eighties presiding over a fading court, and of the great uprising of 1857, when Indian soldiers of the East India Company rebelled, marched on Delhi and made him their reluctant leader. Dalrymple follows the siege of the city through the eyes of those who lived it, drawing on the 'Mutiny Papers', thousands of Urdu and Persian documents in Delhi's National Archives that had barely been used before.",
   "why": "Gripping history, with Indian voices that had been missing from the story.",
   "bio": "Scottish historian and travel writer, born in 1965, who wrote his first book, In Xanadu, at 22 and has lived in Delhi for many years. His histories of India, including The Anarchy, are best-sellers; he co-founded the Jaipur Literature Festival.",
   "awards": [
@@ -11720,7 +11789,7 @@ const CATALOG = [
   "places": [
    "Iran & Afghanistan"
   ],
-  "about": "In 1970s Kabul, Amir, the son of a wealthy man, and Hassan, the son of his father's Hazara servant, are inseparable, flying kites together. Then, after a kite-fighting tournament, Amir witnesses Hassan being assaulted and does nothing, and later betrays him. After the Soviet invasion, Amir and his father flee to California. Decades later, a phone call draws Amir back to Taliban-ruled Afghanistan to rescue Hassan's son and find 'a way to be good again'.",
+  "about": "In 1970s Kabul, Amir, the son of a wealthy man, and Hassan, the son of his father's Hazara servant, are inseparable, flying kites together through the streets. But one winter day something happens that Amir will spend his life trying to forget, and an act of cowardice comes between them. When the Soviets invade, Amir and his father flee to California. Years later, a phone call from an old family friend draws him back to Taliban-ruled Afghanistan, where 'there is a way to be good again'.",
   "why": "A gripping, emotional story of friendship, guilt and redemption, and a vivid picture of Afghanistan.",
   "bio": "Afghan-American novelist and physician, born in Kabul in 1965. His family received asylum in the United States in 1980; he practised medicine in California until The Kite Runner's success. He is a Goodwill Envoy for the UN refugee agency.",
   "awards": [],
@@ -11914,7 +11983,7 @@ const CATALOG = [
   "places": [
    "Gulf & Arabia"
   ],
-  "about": "The first volume of Munif's five-novel saga about the discovery of oil in an unnamed Gulf kingdom resembling Saudi Arabia in the 1930s. American oilmen arrive at the oasis of Wadi al-Uyoun, bulldoze the orchards and move the Bedouin to the coastal town of Harran, where they become labourers. Told through many characters rather than one hero, the novel shows how oil money and a compliant emir transformed a traditional society, ending in a workers' revolt.",
+  "about": "The first volume of Munif's five-novel saga about the discovery of oil in an unnamed Gulf kingdom resembling Saudi Arabia in the 1930s. American oilmen arrive at the oasis of Wadi al-Uyoun, a green valley of orchards and springs, and the lives of its Bedouin inhabitants are turned upside down. Told through many characters rather than one hero, the novel shows how oil money and a compliant emir began to transform a traditional society.",
   "why": "The great Arabic novel of oil, and a powerful account of how the modern Gulf was made.",
   "bio": "Saudi novelist (1933–2004), born in Amman to a Saudi father and Iraqi mother, who trained as an oil economist and worked in the oil industry. Stripped of his Saudi citizenship for his political views, he lived in exile, mostly in Damascus, where he wrote the five-volume Cities of Salt.",
   "awards": [],
@@ -11958,7 +12027,7 @@ const CATALOG = [
   "places": [
    "India & South Asia"
   ],
-  "about": "Roy's second novel, published twenty years after The God of Small Things. In Old Delhi, Anjum, a hijra (a trans woman), leaves the community she has lived in for decades and makes a home in a graveyard, which she turns into a guest house for outcasts. Her story is interwoven with that of Tilo, an architect, and the three men who loved her, caught up in the brutal conflict in Kashmir. At the end, an abandoned baby brings their worlds together.",
+  "about": "Roy's second novel, published twenty years after The God of Small Things. In Old Delhi, Anjum, a hijra (a trans woman), leaves the community she has lived in for decades and makes a home in a graveyard, which she turns into a guest house for outcasts. Her story is interwoven with that of Tilo, an architect, and the three very different men who love her, caught up in the brutal conflict in Kashmir. Slowly, their paths draw together.",
   "why": "Sprawling and angry, but full of tenderness and humour; a portrait of modern India's injustices.",
   "bio": "Indian writer and activist, born in 1961, who trained as an architect. Her first novel, The God of Small Things, won the Booker Prize in 1997; she then spent twenty years writing essays and campaigning on dams, Kashmir, inequality and nationalism before her second novel.",
   "awards": [],
@@ -12025,7 +12094,7 @@ const CATALOG = [
    "Russia",
    "Turkey & the Ottomans"
   ],
-  "about": "Tom Reiss investigates the true identity of Essad Bey, a 1930s best-selling author in Berlin who presented himself as a Muslim prince from the Caucasus. He was in fact Lev Nussimbaum, born in 1905 to a Jewish oil millionaire in Baku, who fled the Russian Revolution across Central Asia and Persia and reinvented himself in Germany. Nussimbaum was very probably also 'Kurban Said', the author of the classic love story Ali and Nino. He died penniless in Positano, Italy, in 1942.",
+  "about": "Tom Reiss investigates the true identity of Essad Bey, a best-selling author in 1930s Berlin who presented himself as a Muslim prince from the Caucasus. He was in fact Lev Nussimbaum, born in 1905 to a Jewish oil millionaire in Baku, who fled the Russian Revolution across Central Asia and Persia and reinvented himself in Germany. Reiss follows the trail of this extraordinary shape-shifter, who was very probably also 'Kurban Said', the mysterious author of the classic love story Ali and Nino.",
   "why": "A real-life adventure stranger than fiction, and a portrait of a lost world between East and West.",
   "bio": "American historian and journalist whose biography The Black Count, about the father of Alexandre Dumas, won the Pulitzer Prize for Biography in 2013.",
   "awards": [],
@@ -12316,7 +12385,7 @@ const CATALOG = [
   "places": [
    "Americas"
   ],
-  "about": "Milo Andret, a solitary boy from the woods of northern Michigan, turns out to be a mathematical genius. In the 1970s he solves a famous problem at Berkeley and becomes a star, but his arrogance, drinking and drug use slowly destroy his career and his family. The second half is told by his son, Hans, who has inherited both his gifts and his demons.",
+  "about": "Milo Andret, a solitary boy from the woods of northern Michigan, turns out to have a rare gift for mathematics. In the 1970s he arrives at Berkeley and takes on one of the great unsolved problems of his field. The novel follows what genius gives him and what it costs, across his career, his loves and his family, and asks what is passed on from one generation to the next.",
   "why": "A moving family saga about genius and its price, which makes mathematics feel beautiful.",
   "bio": "American novelist, born in 1960, who trained as a doctor at Harvard Medical School before turning to fiction. He teaches at the Iowa Writers' Workshop.",
   "awards": [],
@@ -12375,7 +12444,7 @@ const CATALOG = [
    "East Asia & Pacific",
    "Americas"
   ],
-  "about": "The narrator, an unnamed captain of mixed French and Vietnamese parentage, is a communist mole serving as aide to a general in the South Vietnamese army. When Saigon falls in 1975, he flees with the general to Los Angeles and keeps spying on the exile community, while working as an adviser on a Hollywood war film that mocks Apocalypse Now. Finally he returns to Vietnam on a doomed mission. The whole book is his confession, written in a prison camp. It is a spy thriller, a dark comedy and a novel about being 'a man of two minds'.",
+  "about": "The narrator, an unnamed captain of mixed French and Vietnamese parentage, is a communist mole serving as aide to a general in the South Vietnamese army. When Saigon falls in 1975, he flees with the general to Los Angeles and keeps spying on the exile community, while working as an adviser on a Hollywood war film that mocks Apocalypse Now. The whole book is his confession, addressed to a mysterious commandant. It is a spy thriller, a dark comedy and a novel about being 'a man of two minds'.",
   "why": "Funny, furious and brilliant; the Vietnam War told from the Vietnamese side.",
   "bio": "Vietnamese-American novelist and professor, born in 1971, who came to the United States as a refugee in 1975, aged four, and grew up in San Jose, California. The Sympathizer was his first novel; he teaches at the University of Southern California.",
   "awards": [
@@ -12438,7 +12507,7 @@ const CATALOG = [
    "Europe",
    "Russia"
   ],
-  "about": "In 1992, in a village in newly independent Estonia, an old woman, Aliide Truu, finds a terrified young woman, Zara, collapsed in her garden. Zara has escaped from sex traffickers, and turns out to be connected to Aliide's past. Flashbacks reveal Aliide's jealousy of her sister during the Second World War and the Soviet occupation, and the terrible choices she made to survive. Oksanen first wrote the story as a play.",
+  "about": "In 1992, in a village in newly independent Estonia, an old woman, Aliide Truu, finds a terrified young woman, Zara, collapsed in her garden. Zara is running from the men who trafficked her, and Aliide, suspicious of everyone, reluctantly takes her in. As the two women circle each other, the story moves back to Aliide's youth during the Second World War and the Soviet occupation, and to a rivalry with her sister that she has never escaped. Oksanen first wrote the story as a play.",
   "why": "A gripping, harrowing novel about collaboration, shame and violence against women.",
   "bio": "Finnish novelist and playwright, born in 1977 to a Finnish father and an Estonian mother. Her books explore Estonia's history under Soviet occupation.",
   "awards": [
@@ -12496,7 +12565,7 @@ const CATALOG = [
    "Europe",
    "Americas"
   ],
-  "about": "Frank McCourt's memoir of his childhood. Born in Brooklyn in 1930, he was taken back to Limerick, Ireland, by his parents, where the family lived in desperate poverty. His father drank away whatever money he earned and eventually left; three of his siblings died young; his mother, Angela, struggled to keep the rest alive. Told in the voice of the child, with no self-pity and a great deal of humour, it ends when Frank, at nineteen, sails back to America.",
+  "about": "Frank McCourt's memoir of his childhood. Born in Brooklyn in 1930, he was taken back to Limerick, Ireland, by his parents, where the family lived in desperate poverty in a slum lane. His charming father drinks away whatever money he earns, and his mother, Angela, struggles to keep the children fed. Told in the voice of the child, with no self-pity and a great deal of humour, it is the story of a boy who dreams of America.",
   "why": "Heartbreaking and very funny at the same time; one of the great memoirs.",
   "bio": "Irish-American teacher and writer (1930–2009) who taught English in New York public schools for about thirty years. He published Angela's Ashes, his first book, at 66, followed by 'Tis and Teacher Man.",
   "awards": [
@@ -12640,7 +12709,7 @@ const CATALOG = [
   "places": [
    "Europe"
   ],
-  "about": "Kim Philby was a charming, hard-drinking, upper-class British intelligence officer, and for nearly thirty years he was also a Soviet spy, betraying countless agents and operations. Macintyre tells the story through Philby's friendships, especially with his MI6 colleague Nicholas Elliott, who trusted him completely, and the CIA's James Angleton. It ends with Elliott confronting Philby in Beirut in 1963, shortly before he escaped to Moscow.",
+  "about": "Kim Philby was a charming, hard-drinking, upper-class British intelligence officer, rising fast through MI6, and for years he was also secretly working for the Soviet Union. Macintyre tells the story through Philby's closest friendships, especially with his MI6 colleague Nicholas Elliott, who trusted him completely, and the CIA's James Angleton, and asks how a man could deceive the people who loved him for so long.",
   "why": "As gripping as a le Carré novel, and true.",
   "bio": "British historian and columnist for The Times, born in 1963, known for gripping true spy stories, including Operation Mincemeat, Agent Zigzag and The Spy and the Traitor.",
   "awards": [],
@@ -12686,7 +12755,7 @@ const CATALOG = [
   "places": [
    "Africa"
   ],
-  "about": "Twin brothers Marion and Shiva Stone are born in 1954 at a mission hospital in Addis Ababa, sons of a young Indian nun who dies in childbirth and a brilliant British surgeon who flees. Raised by two Indian doctors at the hospital, the boys grow up amid Ethiopia's political turmoil, both drawn to medicine. When betrayal splits the brothers and politics forces Marion to flee, he becomes a surgeon in New York, until the past catches up with him.",
+  "about": "Twin brothers Marion and Shiva Stone are born in 1954 at a mission hospital in Addis Ababa, sons of a young Indian nun and a brilliant British surgeon, in circumstances that become the hospital's great secret. Raised by two Indian doctors at the hospital, the boys grow up amid Ethiopia's political turmoil, both drawn to medicine, and as inseparable as only twins can be, until love and politics begin to pull them apart.",
   "why": "A sweeping family saga full of medicine, love and Ethiopia; hard to put down.",
   "bio": "Physician and novelist born in Addis Ababa in 1955 to Indian parents. He is a professor of medicine at Stanford; his memoir My Own Country is about treating AIDS patients in rural Tennessee.",
   "awards": [],
@@ -12745,7 +12814,7 @@ const CATALOG = [
   "places": [
    "Americas"
   ],
-  "about": "Mary Karr's third memoir, following The Liars' Club and Cherry. It covers her adult life: her marriage to a poet, the birth of her son, her years as a poet and teacher, and her slide into alcoholism and depression. It ends with her recovery and her unlikely conversion to Catholicism.",
+  "about": "Mary Karr's third memoir, following The Liars' Club and Cherry. It covers her adult life: her marriage to a poet, the birth of her son, her years as a poet and teacher, and her slow slide into alcoholism and depression, told with brutal honesty and dark humour, along with her unlikely search for faith.",
   "why": "Brutally honest and very funny; a memoir about addiction and finding faith that never preaches.",
   "bio": "American poet and memoirist, born in Texas in 1955, whose memoir The Liars' Club helped start the memoir boom of the 1990s. She teaches at Syracuse University.",
   "awards": [],
@@ -14248,6 +14317,9 @@ const CATALOG = [
     "summary": "Argued its real subject is memory and imagination as the source of who we are.",
     "url": "https://www.washingtonpost.com/entertainment/books/paul-austers-4321-offers-four-parallel-versions-of-one-life/2017/01/24/c2e85b0a-e18e-11e6-a547-5fb9411d332c_story.html"
    }
+  ],
+  "shortlists": [
+   "Booker Prize, 2017"
   ]
  },
  {
@@ -14348,7 +14420,7 @@ const CATALOG = [
    "Europe"
   ],
   "about": "On a hot summer's day in 1935, at her family's country house, thirteen-year-old Briony Tallis, who longs to be a writer, sees her older sister Cecilia and Robbie Turner, the housekeeper's son, in a strange scene by the fountain. Misunderstanding what she sees and reads, she accuses Robbie of a crime he didn't commit, and destroys three lives. The novel follows Robbie to the retreat at Dunkirk in 1940, and Briony, now a nurse in London, trying to make amends, before a final section that changes everything you've read.",
-  "why": "Beautifully written and gripping, with one of the most famous twists in modern fiction.",
+  "why": "Beautifully written and gripping; a novel about guilt, storytelling and the power of a lie.",
   "bio": "English novelist, born in 1948, who spent his childhood on army bases in Singapore and Libya. Early dark stories earned him the nickname 'Ian Macabre'; he won the Booker Prize in 1998 for Amsterdam.",
   "awards": [
    "National Book Critics Circle Award, 2002"
@@ -14364,6 +14436,9 @@ const CATALOG = [
     "summary": "Masterful in its insight and storytelling, though the ending borrows postmodern devices.",
     "url": "https://www.kirkusreviews.com/book-reviews/ian-mcewan/atonement/"
    }
+  ],
+  "shortlists": [
+   "Booker Prize, 2001"
   ]
  },
  {
@@ -14477,7 +14552,7 @@ const CATALOG = [
    "Syria & Lebanon",
    "Europe"
   ],
-  "about": "In Paris, the narrator meets an old man on the Métro and recognises him as Ossyane, a hero of the French Resistance. Ossyane tells him his life story: son of an Ottoman prince and an Armenian mother, he studied medicine in France, joined the Resistance and fell in love with Clara, a Jewish woman. After the war they try to live together in the Levant, until the 1948 war and family tragedy tear them apart. The book is a lament for the lost, mixed world of the eastern Mediterranean.",
+  "about": "In Paris, the narrator meets an old man on the Métro and recognises him as Ossyane, a hero of the French Resistance. Ossyane tells him his life story: son of an Ottoman prince and an Armenian mother, he studied medicine in France, joined the Resistance and fell in love with Clara, a Jewish woman, then tried to build a life with her in the Levant of the 1940s. The book is a lament for the lost, mixed world of the eastern Mediterranean.",
   "why": "A short, moving novel about love across the divides of the Middle East.",
   "bio": "Lebanese-French writer, born in Beirut in 1949, who worked as a journalist before moving to Paris during the Lebanese civil war in 1976. He won the Prix Goncourt for The Rock of Tanios and was elected to the Académie française, becoming its permanent secretary in 2023.",
   "awards": [],
@@ -14764,6 +14839,9 @@ const CATALOG = [
     "summary": "An entertainment in the highest sense, inventive and surreal, though it may not fully cohere.",
     "url": "https://www.kirkusreviews.com/book-reviews/salman-rushdie/satanic-verses/"
    }
+  ],
+  "shortlists": [
+   "Booker Prize, 1988"
   ]
  },
  {
@@ -14991,7 +15069,10 @@ const CATALOG = [
   "bio": "Kashmiri novelist and journalist, born in Srinagar, who worked for the BBC in London. The Collaborator was his first novel.",
   "awards": [],
   "approach": "Novel",
-  "depth": 2
+  "depth": 2,
+  "shortlists": [
+   "Guardian First Book Award, 2011"
+  ]
  },
  {
   "id": "B5-24",
@@ -15066,7 +15147,7 @@ const CATALOG = [
   "places": [
    "India & South Asia"
   ],
-  "about": "In Ayemenem, Kerala, in 1969, seven-year-old twins Estha and Rahel live with their divorced mother Ammu in a family of fading respectability. When their English cousin Sophie Mol comes to visit, a chain of events is set off: Ammu's secret love for Velutha, a Dalit ('untouchable') carpenter, is exposed, and a child drowns. The novel moves between that terrible fortnight and 1993, when the twins meet again as adults, and shows how 'the Love Laws' of caste and family decide 'who should be loved, and how'.",
+  "about": "In Ayemenem, Kerala, in 1969, seven-year-old twins Estha and Rahel live with their divorced mother Ammu in a family of fading respectability. When their English cousin Sophie Mol comes to visit, a chain of small events begins that will change all their lives within a fortnight. The novel moves between that time and 1993, when the twins meet again as adults, and shows how 'the Love Laws' of caste and family decide 'who should be loved, and how. And how much'.",
   "why": "Lyrical, inventive and devastating; one of the great debuts of the 1990s.",
   "bio": "Indian writer and activist, born in 1961, who trained as an architect. Her first novel, The God of Small Things, won the Booker Prize in 1997; she then spent twenty years writing essays and campaigning on dams, Kashmir, inequality and nationalism before her second novel.",
   "awards": [
@@ -15175,7 +15256,7 @@ const CATALOG = [
   "places": [
    "India & South Asia"
   ],
-  "about": "Balram Halwai, the son of a rickshaw puller from a poor village, writes over seven nights to the Chinese premier, who is about to visit India, to explain how he became a successful entrepreneur in Bangalore. His story: working as a chauffeur for a rich family in Delhi, he saw the corruption and servitude of the 'Rooster Coop' that keeps India's poor in their place, and broke free by murdering his master.",
+  "about": "Balram Halwai, the son of a rickshaw puller from a poor village, writes over seven nights to the Chinese premier, who is about to visit India, to tell him how he became a successful entrepreneur in Bangalore. His story begins when he lands a job as a chauffeur for a rich family in Delhi, where he sees up close the corruption and servitude of the 'Rooster Coop' that keeps India's poor in their place, and decides to break out of it.",
   "why": "A darkly funny, angry novel about class and corruption in modern India.",
   "bio": "Indian writer, born in Madras in 1974, who grew up in Mangalore and Sydney and studied at Columbia and Oxford. He worked as a correspondent for Time magazine before The White Tiger.",
   "awards": [
@@ -15937,10 +16018,41 @@ function itemRow(b){
 const ME_PLACES = ["Palestine","Israel","Jordan","Syria & Lebanon","Iraq","Gulf & Arabia","Egypt & North Africa","Turkey & the Ottomans","Iran & Afghanistan","Arab world"];
 const PLACE_OPTS = ["Middle East","Palestine","Jordan","Syria & Lebanon","Israel","Iraq","Gulf & Arabia","Egypt & North Africa","Turkey & the Ottomans","Iran & Afghanistan","India & South Asia","Central Asia","East Asia & Pacific","Europe","Russia","Americas","Africa"];
 const MOOD_COLORS = {light:"#fde3b0",moving:"#f3c9cf",gripping:"#cfe6d8",deep:"#d6dcf3",funny:"#efe2c4",visual:"#d9ecef",epic:"#e6d9ef",short:"#e3ead4",reference:"#e4e4e4"};
-const FDEF = () => ({kinds:[],places:[],moods:[],lang:"",status:"",length:"",shelf:"",awards:"",sort:"best",view:"grid"});
+const FDEF = () => ({kinds:[],places:[],moods:[],lang:"",status:"",length:"",shelf:"",awards:"",prizes:[],pmode:"",critics:[],legacy:"",sort:"best",view:"grid"});
+/* ---------- recognition: prize families, critics' verdicts, acclaim ---------- */
+const PRIZE_FAMS = [
+  ["nobel","Nobel authors",["Nobel"]],
+  ["booker","Booker",["Booker"]],
+  ["pulitzer","Pulitzer",["Pulitzer"]],
+  ["us","US prizes",["National Book","Edgar","Carnegie","Los Angeles Times","Kirkus Prize","Thriller Writers","National Jewish"]],
+  ["uk","UK prizes",["Costa","Whitbread","Orange","Women's Prize","James Tait","Guardian First","Commonwealth","Authors' Club","Samuel Johnson","Wolfson","Duff Cooper","Thomas Cook"]],
+  ["intl","Translated & international",["Dublin","German Book","Médicis","Femina","Nordic","Finlandia","Giller","Governor General","Angoulême","Vodafone","Gelber"]],
+  ["nonfic","History & non-fiction",["Samuel Johnson","Wolfson","Duff Cooper","Gelber","Nonfiction","Biography","National Jewish","Thomas Cook","Vodafone"]],
+];
+const FAM_LABEL = Object.fromEntries(PRIZE_FAMS.map(([k,l]) => [k,l]));
+const famsOfPrize = a => PRIZE_FAMS.filter(([,,keys]) => keys.some(x => a.includes(x))).map(([k]) => k);
+const prizeList = (b, mode) => [...(b.awards||[]), ...(mode === "short" ? (b.shortlists||[]) : [])];
+const prizeHit = (b, fam, mode) => prizeList(b, mode).some(a => famsOfPrize(a).includes(fam));
+const CRITIC_OPTS = [["loved","💚 Loved"],["liked","👍 Liked"],["mixed","⚖️ Mixed or divided"],["panned","👎 Panned"]];
+const RSCORE = {Rave:3, Positive:2, Mixed:1, Pan:0};
+function verdictOf(b){
+  const rs = b.reviews || []; if (!rs.length) return "";
+  const avg = rs.reduce((a,r) => a + (RSCORE[r.label] ?? 1.5), 0) / rs.length;
+  return avg >= 2.5 ? "loved" : avg >= 1.75 ? "liked" : avg >= 1 ? "mixed" : "panned";
+}
+function acclaim(b){
+  let sc = 0;
+  for (const a of b.awards||[]) sc += a.startsWith("Author") ? 1.5 : 3;
+  sc += (b.shortlists||[]).length * 1.5;
+  const rs = b.reviews || [];
+  if (rs.length){ const avg = rs.reduce((a,r) => a + (RSCORE[r.label] ?? 1.5), 0) / rs.length; sc += (avg - 1.5) * 2 * Math.min(1, 0.5 + rs.length/4); }
+  if (b.legacy) sc += 1;
+  return sc;
+}
 S.f = Object.assign(FDEF(), store.get("fs-f2", {}));
+for (const k of ["prizes","critics","kinds","places","moods"]) if (!Array.isArray(S.f[k])) S.f[k] = [];
 const placeMatch = (b, p) => p === "Middle East" ? b.places.some(x => ME_PLACES.includes(x)) : b.places.includes(p);
-const filtersActive = f => f.kinds.length || f.places.length || f.moods.length || f.lang || f.status || f.length || f.shelf || f.awards;
+const filtersActive = f => f.kinds.length || f.places.length || f.moods.length || f.lang || f.status || f.length || f.shelf || f.awards || (f.prizes||[]).length || (f.critics||[]).length || f.legacy;
 function passFilters(b, f){
   if (f.kinds.length && !f.kinds.includes(b.kind)) return false;
   if (f.places.length && !f.places.some(p => placeMatch(b, p))) return false;
@@ -15948,6 +16060,9 @@ function passFilters(b, f){
   if (f.lang && !(f.lang === "ar" ? (b.lang === "ar" || b.lang === "multi") : b.lang === f.lang)) return false;
   if (f.shelf && b.spot !== f.shelf) return false;
   if (f.awards && !(b.awards||[]).length) return false;
+  if ((f.prizes||[]).length && !f.prizes.some(p => prizeHit(b, p, f.pmode))) return false;
+  if ((f.critics||[]).length && !f.critics.includes(verdictOf(b))) return false;
+  if (f.legacy && !b.legacy) return false;
   if (f.length){ const p = b.pages||0; if (!p) return false; if (f.length==="short" && p>=200) return false; if (f.length==="medium" && (p<200||p>400)) return false; if (f.length==="long" && p<=400) return false; }
   const st = statusOf(b);
   if (f.status==="unread-me" && (!S.me || st.reads[S.me])) return false;
@@ -15994,6 +16109,7 @@ function results(f, q){
     title: (x,y) => x.b.title.localeCompare(y.b.title),
     author: (x,y) => (x.b.author||"~").localeCompare(y.b.author||"~"),
     year: (x,y) => (x.b.year||9999) - (y.b.year||9999),
+    acclaim: (x,y) => (acclaim(y.b) - acclaim(x.b)) || ((SHELF_ORDER.indexOf(x.b.spot)*1000+x.b.pos) - (SHELF_ORDER.indexOf(y.b.spot)*1000+y.b.pos)),
     shelf: (x,y) => (SHELF_ORDER.indexOf(x.b.spot)*1000+x.b.pos) - (SHELF_ORDER.indexOf(y.b.spot)*1000+y.b.pos),
   }[f.sort] || (() => 0);
   list.sort(order);
@@ -16030,7 +16146,10 @@ function activeChips(){
   if (f.status) chips.push(["status",f.status,label[f.status]]);
   if (f.shelf) chips.push(["shelf",f.shelf,"Shelf " + shelfLabel(f.shelf)]);
   if (f.awards) chips.push(["awards","yes","Award winners"]);
-  return chips.map(([k,v,l]) => `<button class="chip on" data-unfilter="${k}" data-val="${esc(v)}">${esc(l)} ✕</button>`).join("");
+  (f.prizes||[]).forEach(p => chips.push(["prizes",p,FAM_LABEL[p] + (f.pmode==="short" ? " · won or shortlisted" : "")]));
+  (f.critics||[]).forEach(c => chips.push(["critics",c,"Critics: " + (CRITIC_OPTS.find(x=>x[0]===c)||["",c])[1].replace(/^\S+ /,"")]));
+  if (f.legacy) chips.push(["legacy","yes","Classics & landmarks"]);
+  return chips.map(([k,v,l]) => `<button class="chip on${k==="prizes"?" gold":""}" data-unfilter="${k}" data-val="${esc(v)}">${esc(l)} ✕</button>`).join("");
 }
 function suggestions(words){
   // suggest a place or kind that narrows the current results
@@ -16043,12 +16162,30 @@ function suggestions(words){
   Object.entries(kc).sort((a,b)=>b[1]-a[1]).slice(0,2).forEach(([k,n]) => { if (n < r.length && !S.f.kinds.includes(k)) sug.push(["kinds",k,k]); });
   return sug.slice(0,3).map(([k,v,l]) => `<button class="chip sug" data-addfilter="${k}" data-val="${esc(v)}">${esc(l)}</button>`).join("");
 }
-function searchBar(){
-  const n = [S.f.kinds,S.f.places,S.f.moods].reduce((a,x)=>a+x.length,0) + ["lang","status","length","shelf","awards"].filter(k=>S.f[k]).length;
+function searchBar(noBtn){
+  const n = [S.f.kinds,S.f.places,S.f.moods,S.f.prizes||[],S.f.critics||[]].reduce((a,x)=>a+x.length,0) + ["lang","status","length","shelf","awards","legacy"].filter(k=>S.f[k]).length;
   return `<div class="searchrow"><div class="search2${S.q?" typing":""}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
     <input id="q" type="search" enterkeyhint="search" placeholder="Title, author, place, topic…" value="${esc(S.q)}" autocomplete="off" aria-label="Search books">${S.q?`<button class="xbtn" data-act="clearq" aria-label="Clear search">✕</button>`:""}</div>
-    <button class="fbtn2" data-act="filters">Filters${n?`<span class="dot2">${n}</span>`:""}</button></div>`;
+    ${noBtn ? "" : `<button class="fbtn2" data-act="filters">Filters${n?`<span class="dot2">${n}</span>`:""}</button>`}</div>`;
 }
+/* where the current results sit on the wall */
+function hitMap(list){
+  const c = {}; for (const b of list) c[b.spot] = (c[b.spot]||0) + 1;
+  const spots = Object.keys(c);
+  if (!spots.length) return "";
+  const cells = [...SHELF_ORDER,"B6"].map(sp => {
+    const n = c[sp]||0, on = S.f.shelf === sp;
+    if (sp === "B6") return `<div class="hcell empty" style="grid-area:${AREAS[sp]}"></div>`;
+    return `<button class="hcell${n?" hit":""}${on?" sel":""}" style="grid-area:${AREAS[sp]}" ${n ? (on ? `data-unfilter="shelf" data-val="${sp}"` : `data-addfilter="shelf" data-val="${sp}"`) : "disabled"} aria-label="Shelf ${shelfLabel(sp)}: ${n} match${n===1?"":"es"}"><span>${sp==="A-cubby"?"cubby":sp}</span>${n?`<em>${n}</em>`:""}</button>`;
+  }).join("");
+  return `<div class="hitwrap"><div class="eyebrow">Where they are${spots.length>1 && !S.f.shelf ? " · tap a shelf to see just those" : ""}</div><div class="hitmap">${cells}</div></div>`;
+}
+const PRESETS = {
+  bp: {prizes:["booker","pulitzer"], sort:"acclaim"},
+  loved: {critics:["loved"], sort:"acclaim"},
+  argued: {critics:["mixed"], sort:"acclaim"},
+  nobel: {prizes:["nobel"], sort:"acclaim"},
+};
 function viewFind(){
   const books = allBooks();
   const searching = S.q.trim() || filtersActive(S.f);
@@ -16060,6 +16197,12 @@ function viewFind(){
     const placeTiles = ["Middle East","Palestine","Jordan","Syria & Lebanon","India & South Asia","Europe","Americas","Russia"].map(p => [p, books.filter(b => placeMatch(b,p))]);
     const tile = (field, val, list) => `<button class="tile2" data-addfilter="${field}" data-val="${esc(val)}"><b>${esc(val)}</b><small>${list.length} books</small><span class="tstack">${list.filter(b=>!unknown(b)).slice(0,5).map((b,i)=>`<i style="background:${b.color};height:${[40,52,34,46,38][i]}px"></i>`).join("")}</span></button>`;
     const unreadAll = books.filter(b => !Object.keys(statusOf(b).reads).length).length;
+    const cnt = f => results(Object.assign(FDEF(), f), "").strong.length;
+    const shelvesOf = f => new Set(results(Object.assign(FDEF(), f), "").strong.map(b=>b.spot)).size;
+    const accl = [["bp","🏆 Booker & Pulitzer",`${cnt(PRESETS.bp)} books · ${shelvesOf(PRESETS.bp)} shelves`,"gold"],
+      ["loved","💚 Critics' favourites",`${cnt(PRESETS.loved)} books critics loved`,"green"],
+      ["argued","⚖️ Books critics argued about",`${cnt(PRESETS.argued)} mixed or divided`,"amber"],
+      ["nobel","🏛 By Nobel winners",`${cnt(PRESETS.nobel)} books`,"blue"]];
     const quick = [["awards","yes",`Award winners · ${books.filter(b=>(b.awards||[]).length).length}`],["length","short",`Under 200 pages · ${books.filter(b=>b.pages&&b.pages<200&&!unknown(b)).length}`],["status","unread-all",`Nobody has read · ${unreadAll}`],["lang","ar",`Arabic or bilingual · ${books.filter(b=>b.lang==="ar"||b.lang==="multi").length}`],["lang","de",`In German · ${books.filter(b=>b.lang==="de").length}`],["status","check",`Needs checking · ${books.filter(b=>b.flag||unknown(b)).length}`]];
     body = `
       <button class="pick2" data-act="pick"><span><span class="eyebrow" style="color:inherit;opacity:.7">Pick something for me</span><b>${esc(S.pickLine || "Not sure what to read next?")}</b></span><span class="pickicon" aria-hidden="true">↻</span></button>
@@ -16069,6 +16212,8 @@ function viewFind(){
       <div class="tiles2">${kindTiles.map(([k,l]) => tile("kinds",k,l)).join("")}</div>
       <div class="sec2"><span class="eyebrow">Where it's set, or what it's about</span></div>
       <div class="tiles2">${placeTiles.map(([p,l]) => tile("places",p,l)).join("")}</div>
+      <div class="sec2"><span class="eyebrow">Browse by acclaim</span></div>
+      <div class="acclaim">${accl.map(([k,t,sub,c]) => `<button class="atile ${c}" data-preset="${k}"><b>${t}</b><small>${sub}</small></button>`).join("")}</div>
       <div class="sec2"><span class="eyebrow">Compare side by side</span></div>
       <div class="chips wrap">${READY_COMPARES.map(([n,l],i)=>`<button class="chip" data-ready="${i}">⇆ ${esc(n)}</button>`).join("")}</div>
       <div class="sec2"><span class="eyebrow">Quick lists</span></div>
@@ -16077,9 +16222,10 @@ function viewFind(){
   } else {
     const r = results(S.f, S.q);
     const total = r.strong.length + r.weak.length;
-    const sorts = [["best", r.words.length ? "Best match" : "Shelf order"],["title","Title"],["author","Author"],["year","Year"]];
+    const sorts = [["best", r.words.length ? "Best match" : "Shelf order"],["acclaim","Most acclaimed"],["title","Title"],["author","Author"],["year","Year"]];
     body = `
       <div class="chips" style="margin-top:10px">${activeChips()}${suggestions(r.words)}</div>
+      ${total && total < allBooks().length ? hitMap([...r.strong, ...r.weak]) : ""}
       <div class="resbar"><span class="eyebrow">${total} book${total===1?"":"s"}</span>
         <span class="row" style="gap:6px"><select id="sort" aria-label="Sort" class="mini-select">${sorts.map(([k,v])=>`<option value="${k}" ${S.f.sort===k?"selected":""}>${v}</option>`).join("")}</select>
         <button class="viewbtn" data-act="view" aria-label="Switch between covers and list">${S.f.view==="list"?"Covers":"List"}</button></span></div>
@@ -16088,7 +16234,9 @@ function viewFind(){
       ${r.weak.length ? `<div class="sec2"><span class="eyebrow">Mentions "${esc(S.q.trim())}" in the description</span></div>${bookBlock(r.weak, r.words)}` : ""}
       <div class="row" style="margin-top:16px"><button class="btn small" data-act="clear">Clear search and filters</button><button class="btn small" data-act="add">Add a book</button></div>`;
   }
-  return `<div class="findtop">${header("Find a book", searching ? "Search" : "What's next?")}${searchBar()}</div>${body}`;
+  const wide = searching && window.innerWidth >= 1000;
+  if (wide) body = `<div class="findwide"><aside class="fpanel"><div class="row" style="justify-content:space-between"><b style="font-size:1.05rem">Filters</b><button class="linkbtn" data-act="clear">Clear all</button></div>${filterSections(S.f, true)}</aside><div class="fmain">${body}</div></div>`;
+  return `<div class="findtop">${header("Find a book", searching ? "Search" : "What's next?")}${searchBar(wide)}</div>${body}`;
 }
 function pickForMe(){
   const base = filtersActive(S.f) || S.q.trim() ? [...results(S.f,S.q).strong, ...results(S.f,S.q).weak] : allBooks();
@@ -16099,24 +16247,37 @@ function pickForMe(){
 }
 /* filters sheet works on a draft so the count updates before applying */
 function openFilters(){ S.draft = JSON.parse(JSON.stringify(S.f)); S.sheet = "__filters"; renderSheet(); }
-function renderFilters(){
-  const L = document.getElementById("layer"), d = S.draft, books = allBooks();
-  const count = results(d, S.q); const n = count.strong.length + count.weak.length;
-  const base = Object.assign(FDEF(), {sort:d.sort, view:d.view});
+function filterSections(d, live){
+  const books = allBooks();
+  const A1 = live ? "data-lf" : "data-draft", AM = live ? "data-lfm" : "data-draftm";
   const kindCounts = {}; for (const b of books) kindCounts[b.kind] = (kindCounts[b.kind]||0)+1;
-  const seg = (field, opts) => `<div class="seg2" role="group">${opts.map(([v,l]) => `<button class="${d[field]===v?"on":""}" data-draft="${field}" data-val="${esc(v)}">${esc(l)}</button>`).join("")}</div>`;
-  const toggles = (field, opts) => opts.map(([v,l,c]) => `<button class="chip ${d[field].includes(v)?"on":""}" data-draftm="${field}" data-val="${esc(v)}">${esc(l)}${c!=null?` <em>${c}</em>`:""}</button>`).join("");
-  const prevTop = L.querySelector(".sheet")?.scrollTop || 0;
-  L.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Filters">
-    <div class="grabzone" data-grab><div class="grab"></div><button class="sheetx" data-act="close" aria-label="Close">✕</button></div>
-    <div class="row" style="justify-content:space-between"><h2>Filters</h2><button class="linkbtn" data-act="dreset">Reset</button></div>
-    <div class="fsec"><div class="eyebrow">Kind of book</div><div class="kgrid">${Object.entries(kindCounts).sort((a,b)=>b[1]-a[1]).map(([k,c]) => `<button class="kopt ${d.kinds.includes(k)?"on":""}" data-draftm="kinds" data-val="${esc(k)}"><span>${esc(k)}</span><em>${c}</em></button>`).join("")}</div></div>
+  const seg = (field, opts) => `<div class="seg2" role="group">${opts.map(([v,l]) => `<button class="${(d[field]||"")===v?"on":""}" ${A1}="${field}" data-val="${esc(v)}">${esc(l)}</button>`).join("")}</div>`;
+  const toggles = (field, opts, cls="") => opts.map(([v,l,c]) => `<button class="chip ${cls} ${(d[field]||[]).includes(v)?"on":""}" ${AM}="${field}" data-val="${esc(v)}">${esc(l)}${c!=null?` <em>${c}</em>`:""}</button>`).join("");
+  const famCount = k => books.filter(b => prizeHit(b, k, d.pmode)).length;
+  const vc = {}; for (const b of books){ const v = verdictOf(b); if (v) vc[v] = (vc[v]||0)+1; }
+  const legacyN = books.filter(b => b.legacy).length;
+  return `
+    <div class="fsec"><div class="eyebrow">Kind of book</div><div class="kgrid">${Object.entries(kindCounts).sort((a,b)=>b[1]-a[1]).map(([k,c]) => `<button class="kopt ${d.kinds.includes(k)?"on":""}" ${AM}="kinds" data-val="${esc(k)}"><span>${esc(k)}</span><em>${c}</em></button>`).join("")}</div></div>
+    <div class="fsec"><div class="eyebrow">Recognition</div><div class="fnote">Prizes the book or its author won, and what critics said</div>
+      <div class="subeye">Prizes</div><div class="chips wrap">${toggles("prizes", PRIZE_FAMS.map(([k,l]) => [k, l, famCount(k)]).filter(x=>x[2]), "gold")}</div>
+      ${seg("pmode", [["","Won only"],["short","Won or shortlisted"]])}
+      <div class="subeye">What critics thought</div><div class="chips wrap">${toggles("critics", CRITIC_OPTS.map(([k,l]) => [k, l, vc[k]||0]).filter(x=>x[2]))}</div>
+      <div class="subeye">Other</div><div class="chips wrap"><button class="chip ${d.legacy?"on":""}" ${A1}="legacy" data-val="yes">📜 Classics & landmarks <em>${legacyN}</em></button></div></div>
     <div class="fsec"><div class="eyebrow">Set in or about</div><div class="chips wrap">${toggles("places", PLACE_OPTS.map(p => [p, p, books.filter(b=>placeMatch(b,p)).length]).filter(x=>x[2]))}</div></div>
     <div class="fsec"><div class="eyebrow">Mood</div><div class="chips wrap">${toggles("moods", Object.entries(MOODS).map(([k,v]) => [k,v,null]))}</div></div>
     <div class="fsec"><div class="eyebrow">Length</div>${seg("length", [["","Any"],["short","Under 200"],["medium","200–400"],["long","400+"]])}</div>
     <div class="fsec"><div class="eyebrow">Reading</div>${seg("status", [["","Anything"],["unread-me","Not read by me"],["unread-all","Nobody has"],["reading","Being read"]])}</div>
     <div class="fsec"><div class="eyebrow">Language</div>${seg("lang", [["","All"],["en","English"],["ar","العربية"],["de","Deutsch"],["fr","Français"]])}</div>
-    <div class="fsec"><div class="eyebrow">Shelf</div><div class="chips wrap">${[["","Any shelf"], ...SHELF_ORDER.map(s=>[s, shelfLabel(s)])].map(([v,l]) => `<button class="chip ${d.shelf===v?"on":""}" data-draft="shelf" data-val="${v}">${l}</button>`).join("")}</div></div>
+    <div class="fsec"><div class="eyebrow">Shelf</div><div class="chips wrap">${[["","Any shelf"], ...SHELF_ORDER.map(s=>[s, shelfLabel(s)])].map(([v,l]) => `<button class="chip ${d.shelf===v?"on":""}" ${A1}="shelf" data-val="${v}">${l}</button>`).join("")}</div></div>`;
+}
+function renderFilters(){
+  const L = document.getElementById("layer"), d = S.draft;
+  const count = results(d, S.q); const n = count.strong.length + count.weak.length;
+  const prevTop = L.querySelector(".sheet")?.scrollTop || 0;
+  L.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Filters">
+    <div class="grabzone" data-grab><div class="grab"></div><button class="sheetx" data-act="close" aria-label="Close">✕</button></div>
+    <div class="row" style="justify-content:space-between"><h2>Filters</h2><button class="linkbtn" data-act="dreset">Reset</button></div>
+    ${filterSections(d, false)}
     <div class="applybar"><button class="btn primary wide" data-act="dapply" ${n?"":"disabled"}>${n ? `Show ${n} book${n===1?"":"s"}` : "No books match"}</button></div>
   </div></div>`;
   const sh = L.querySelector(".sheet"); if (sh){ sh.style.animation = prevTop ? "none" : ""; sh.scrollTop = prevTop; }
@@ -16192,7 +16353,7 @@ function viewCompare(){
     ["Subjects & places", b => labelsOf(b).map(l => `<span class="cchip ${shared.includes(l)?"same":"diff"}">${esc(l)}</span>`).join("") || "—"],
     ["Mood", b => (b.tags||[]).map(t => MOODS[t]||t).join(" · ") || "—"],
     ["Awards & critics", b => {
-      const aw = (b.awards||[]).map(a => `<span class="award">🏆 ${esc(a)}</span>`).join(" ");
+      const aw = [...(b.awards||[]).map(a => `<span class="award">🏆 ${esc(a)}</span>`), ...(b.shortlists||[]).map(a => `<span class="award sl">Shortlisted: ${esc(a)}</span>`)].join(" ");
       const rv = (b.reviews||[]); const counts = {}; rv.forEach(r => counts[r.label] = (counts[r.label]||0)+1);
       const rvTxt = rv.length ? Object.entries(counts).map(([l,n]) => `<span class="rlabel ${l.toLowerCase()}">${n} ${esc(l)}</span>`).join(" ") : `<span class="muted">No critics' reviews added yet</span>`;
       const lg = !aw && b.legacy ? `<div style="font-size:.85rem;margin-bottom:4px">${esc(b.legacy)}</div>` : "";
@@ -16361,7 +16522,7 @@ function renderSheet(){
         ${b.legacy ? `<div class="eyebrow">Legacy</div><p>${esc(b.legacy)}</p>` : ""}
         ${b.bio ? `<div class="eyebrow">About the author</div><p>${esc(b.bio)}</p>` : ""}
         <button class="linkbtn" data-act="more">Show less ▴</button></div>` : `<button class="linkbtn" style="margin-top:8px" data-act="more">Read more ▾</button>`) : ""}
-    ${(b.awards||[]).length ? `<div class="awards">${b.awards.map(a => `<span class="award">🏆 ${esc(a)}</span>`).join("")}</div>` : ""}
+    ${(b.awards||[]).length || (b.shortlists||[]).length ? `<div class="awards">${(b.awards||[]).map(a => { const f = famsOfPrize(a)[0]; return f ? `<button class="award" data-prizefam="${f}" title="See all ${esc(FAM_LABEL[f])} books">🏆 ${esc(a)}</button>` : `<span class="award">🏆 ${esc(a)}</span>`; }).join("")}${(b.shortlists||[]).map(a => { const f = famsOfPrize(a)[0]; return `<button class="award sl" ${f?`data-prizefam="${f}" data-short="1"`:""}>Shortlisted: ${esc(a)}</button>`; }).join("")}</div>` : ""}
     ${unknown(b) ? "" : reviewsBlock(b, st)}
     ${(b.flag||unknown(b))&&!b.st?.edit?`<div class="flagnote" style="margin-top:12px">Needs checking: ${esc(b.flag||"title not readable from the photo")}. Use "Edit details" below to fix it.</div>`:""}
     <div class="section">
@@ -16592,8 +16753,16 @@ document.addEventListener("click", async e => {
     store.set("fs-f2",S.f); S.tab="find"; window.scrollTo(0,0); render(); return; }
   const dr = t.closest("[data-draft]");
   if (dr && S.draft){ const k=dr.dataset.draft, v=dr.dataset.val; S.draft[k] = S.draft[k]===v && v!=="" ? "" : v; if (v==="unread-me" && !S.me){ toast("Choose who you are first, from the top of the page."); } renderFilters(); return; }
+  const pre = t.closest("[data-preset]");
+  if (pre){ S.q=""; store.set("fs-q",""); S.f = Object.assign(FDEF(), {view:S.f.view}, JSON.parse(JSON.stringify(PRESETS[pre.dataset.preset]))); store.set("fs-f2",S.f); closeSheet(); S.tab="find"; window.scrollTo(0,0); render(); return; }
+  const pz = t.closest("[data-prizefam]");
+  if (pz){ S.q=""; store.set("fs-q",""); S.f = Object.assign(FDEF(), {view:S.f.view, prizes:[pz.dataset.prizefam], pmode: pz.dataset.short ? "short" : "", sort:"acclaim"}); store.set("fs-f2",S.f); closeSheet(); S.tab="find"; window.scrollTo(0,0); render(); return; }
+  const lf = t.closest("[data-lf]");
+  if (lf){ const k=lf.dataset.lf, v=lf.dataset.val; S.f[k] = (S.f[k]||"")===v && v!=="" ? "" : v; store.set("fs-f2",S.f); render(); return; }
+  const lfm = t.closest("[data-lfm]");
+  if (lfm){ const k=lfm.dataset.lfm, v=lfm.dataset.val; const cur = S.f[k]||[]; S.f[k] = cur.includes(v) ? cur.filter(x=>x!==v) : [...cur, v]; store.set("fs-f2",S.f); render(); return; }
   const dm = t.closest("[data-draftm]");
-  if (dm && S.draft){ const k=dm.dataset.draftm, v=dm.dataset.val; S.draft[k] = S.draft[k].includes(v) ? S.draft[k].filter(x=>x!==v) : [...S.draft[k], v]; renderFilters(); return; }
+  if (dm && S.draft){ const k=dm.dataset.draftm, v=dm.dataset.val; S.draft[k] = S.draft[k] || []; S.draft[k] = S.draft[k].includes(v) ? S.draft[k].filter(x=>x!==v) : [...S.draft[k], v]; renderFilters(); return; }
   if (!act) return;
   const id = S.sheet;
   switch(act){
@@ -16659,6 +16828,8 @@ document.addEventListener("input", e => {
   if (e.target.id === "q"){ S.q = e.target.value; store.set("fs-q", S.q); clearTimeout(S.qt); S.qt = setTimeout(render, 120); }
 });
 document.addEventListener("change", e => { if (e.target.id === "sort"){ S.f.sort = e.target.value; store.set("fs-f2", S.f); render(); } });
+let _wide = window.innerWidth >= 1000;
+window.addEventListener("resize", () => { const w = window.innerWidth >= 1000; if (w !== _wide){ _wide = w; if (S.tab === "find") render(); } });
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" && S.sheet){ closeSheet(); return; }
   const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "");
