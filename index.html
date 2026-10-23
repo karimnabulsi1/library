@@ -158,6 +158,25 @@ h2{font-size:1.25rem}
 .sheet{background:var(--surface);width:100%;max-width:620px;max-height:calc(92% - env(safe-area-inset-top,0px));overflow-y:auto;border-radius:18px 18px 0 0;padding:10px max(18px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));animation:up .22s ease-out}
 @media (min-width:700px){.scrim{align-items:center}.sheet{border-radius:18px}}
 @keyframes up{from{transform:translateY(30px);opacity:.6}}
+.scrim{animation:fadein .2s ease-out}
+@keyframes fadein{from{background-color:transparent}}
+.fxghost{position:fixed;z-index:35;border-radius:3px 6px 6px 3px;transform-origin:0 0;pointer-events:none;box-shadow:0 8px 22px rgba(0,0,0,.25),inset 6px 0 0 rgba(0,0,0,.18)}
+.tabs > div{position:relative}
+.tabind{position:absolute;top:-6px;left:0;height:3px;border-radius:0 0 3px 3px;background:var(--accent);transition:transform .32s cubic-bezier(.2,.8,.2,1),width .32s,opacity .2s;pointer-events:none}
+.tab{position:relative}
+.tabbump{position:absolute;right:4px;top:-4px;background:#d9534f;color:#fff;border-radius:9px;font-size:.66rem;font-weight:700;padding:0 5px;pointer-events:none}
+.reelwrap{position:fixed;inset:0;z-index:40;background:var(--scrim);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;cursor:pointer}
+.reel{width:130px;height:170px;overflow:hidden;border-radius:14px;background:var(--surface);position:relative}
+.reel .strip div{height:170px;display:flex;align-items:center;justify-content:center}
+.reel .strip i{width:92px;height:136px;border-radius:3px 7px 7px 3px;display:flex;align-items:flex-end;padding:8px;font:italic 400 .78rem var(--font-display);font-style:normal;line-height:1.15;box-shadow:inset 5px 0 0 rgba(0,0,0,.16)}
+.reelcap{color:#fff;font-weight:600;font-size:1rem;text-shadow:0 1px 4px rgba(0,0,0,.4);max-width:80%;text-align:center}
+.fxpend{opacity:0;transform:translateY(10px)}
+.ccard,.tile2,.atile{transition:opacity .35s ease-out,transform .35s cubic-bezier(.2,.8,.2,1)}
+.btn,.chip,.kopt,.tile2,.atile,.tab,.fbtn2,.pick2,.mood2,.hcell.hit,button.award,.spine,.item{-webkit-tap-highlight-color:transparent}
+.btn:active,.chip:active,.kopt:active,.tile2:active,.atile:active,.fbtn2:active,.pick2:active,.mood2:active,.hcell.hit:active,button.award:active,.seg2 button:active{transform:scale(.96);transition:transform .08s}
+.ccard:active .cover2,.item:active{transform:scale(.97);transition:transform .08s}
+.tab:active svg{transform:scale(.88);transition:transform .08s}
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
 .grab{width:42px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
 .hero{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start}
 .cover{width:74px;height:108px;border-radius:3px 6px 6px 3px;box-shadow:0 4px 12px var(--shelf-shadow),inset 6px 0 0 rgba(0,0,0,.18);display:flex;align-items:flex-end;padding:7px;font-family:var(--font-display);font-size:.72rem;line-height:1.1;overflow:hidden}
@@ -336,7 +355,7 @@ mark{background:#ffe2a8;color:#1c2629;border-radius:2px;padding:0 1px}
 .chip.gold.on em{color:#fff;opacity:.85}
 :root[data-theme="dark"] .chip.gold:not(.on){background:#3a2f17;border-color:#5a4720;color:#f1d79a}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.gold:not(.on){background:#3a2f17;border-color:#5a4720;color:#f1d79a}}
-.worth{text-transform:none;letter-spacing:0;font-weight:500}
+.worth{display:block;text-transform:none;letter-spacing:0;font-weight:500;font-size:.78rem;margin-top:2px}
 .seg2{flex-wrap:wrap}
 .fnote{font-size:.8rem;color:var(--muted);margin:-2px 0 8px}
 .subeye{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:10px 0 6px}
@@ -16239,7 +16258,7 @@ function viewFind(){
     body = `
       <div class="chips" style="margin-top:10px">${activeChips()}${suggestions(r.words)}</div>
       ${total && total < allBooks().length ? hitMap([...r.strong, ...r.weak]) : ""}
-      <div class="resbar"><span class="eyebrow">${total} book${total===1?"":"s"}${total ? `<span class="worth" title="Estimates by type of book, not valuations"> · ≈ ${usd([...r.strong,...r.weak].reduce((a,b)=>a+(b.price||0),0))} new, ${usd([...r.strong,...r.weak].reduce((a,b)=>a+(b.resale||0),0))} resale</span>` : ""}</span>
+      <div class="resbar"><span class="eyebrow">${total} book${total===1?"":"s"}${total ? `<span class="worth" title="Estimates by type of book, not valuations">≈ <span data-count="${[...r.strong,...r.weak].reduce((a,b)=>a+(b.price||0),0)}" data-ck="wnew" data-fmt="usd">${usd([...r.strong,...r.weak].reduce((a,b)=>a+(b.price||0),0))}</span> new, <span data-count="${[...r.strong,...r.weak].reduce((a,b)=>a+(b.resale||0),0)}" data-ck="wres" data-fmt="usd">${usd([...r.strong,...r.weak].reduce((a,b)=>a+(b.resale||0),0))}</span> resale</span>` : ""}</span>
         <span class="row" style="gap:6px"><select id="sort" aria-label="Sort" class="mini-select">${sorts.map(([k,v])=>`<option value="${k}" ${S.f.sort===k?"selected":""}>${v}</option>`).join("")}</select>
         <button class="viewbtn" data-act="view" aria-label="Switch between covers and list">${S.f.view==="list"?"Covers":"List"}</button></span></div>
       ${total ? "" : `<div class="card muted">Nothing matches${S.q?` "${esc(S.q)}"`:""}. Try fewer words or remove a filter.</div>`}
@@ -16256,7 +16275,7 @@ function pickForMe(){
   let pool = base.filter(b => !unknown(b) && b.kind !== "Reference & Other" && !(S.me && statusOf(b).reads[S.me]) && !(b.tags||[]).includes("reference") && !b.subjects.includes("Colouring"));
   if (!pool.length) pool = allBooks().filter(b => !unknown(b));
   const b = pool[Math.floor(Math.random()*pool.length)];
-  if (b) openSheet(b.id);
+  if (b) FX.spinPick(pool, b);
 }
 /* filters sheet works on a draft so the count updates before applying */
 function openFilters(){ S.draft = JSON.parse(JSON.stringify(S.f)); S.sheet = "__filters"; renderSheet(); }
@@ -16455,9 +16474,9 @@ function viewFamily(){
     <div class="eyebrow" style="margin-top:6px">The collection, Wall 1</div>
     <div class="stats">
       <div class="stat"><b>${books.length}</b><small>books and catalogues</small></div>
-      <div class="stat"><b>${usd(tot("price"))}</b><small>to buy new today (${jod(tot("price"))})</small></div>
-      <div class="stat"><b>${usd(tot("orig"))}</b><small>original cover prices</small></div>
-      <div class="stat"><b>${usd(tot("resale"))}</b><small>if resold used (${jod(tot("resale"))})</small></div>
+      <div class="stat"><b data-count="${tot("price")}" data-ck="fprice" data-fmt="usd" data-from0="1">${usd(tot("price"))}</b><small>to buy new today (${jod(tot("price"))})</small></div>
+      <div class="stat"><b data-count="${tot("orig")}" data-ck="forig" data-fmt="usd" data-from0="1">${usd(tot("orig"))}</b><small>original cover prices</small></div>
+      <div class="stat"><b data-count="${tot("resale")}" data-ck="fres" data-fmt="usd" data-from0="1">${usd(tot("resale"))}</b><small>if resold used (${jod(tot("resale"))})</small></div>
     </div>
     <div class="muted" style="font-size:.82rem">Values are estimates by type of book, not looked-up prices. Out-of-print titles may be worth more.</div>
     <div class="card stack-v"><div class="eyebrow">By kind of book</div><div class="bars">${Object.entries(genres).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`<div class="bar"><span>${esc(g)}</span><span class="track"><span class="fill" style="display:block;width:${n/max*100}%"></span></span><span>${n}</span></div>`).join("")}</div></div>
@@ -16501,8 +16520,27 @@ function similarTo(b){
   return out.sort((a,c) => c[0]-a[0]).slice(0,8).map(x => x[1]);
 }
 function openSheet(id, mode){ S.sheet = id; S.sheetMode = mode||"view"; S.moreOpen = false; renderSheet(); const sh=document.querySelector(".sheet"); if (sh) sh.scrollTop = 0; }
-function closeSheet(){ S.sheet = null; document.getElementById("layer").innerHTML = ""; }
+let closeTok = 0;
+function closeSheet(){
+  S.sheet = null;
+  const L = document.getElementById("layer"), sh = L.querySelector(".sheet"), sc = L.querySelector(".scrim");
+  if (!sh || FX.rm()){ L.innerHTML = ""; return; }
+  const tok = ++closeTok; sc.style.pointerEvents = "none";
+  const from = getComputedStyle(sh).transform; const wide = window.innerWidth >= 700;
+  sh.style.animation = "none";
+  sh.animate([{transform: from === "none" ? "none" : from, opacity:1}, wide ? {transform:"translateY(24px) scale(.98)", opacity:0} : {transform:"translateY(100%)", opacity:1}], {duration: 220, easing:"cubic-bezier(.4,0,1,1)", fill:"forwards"});
+  sc.animate([{backgroundColor:getComputedStyle(sc).backgroundColor},{backgroundColor:"transparent"}], {duration:220, fill:"forwards"}).onfinish = () => { if (tok === closeTok && !S.sheet) L.innerHTML = ""; };
+}
 function renderSheet(){
+  const L = document.getElementById("layer");
+  const fresh = !L.querySelector(".sheet") || L.querySelector(".scrim")?.style.pointerEvents === "none";
+  closeTok++;
+  _renderSheet();
+  const sh = L.querySelector(".sheet");
+  if (sh && !fresh){ sh.style.animation = "none"; L.querySelector(".scrim").style.animation = "none"; }
+  if (sh && fresh) FX.sheetOpened(sh);
+}
+function _renderSheet(){
   const L = document.getElementById("layer");
   if (S.sheet === "__picker" || S.sheet === "__account") return renderAccount();
   if (S.sheet === "__add") return renderAdd();
@@ -16684,6 +16722,158 @@ try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change", apply
   document.addEventListener("pointercancel", end);
 })();
 
+/* ---------------- motion ---------------- */
+const FX = (() => {
+  const EASE = "cubic-bezier(.2,.8,.2,1)";
+  const rm = () => { try{ return matchMedia("(prefers-reduced-motion: reduce)").matches || !document.body.animate; }catch(e){ return true; } };
+  let flight = null;   // {rect, color} of the element a book was opened from
+  const TAB_ORDER = ["shelves","find","mine","family","compare"];
+
+  function srcOf(el){ return el.querySelector(".cover2, .chip-col") || el; }
+  function openFrom(el, id){
+    if (rm()){ openSheet(id); return; }
+    const src = srcOf(el), r = src.getBoundingClientRect();
+    const color = getComputedStyle(src).backgroundColor;
+    const go = () => { flight = {rect:r, color}; openSheet(id); };
+    if (el.classList.contains("spine")){
+      const flat = el.closest(".flat");
+      el.animate([{transform:"none"},{transform: flat ? "translateX(16px)" : "translateY(-20px) rotate(-3deg)"}], {duration:170, easing:EASE}).onfinish = go;
+    } else go();
+  }
+  function sheetOpened(sh){
+    if (rm()) return;
+    const wide = window.innerWidth >= 700;
+    sh.style.animation = "none";
+    const cover = sh.querySelector(".hero .cover");
+    const target = cover ? cover.getBoundingClientRect() : null;
+    sh.animate(wide ? [{transform:"translateY(26px) scale(.97)", opacity:0},{transform:"none", opacity:1}]
+                    : [{transform:"translateY(100%)"},{transform:"translateY(-6px)", offset:.72},{transform:"none"}],
+      {duration: wide ? 260 : 400, easing: wide ? EASE : "cubic-bezier(.25,.9,.3,1)"});
+    const sfg = sh.querySelector(".starwrap .sfg");
+    if (sfg){ const w = sfg.style.width; sfg.animate([{width:"0%"},{width:w}], {duration:700, delay:250, easing:EASE, fill:"backwards"}); }
+    if (flight && cover && target){
+      const {rect:a, color} = flight; flight = null;
+      const g = document.createElement("div"); g.className = "fxghost";
+      Object.assign(g.style, {left:target.left+"px", top:target.top+"px", width:target.width+"px", height:target.height+"px", background:color});
+      document.body.appendChild(g); cover.style.visibility = "hidden";
+      // the sheet is sliding up, so the cover's final spot is where it will be once the sheet settles
+      g.animate([{transform:`translate(${a.left-target.left}px,${a.top-target.top}px) scale(${a.width/target.width},${a.height/target.height})`, borderRadius:"2px"},{transform:"none"}],
+        {duration:420, easing:EASE}).onfinish = () => { g.remove(); cover.style.visibility = ""; };
+    } else flight = null;
+  }
+  function flyToMine(){
+    if (rm()) return;
+    const cover = document.querySelector(".sheet .hero .cover"), tab = document.querySelector('.tab[data-tab="mine"]');
+    if (!cover || !tab) return;
+    const a = cover.getBoundingClientRect(), t = tab.getBoundingClientRect();
+    const g = document.createElement("div"); g.className = "fxghost";
+    Object.assign(g.style, {left:a.left+"px", top:a.top+"px", width:a.width+"px", height:a.height+"px", background:getComputedStyle(cover).backgroundColor, zIndex:40});
+    document.body.appendChild(g);
+    const dx = t.left + t.width/2 - (a.left + a.width/2), dy = t.top + 6 - (a.top + a.height/2);
+    g.animate([{transform:"none", opacity:1},{transform:`translate(${dx*0.45}px,${dy*0.3-40}px) scale(.55) rotate(-8deg)`, opacity:1, offset:.45},{transform:`translate(${dx}px,${dy}px) scale(.1)`, opacity:.4}],
+      {duration:620, easing:"cubic-bezier(.5,0,.7,1)"}).onfinish = () => {
+        g.remove();
+        tab.animate([{transform:"scale(1)"},{transform:"scale(1.22)"},{transform:"scale(.95)"},{transform:"scale(1)"}], {duration:380});
+        const bd = document.createElement("span"); bd.className = "tabbump"; bd.textContent = "+1"; tab.appendChild(bd);
+        bd.animate([{opacity:0, transform:"translateY(4px)"},{opacity:1, transform:"none", offset:.2},{opacity:1, offset:.8},{opacity:0}], {duration:1500}).onfinish = () => bd.remove();
+      };
+  }
+  function zoomToShelf(b){
+    const finish = () => { S.tab="shelves"; S.shelf=b.spot; S.focus=b.id; S.pendingScroll=true; window.scrollTo(0,0); render();
+      if (!rm()){ const bd = document.querySelector(".board"); bd && bd.animate([{opacity:.2, transform:"scale(.96)"},{opacity:1, transform:"none"}], {duration:260, easing:EASE}); } };
+    if (rm()) return finish();
+    S.tab="shelves"; S.shelf=null; S.focus=null; window.scrollTo(0,0); render();
+    const wall = document.querySelector(".wall:not(.small)"), cell = wall && wall.querySelector(`[data-shelf="${b.spot}"]`);
+    if (!cell) return finish();
+    const w = wall.getBoundingClientRect(), c = cell.getBoundingClientRect();
+    const sc = Math.min(window.innerWidth*0.94 / c.width, window.innerHeight*0.5 / c.height);
+    const tx = (window.innerWidth - c.width*sc)/2 - (c.left - w.left)*sc - w.left;
+    const ty = window.innerHeight*0.3 - (c.top - w.top)*sc - w.top;
+    wall.style.transformOrigin = "0 0"; cell.classList.add("hl");
+    wall.animate([{transform:"none"},{transform:`translate(${tx}px,${ty}px) scale(${sc})`, opacity:1, offset:.85},{transform:`translate(${tx}px,${ty}px) scale(${sc})`, opacity:0}],
+      {duration:620, easing:EASE, fill:"forwards"}).onfinish = finish;
+  }
+  function themeSwitch(btn, apply){
+    if (rm() || !document.startViewTransition){ apply(); return; }
+    const r = btn.getBoundingClientRect(), x = r.left + r.width/2, y = r.top + r.height/2;
+    const R = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    const vt = document.startViewTransition(apply);
+    vt.ready.then(() => document.documentElement.animate({clipPath:[`circle(0px at ${x}px ${y}px)`, `circle(${R}px at ${x}px ${y}px)`]},
+      {duration:520, easing:"cubic-bezier(.4,0,.2,1)", pseudoElement:"::view-transition-new(root)"})).catch(()=>{});
+  }
+  function spinPick(pool, b){
+    if (rm()){ openSheet(b.id); return; }
+    const picks = []; for (let i=0;i<18;i++) picks.push(pool[Math.floor(Math.random()*pool.length)]); picks.push(b);
+    const wrap = document.createElement("div"); wrap.className = "reelwrap";
+    wrap.innerHTML = `<div class="reel"><div class="strip">${picks.map(x => `<div><i style="background:${x.color};color:${inkOn(x.color)}">${esc(unknown(x)?"?":x.title)}</i></div>`).join("")}</div></div><div class="reelcap">Picking a book…</div>`;
+    document.body.appendChild(wrap);
+    const strip = wrap.querySelector(".strip"), reel = wrap.querySelector(".reel"), H = 170;
+    wrap.animate([{opacity:0},{opacity:1}], {duration:150});
+    let done = false;
+    const land = () => { if (done) return; done = true;
+      const last = strip.lastElementChild.querySelector("i");
+      reel.animate([{boxShadow:"0 0 0 0 rgba(242,179,61,0)"},{boxShadow:"0 0 0 4px #f2b33d, 0 0 26px 6px rgba(242,179,61,.6)"},{boxShadow:"0 0 0 0 rgba(242,179,61,0)"}], {duration:600});
+      wrap.querySelector(".reelcap").textContent = b.title;
+      setTimeout(() => { const r = last.getBoundingClientRect(); flight = {rect:r, color:getComputedStyle(last).backgroundColor};
+        wrap.animate([{opacity:1},{opacity:0}], {duration:180}).onfinish = () => wrap.remove(); openSheet(b.id); }, 520); };
+    strip.animate([{transform:"translateY(0)"},{transform:`translateY(-${(picks.length-1)*H}px)`}], {duration:1500, easing:"cubic-bezier(.15,.6,.15,1)", fill:"forwards"}).onfinish = land;
+    wrap.addEventListener("click", () => { strip.getAnimations().forEach(a => a.finish()); }, {once:true});
+  }
+  // remember where cards were, then slide them from there after the re-render
+  function capture(root){
+    const m = new Map(); const vh = innerHeight;
+    root.querySelectorAll(".ccard[data-book], .item[data-book], .hcell").forEach(el => { const r = el.getBoundingClientRect(); if (r.bottom > -50 && r.top < vh + 50) m.set(keyOf(el), {r, txt: el.textContent}); });
+    return m;
+  }
+  const keyOf = el => el.dataset.book ? "b:" + el.dataset.book : "h:" + (el.getAttribute("aria-label")||"").split(":")[0];
+  function flip(root, prev){
+    const vh = innerHeight; let n = 0;
+    root.querySelectorAll(".ccard[data-book], .item[data-book]").forEach(el => {
+      const r = el.getBoundingClientRect(); if (r.bottom < -50 || r.top > vh + 50 || n > 60) return; n++;
+      const p = prev.get(keyOf(el));
+      if (p){ const dx = p.r.left - r.left, dy = p.r.top - r.top; if (Math.abs(dx) > 1 || Math.abs(dy) > 1) el.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:"none"}], {duration:340, easing:EASE}); }
+      else el.animate([{opacity:0, transform:"scale(.92)"},{opacity:1, transform:"none"}], {duration:260, easing:EASE});
+    });
+    let k = 0;
+    root.querySelectorAll(".hcell.hit").forEach(el => { const p = prev.get(keyOf(el)); if (!p || p.txt !== el.textContent){ const em = el.querySelector("em"); em && em.animate([{transform:"scale(.4)", opacity:0},{transform:"scale(1.2)", opacity:1, offset:.7},{transform:"scale(1)"}], {duration:320, delay:(k++)*40, easing:EASE, fill:"backwards"}); } });
+  }
+  // covers fade in softly as they scroll into view
+  let io = null;
+  function revealCovers(root){
+    if (rm() || !("IntersectionObserver" in window)) return;
+    io && io.disconnect();
+    io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.remove("fxpend"); io.unobserve(e.target); } }), {rootMargin:"0px 0px -20px 0px"});
+    const vh = innerHeight;
+    root.querySelectorAll(".ccard, .tile2, .atile").forEach(el => { if (el.getBoundingClientRect().top > vh){ el.classList.add("fxpend"); io.observe(el); } });
+  }
+  function tabEnter(root, [from, to]){
+    if (rm()) return;
+    const d = Math.sign(TAB_ORDER.indexOf(to) - TAB_ORDER.indexOf(from)) || 1;
+    root.animate([{opacity:0, transform:`translateX(${d*22}px)`},{opacity:1, transform:"none"}], {duration:240, easing:EASE});
+  }
+  function moveTabInd(){
+    const bar = document.querySelector(".tabs > div"); if (!bar) return;
+    let ind = bar.querySelector(".tabind"); if (!ind){ ind = document.createElement("i"); ind.className = "tabind"; bar.appendChild(ind); }
+    const t = bar.querySelector(`.tab[data-tab="${S.tab}"]`);
+    if (!t){ ind.style.opacity = 0; return; }
+    const br = bar.getBoundingClientRect(), r = t.getBoundingClientRect();
+    ind.style.opacity = 1; ind.style.width = (r.width*0.5) + "px"; ind.style.transform = `translateX(${r.left - br.left + r.width*0.25}px)`;
+  }
+  // numbers tick up to their new value
+  const last = {};
+  function counts(root){
+    root.querySelectorAll("[data-count]").forEach(el => {
+      const key = el.dataset.ck || el.dataset.count, end = +el.dataset.count, start = last[key] ?? (el.dataset.from0 ? 0 : end);
+      last[key] = end; if (rm() || start === end) return;
+      const fmt = el.dataset.fmt === "usd" ? usd : el.dataset.fmt === "jod" ? jod : (n => Math.round(n).toLocaleString("en-US"));
+      const t0 = performance.now(), dur = 650;
+      (function tick(t){ const k = Math.min(1, (t - t0)/dur), e = 1 - Math.pow(1-k, 3); el.textContent = fmt(start + (end - start)*e); if (k < 1) requestAnimationFrame(tick); })(t0);
+    });
+  }
+  window.addEventListener("resize", () => moveTabInd());
+  return {rm, openFrom, sheetOpened, flyToMine, zoomToShelf, themeSwitch, spinPick, capture, flip, revealCovers, tabEnter, moveTabInd, counts};
+})();
+
 /* ---------------- main render ---------------- */
 function syncBanner(){
   if (!S.online) return `<div class="syncchip"><i></i>Offline. Your changes are saved on this phone and will sync when you're back online.</div>`;
@@ -16704,6 +16894,8 @@ function render(){
     for (const [k,v] of Object.entries(keep)){ const el = document.getElementById(k); if (el && v) el.value = v; }
     return;
   }
+  const flipPrev = (S.tab === "find" && lastTab === "find" && !FX.rm()) ? FX.capture(app) : null;
+  const tabChange = lastTab && lastTab !== S.tab ? [lastTab, S.tab] : null;
   app.innerHTML = (S.tab==="find" ? viewFind() : S.tab==="family" ? viewFamily() : S.tab==="mine" ? viewMine() : S.tab==="compare" ? viewCompare() : viewShelves()) + compareTray();
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-current", t.dataset.tab===S.tab ? "page" : "false"));
   if (qFocused){ const q = document.getElementById("q"); q.focus(); try{ q.setSelectionRange(caret,caret); }catch(e){} }
@@ -16719,6 +16911,10 @@ function render(){
     const active = document.activeElement && document.activeElement.closest(".sheet");
     if (!active || !["note","lendto"].includes(document.activeElement.id)) renderSheet();
   }
+  if (flipPrev) FX.flip(app, flipPrev); else FX.revealCovers(app);
+  if (tabChange) FX.tabEnter(app, tabChange);
+  FX.moveTabInd();
+  FX.counts(app);
   lastTab = S.tab;
 }
 function go(tab){ S.tab = tab; if (tab!=="shelves"){ S.focus=null; } window.scrollTo(0,0); render(); }
@@ -16733,9 +16929,9 @@ document.addEventListener("click", async e => {
   const shelfEl = t.closest("[data-shelf]");
   if (shelfEl && !t.closest(".wall.small") || (shelfEl && t.closest(".wall.small"))){ S.shelf = shelfEl.dataset.shelf; S.focus=null; S.tab="shelves"; window.scrollTo(0,0); render(); return; }
   const bookEl = t.closest("[data-book]");
-  if (bookEl && !t.closest(".sheet")){ openSheet(bookEl.dataset.book); return; }
+  if (bookEl && !t.closest(".sheet")){ FX.openFrom(bookEl, bookEl.dataset.book); return; }
   const simEl = t.closest("[data-sim]");
-  if (simEl){ openSheet(simEl.dataset.sim); return; }
+  if (simEl){ FX.openFrom(simEl, simEl.dataset.sim); return; }
   const rate = t.closest("[data-rate]");
   if (rate){ const n = +rate.dataset.rate, bid = S.sheet; writeSection("notes", s => { s.ratings = {...(s.ratings||{})}; if (s.ratings[bid]===n) delete s.ratings[bid]; else s.ratings[bid]=n; return s; }); return; }
   const cm = t.closest("[data-cmp]");
@@ -16749,7 +16945,7 @@ document.addEventListener("click", async e => {
   const gt = t.closest("[data-goto]");
   if (gt){ closeSheet(); go(gt.dataset.goto); return; }
   const li = t.closest("[data-list]");
-  if (li){ const v = li.dataset.list, bid = S.sheet, cur = myList(bid); setList(bid, cur === v ? null : v);
+  if (li){ const v = li.dataset.list, bid = S.sheet, cur = myList(bid); if (cur !== v) FX.flyToMine(); setList(bid, cur === v ? null : v);
     toast(cur === v ? "Taken off your list" : v === "read" ? "Moved to Read" : v === "reading" ? "Added to Reading now" : "Added to Want to read"); return; }
   const pv = t.closest("[data-priv]");
   if (pv){ const s = pv.dataset.priv, on = mySec(s).visible !== false; writeSection(s, sec => { sec.visible = !on; return sec; }); renderSheetIfOpen(); toast(on ? `${SECTION_INFO[s].title}: only you` : `${SECTION_INFO[s].title}: visible to family`); return; }
@@ -16781,7 +16977,7 @@ document.addEventListener("click", async e => {
   const id = S.sheet;
   switch(act){
     case "close": if (S.sheet==="__picker" && S.returnTo){ S.after=null; finishPicker(); } else closeSheet(); break;
-    case "theme": { const order = ["auto","dark","light"]; S.theme = order[(order.indexOf(S.theme)+1)%3]; store.set("fs-theme", S.theme); applyTheme(); render(); toast({auto:"Theme matches your device", dark:"Dark mode", light:"Light mode"}[S.theme]); break; }
+    case "theme": { const order = ["auto","dark","light"]; S.theme = order[(order.indexOf(S.theme)+1)%3]; store.set("fs-theme", S.theme); FX.themeSwitch(actEl, () => { applyTheme(); render(); }); toast({auto:"Theme matches your device", dark:"Dark mode", light:"Light mode"}[S.theme]); break; }
     case "wall": S.shelf=null; S.focus=null; render(); break;
     case "picker": openPicker(); break;
     case "pick": pickForMe(); break;
@@ -16794,7 +16990,7 @@ document.addEventListener("click", async e => {
     case "more": S.moreOpen = !S.moreOpen; renderSheet(); break;
     case "needcheck": S.q=""; S.f=Object.assign(FDEF(),{status:"check",view:S.f.view}); store.set("fs-f2",S.f); go("find"); break;
     case "add": S.sheet="__add"; renderSheet(); break;
-    case "show": { const b = byId(actEl.dataset.id); closeSheet(); S.tab="shelves"; S.shelf=b.spot; S.focus=b.id; S.pendingScroll=true; window.scrollTo(0,0); render(); break; }
+    case "show": { const b = byId(actEl.dataset.id); closeSheet(); FX.zoomToShelf(b); break; }
     case "account": openAccount(); break;
     case "cmpgo": openCompare(); break;
     case "cmpclear": S.cmp = []; saveCmp(); if (S.tab === "compare") S.tab = S.cmpFrom || "find"; render(); break;
