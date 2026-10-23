@@ -336,6 +336,8 @@ mark{background:#ffe2a8;color:#1c2629;border-radius:2px;padding:0 1px}
 .chip.gold.on em{color:#fff;opacity:.85}
 :root[data-theme="dark"] .chip.gold:not(.on){background:#3a2f17;border-color:#5a4720;color:#f1d79a}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.gold:not(.on){background:#3a2f17;border-color:#5a4720;color:#f1d79a}}
+.worth{text-transform:none;letter-spacing:0;font-weight:500}
+.seg2{flex-wrap:wrap}
 .fnote{font-size:.8rem;color:var(--muted);margin:-2px 0 8px}
 .subeye{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:10px 0 6px}
 button.award{border:0;cursor:pointer;font:inherit;font-size:.78rem}
@@ -16018,7 +16020,7 @@ function itemRow(b){
 const ME_PLACES = ["Palestine","Israel","Jordan","Syria & Lebanon","Iraq","Gulf & Arabia","Egypt & North Africa","Turkey & the Ottomans","Iran & Afghanistan","Arab world"];
 const PLACE_OPTS = ["Middle East","Palestine","Jordan","Syria & Lebanon","Israel","Iraq","Gulf & Arabia","Egypt & North Africa","Turkey & the Ottomans","Iran & Afghanistan","India & South Asia","Central Asia","East Asia & Pacific","Europe","Russia","Americas","Africa"];
 const MOOD_COLORS = {light:"#fde3b0",moving:"#f3c9cf",gripping:"#cfe6d8",deep:"#d6dcf3",funny:"#efe2c4",visual:"#d9ecef",epic:"#e6d9ef",short:"#e3ead4",reference:"#e4e4e4"};
-const FDEF = () => ({kinds:[],places:[],moods:[],lang:"",status:"",length:"",shelf:"",awards:"",prizes:[],pmode:"",critics:[],legacy:"",sort:"best",view:"grid"});
+const FDEF = () => ({kinds:[],places:[],moods:[],lang:"",status:"",length:"",shelf:"",awards:"",prizes:[],pmode:"",critics:[],legacy:"",price:"",treasure:"",sort:"best",view:"grid"});
 /* ---------- recognition: prize families, critics' verdicts, acclaim ---------- */
 const PRIZE_FAMS = [
   ["nobel","Nobel authors",["Nobel"]],
@@ -16040,6 +16042,11 @@ function verdictOf(b){
   const avg = rs.reduce((a,r) => a + (RSCORE[r.label] ?? 1.5), 0) / rs.length;
   return avg >= 2.5 ? "loved" : avg >= 1.75 ? "liked" : avg >= 1 ? "mixed" : "panned";
 }
+const PRICE_OPTS = [["","Any"],["u15","Under $15"],["15","$15–30"],["30","$30–60"],["60","$60+"]];
+const priceBand = p => !p ? "" : p < 15 ? "u15" : p < 30 ? "15" : p < 60 ? "30" : "60";
+const valueOf = b => (b.resale||0) * 1000 + (b.price||0);
+let _treasures = null;
+const treasureIds = () => _treasures ||= new Set(allBooks().filter(b => !unknown(b)).sort((a,c) => valueOf(c) - valueOf(a)).slice(0,20).map(b => b.id));
 function acclaim(b){
   let sc = 0;
   for (const a of b.awards||[]) sc += a.startsWith("Author") ? 1.5 : 3;
@@ -16052,7 +16059,7 @@ function acclaim(b){
 S.f = Object.assign(FDEF(), store.get("fs-f2", {}));
 for (const k of ["prizes","critics","kinds","places","moods"]) if (!Array.isArray(S.f[k])) S.f[k] = [];
 const placeMatch = (b, p) => p === "Middle East" ? b.places.some(x => ME_PLACES.includes(x)) : b.places.includes(p);
-const filtersActive = f => f.kinds.length || f.places.length || f.moods.length || f.lang || f.status || f.length || f.shelf || f.awards || (f.prizes||[]).length || (f.critics||[]).length || f.legacy;
+const filtersActive = f => f.kinds.length || f.places.length || f.moods.length || f.lang || f.status || f.length || f.shelf || f.awards || (f.prizes||[]).length || (f.critics||[]).length || f.legacy || f.price || f.treasure;
 function passFilters(b, f){
   if (f.kinds.length && !f.kinds.includes(b.kind)) return false;
   if (f.places.length && !f.places.some(p => placeMatch(b, p))) return false;
@@ -16063,6 +16070,8 @@ function passFilters(b, f){
   if ((f.prizes||[]).length && !f.prizes.some(p => prizeHit(b, p, f.pmode))) return false;
   if ((f.critics||[]).length && !f.critics.includes(verdictOf(b))) return false;
   if (f.legacy && !b.legacy) return false;
+  if (f.price && priceBand(b.price) !== f.price) return false;
+  if (f.treasure && !treasureIds().has(b.id)) return false;
   if (f.length){ const p = b.pages||0; if (!p) return false; if (f.length==="short" && p>=200) return false; if (f.length==="medium" && (p<200||p>400)) return false; if (f.length==="long" && p<=400) return false; }
   const st = statusOf(b);
   if (f.status==="unread-me" && (!S.me || st.reads[S.me])) return false;
@@ -16109,6 +16118,7 @@ function results(f, q){
     title: (x,y) => x.b.title.localeCompare(y.b.title),
     author: (x,y) => (x.b.author||"~").localeCompare(y.b.author||"~"),
     year: (x,y) => (x.b.year||9999) - (y.b.year||9999),
+    value: (x,y) => (valueOf(y.b) - valueOf(x.b)) || ((SHELF_ORDER.indexOf(x.b.spot)*1000+x.b.pos) - (SHELF_ORDER.indexOf(y.b.spot)*1000+y.b.pos)),
     acclaim: (x,y) => (acclaim(y.b) - acclaim(x.b)) || ((SHELF_ORDER.indexOf(x.b.spot)*1000+x.b.pos) - (SHELF_ORDER.indexOf(y.b.spot)*1000+y.b.pos)),
     shelf: (x,y) => (SHELF_ORDER.indexOf(x.b.spot)*1000+x.b.pos) - (SHELF_ORDER.indexOf(y.b.spot)*1000+y.b.pos),
   }[f.sort] || (() => 0);
@@ -16149,6 +16159,8 @@ function activeChips(){
   (f.prizes||[]).forEach(p => chips.push(["prizes",p,FAM_LABEL[p] + (f.pmode==="short" ? " · won or shortlisted" : "")]));
   (f.critics||[]).forEach(c => chips.push(["critics",c,"Critics: " + (CRITIC_OPTS.find(x=>x[0]===c)||["",c])[1].replace(/^\S+ /,"")]));
   if (f.legacy) chips.push(["legacy","yes","Classics & landmarks"]);
+  if (f.price) chips.push(["price",f.price,"≈ " + PRICE_OPTS.find(x=>x[0]===f.price)[1] + " new"]);
+  if (f.treasure) chips.push(["treasure","yes","💎 Treasures"]);
   return chips.map(([k,v,l]) => `<button class="chip on${k==="prizes"?" gold":""}" data-unfilter="${k}" data-val="${esc(v)}">${esc(l)} ✕</button>`).join("");
 }
 function suggestions(words){
@@ -16163,7 +16175,7 @@ function suggestions(words){
   return sug.slice(0,3).map(([k,v,l]) => `<button class="chip sug" data-addfilter="${k}" data-val="${esc(v)}">${esc(l)}</button>`).join("");
 }
 function searchBar(noBtn){
-  const n = [S.f.kinds,S.f.places,S.f.moods,S.f.prizes||[],S.f.critics||[]].reduce((a,x)=>a+x.length,0) + ["lang","status","length","shelf","awards","legacy"].filter(k=>S.f[k]).length;
+  const n = [S.f.kinds,S.f.places,S.f.moods,S.f.prizes||[],S.f.critics||[]].reduce((a,x)=>a+x.length,0) + ["lang","status","length","shelf","awards","legacy","price","treasure"].filter(k=>S.f[k]).length;
   return `<div class="searchrow"><div class="search2${S.q?" typing":""}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
     <input id="q" type="search" enterkeyhint="search" placeholder="Title, author, place, topic…" value="${esc(S.q)}" autocomplete="off" aria-label="Search books">${S.q?`<button class="xbtn" data-act="clearq" aria-label="Clear search">✕</button>`:""}</div>
     ${noBtn ? "" : `<button class="fbtn2" data-act="filters">Filters${n?`<span class="dot2">${n}</span>`:""}</button>`}</div>`;
@@ -16185,6 +16197,7 @@ const PRESETS = {
   loved: {critics:["loved"], sort:"acclaim"},
   argued: {critics:["mixed"], sort:"acclaim"},
   nobel: {prizes:["nobel"], sort:"acclaim"},
+  treasures: {treasure:"yes", sort:"value"},
 };
 function viewFind(){
   const books = allBooks();
@@ -16217,16 +16230,16 @@ function viewFind(){
       <div class="sec2"><span class="eyebrow">Compare side by side</span></div>
       <div class="chips wrap">${READY_COMPARES.map(([n,l],i)=>`<button class="chip" data-ready="${i}">⇆ ${esc(n)}</button>`).join("")}</div>
       <div class="sec2"><span class="eyebrow">Quick lists</span></div>
-      <div class="chips wrap">${quick.map(([k,v,l])=>`<button class="chip" data-addfilter="${k}" data-val="${v}">${esc(l)}</button>`).join("")}</div>
+      <div class="chips wrap"><button class="chip" data-preset="treasures">💎 Treasures · 20 most valuable</button>${quick.map(([k,v,l])=>`<button class="chip" data-addfilter="${k}" data-val="${v}">${esc(l)}</button>`).join("")}</div>
       <div style="margin-top:18px"><button class="btn" data-act="add">Add a book</button></div>`;
   } else {
     const r = results(S.f, S.q);
     const total = r.strong.length + r.weak.length;
-    const sorts = [["best", r.words.length ? "Best match" : "Shelf order"],["acclaim","Most acclaimed"],["title","Title"],["author","Author"],["year","Year"]];
+    const sorts = [["best", r.words.length ? "Best match" : "Shelf order"],["acclaim","Most acclaimed"],["value","Most valuable"],["title","Title"],["author","Author"],["year","Year"]];
     body = `
       <div class="chips" style="margin-top:10px">${activeChips()}${suggestions(r.words)}</div>
       ${total && total < allBooks().length ? hitMap([...r.strong, ...r.weak]) : ""}
-      <div class="resbar"><span class="eyebrow">${total} book${total===1?"":"s"}</span>
+      <div class="resbar"><span class="eyebrow">${total} book${total===1?"":"s"}${total ? `<span class="worth" title="Estimates by type of book, not valuations"> · ≈ ${usd([...r.strong,...r.weak].reduce((a,b)=>a+(b.price||0),0))} new, ${usd([...r.strong,...r.weak].reduce((a,b)=>a+(b.resale||0),0))} resale</span>` : ""}</span>
         <span class="row" style="gap:6px"><select id="sort" aria-label="Sort" class="mini-select">${sorts.map(([k,v])=>`<option value="${k}" ${S.f.sort===k?"selected":""}>${v}</option>`).join("")}</select>
         <button class="viewbtn" data-act="view" aria-label="Switch between covers and list">${S.f.view==="list"?"Covers":"List"}</button></span></div>
       ${total ? "" : `<div class="card muted">Nothing matches${S.q?` "${esc(S.q)}"`:""}. Try fewer words or remove a filter.</div>`}
@@ -16265,6 +16278,7 @@ function filterSections(d, live){
       <div class="subeye">Other</div><div class="chips wrap"><button class="chip ${d.legacy?"on":""}" ${A1}="legacy" data-val="yes">📜 Classics & landmarks <em>${legacyN}</em></button></div></div>
     <div class="fsec"><div class="eyebrow">Set in or about</div><div class="chips wrap">${toggles("places", PLACE_OPTS.map(p => [p, p, books.filter(b=>placeMatch(b,p)).length]).filter(x=>x[2]))}</div></div>
     <div class="fsec"><div class="eyebrow">Mood</div><div class="chips wrap">${toggles("moods", Object.entries(MOODS).map(([k,v]) => [k,v,null]))}</div></div>
+    <div class="fsec"><div class="eyebrow">Value</div><div class="fnote">Estimated price to buy new today</div>${seg("price", PRICE_OPTS)}<div class="chips wrap" style="margin-top:8px"><button class="chip ${d.treasure?"on":""}" ${A1}="treasure" data-val="yes">💎 Treasures: the 20 most valuable</button></div></div>
     <div class="fsec"><div class="eyebrow">Length</div>${seg("length", [["","Any"],["short","Under 200"],["medium","200–400"],["long","400+"]])}</div>
     <div class="fsec"><div class="eyebrow">Reading</div>${seg("status", [["","Anything"],["unread-me","Not read by me"],["unread-all","Nobody has"],["reading","Being read"]])}</div>
     <div class="fsec"><div class="eyebrow">Language</div>${seg("lang", [["","All"],["en","English"],["ar","العربية"],["de","Deutsch"],["fr","Français"]])}</div>
