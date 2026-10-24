@@ -516,6 +516,67 @@ b.mine{color:var(--accent);font-weight:600}
 .traygo:disabled{opacity:.45;cursor:default}
 .cmpcheck{position:absolute;bottom:6px;right:6px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:700 .75rem var(--font-body)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* family */
+.avatar.big{width:44px;height:44px;font-size:1.1rem}
+.feedlist{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.feed{display:flex;gap:10px;align-items:flex-start;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:11px 12px;color:inherit;font:inherit;cursor:pointer;width:100%}
+.feed:last-child{border-bottom:0}
+.feed .avatar{flex:0 0 auto;margin-top:1px}
+.ftxt{min-width:0;font-size:.92rem;line-height:1.35}
+.ftxt small{display:block;color:var(--muted);font-size:.78rem;margin-top:2px}
+.fquote{display:block;font-family:var(--font-display);font-size:.88rem;color:var(--muted);margin-top:3px}
+.fstars{color:var(--glow);letter-spacing:1px;font-size:.85rem;white-space:nowrap}
+.code.mini{font-size:.7rem;padding:1px 5px;vertical-align:1px}
+.reccard{display:flex;gap:12px;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;padding:12px}
+.reccard .cover2{width:56px;flex:0 0 auto;border:0;cursor:pointer}
+.recline{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;background:var(--bg);border-radius:10px;padding:8px 10px}
+.recline .avatar{flex:0 0 auto}
+.famacts{gap:6px}
+.btn.on{border-color:var(--accent);color:var(--accent)}
+.clubcard{display:flex;gap:12px;align-items:center;text-align:left;width:100%;color:inherit;font:inherit;cursor:pointer;background:linear-gradient(135deg,color-mix(in srgb,var(--maple) 16%,var(--surface)),var(--surface) 70%)}
+.clubcard.empty{display:block;cursor:default}
+.clubcard.empty b{display:block;margin:4px 0}
+.clubcard .cover2{width:62px;flex:0 0 auto}
+.cc-txt{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
+.cc-txt b{font-family:var(--font-display);font-weight:400;font-size:1.08rem}
+.cc-txt small{color:var(--muted)}
+.cc-people{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.cc-p{display:flex;flex-direction:column;gap:3px;align-items:center}
+.cc-p i{display:block;height:3px;border-radius:2px;background:var(--accent);min-width:3px;max-width:26px}
+.chev{color:var(--muted);font-size:1.4rem}
+.clubhero{display:grid;grid-template-columns:110px 1fr;gap:16px;align-items:start;margin-top:8px}
+.clubhero .cover2{border:0;cursor:pointer;font-size:.9rem}
+.meetf{margin-top:10px;max-width:220px}
+.members{display:flex;flex-direction:column;gap:8px}
+.member{display:grid;grid-template-columns:26px minmax(60px,110px) 1fr auto;gap:10px;align-items:center;font-size:.9rem}
+.mbar{height:6px;border-radius:4px;background:var(--bg);overflow:hidden}
+.mbar i{display:block;height:100%;background:var(--accent);border-radius:4px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.mpct{color:var(--muted);font-size:.8rem}
+.thought{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.thought .avatar{flex:0 0 auto}
+.tmeta{font-size:.8rem;color:var(--muted)}
+.ttext{font-size:.93rem;margin-top:3px;white-space:pre-wrap}
+.spoiltag{color:var(--warn);font-weight:600}
+.spoiler{margin-top:4px;width:100%;text-align:left;border:1px dashed var(--line);background:repeating-linear-gradient(-45deg,var(--bg),var(--bg) 6px,var(--surface) 6px,var(--surface) 12px);border-radius:8px;padding:10px;font:inherit;font-size:.86rem;color:var(--muted);cursor:pointer}
+#clubnote{margin-top:10px}
+.yearcard{position:relative;overflow:hidden;border-radius:18px;padding:20px 20px 0;color:#fff;background:radial-gradient(120% 90% at 0% 0%,#1f8a9c 0%,#145e6b 45%,#0f3b44 100%);box-shadow:0 10px 30px rgba(15,59,68,.28)}
+.yearcard .eyebrow{color:rgba(255,255,255,.78)}
+.yc-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.yc-mark{font-family:var(--font-display);font-size:.9rem;color:#ffd79a}
+.yc-big{display:flex;align-items:baseline;gap:10px;margin:14px 0 6px}
+.yc-big b{font-family:var(--font-display);font-weight:400;font-size:3.6rem;line-height:1}
+.yc-big span{font-size:1.05rem;opacity:.9}
+.yc-line{font-size:.98rem;line-height:1.4;padding:7px 0;border-top:1px solid rgba(255,255,255,.14)}
+.yc-line b{color:#ffd79a;font-weight:600}
+.yc-next{margin-top:8px;font-size:.88rem;background:rgba(255,255,255,.1);border-radius:10px;padding:9px 11px}
+.yc-spines{display:flex;align-items:flex-end;gap:2px;margin-top:16px;padding:0 2px;border-bottom:6px solid #c88a45;min-height:20px}
+.yc-spines i{flex:1 1 0;max-width:16px;border-radius:2px 2px 0 0;box-shadow:inset 2px 0 0 rgba(0,0,0,.15)}
+.outrow{display:flex;flex-direction:column}
+.outrow .item{border-bottom:0}
+.outrow.late{background:color-mix(in srgb,var(--glow) 12%,var(--surface))}
+.outact{display:flex;gap:6px;padding:0 12px 10px 28px;flex-wrap:wrap}
+@media (min-width:900px){ .famnarrow{max-width:760px} .clubhero{grid-template-columns:140px 1fr} .yearcard{max-width:520px} }
 </style>
 
 </head>
@@ -16106,7 +16167,7 @@ function enterLibrary(code){
     const m = {}; snap.forEach(d => { m[d.id] = d.data(); }); S.added = m; render();
   }, onErr("added")));
   subs.push(FB.onSnapshot(FB.collection(FB.db, base(), "meta"), snap => {
-    const m = {}; snap.forEach(d => { m[d.id] = d.data(); }); S.meta = m; COVERS.fromServer((m.covers||{}).map || {}); render();
+    const m = {}; snap.forEach(d => { m[d.id] = d.data(); }); S.meta = m; COVERS.fromServer((m.covers||{}).map || {}); render(); try{ landRecs(); }catch(e){ console.warn("landRecs", e && e.message); }
   }, onErr("meta")));
   subs.push(FB.onSnapshot(FB.collection(FB.db, base(), "people"), snap => {
     const m = {}; snap.forEach(d => { m[d.id] = d.data(); }); S.people = m;
@@ -16898,7 +16959,216 @@ function viewMine(){
     <div class="seg2 minetabs" role="tablist">${tabs.map(([s,l]) => `<button class="${s===cur?"on":""}" data-minetab="${s}" role="tab" aria-selected="${s===cur}">${SECTION_INFO[s].title} <em>${l.length}</em></button>`).join("")}</div>
     ${privacyLine(cur)}
     ${list.length ? bookBlock(list, []) : `<div class="card muted" style="margin-top:12px">${empty}</div><div style="margin-top:12px"><button class="btn" data-goto="find">Find a book</button></div>`}
+    ${(() => { const mineOut = outBooks().filter(o => o.s.lentBy === S.me || o.s.borrowedBy === S.me); return mineOut.length ? `<div class="sec2"><span class="eyebrow">Out of the house</span></div><div class="list">${mineOut.map(outRow).join("")}</div>` : ""; })()}
     <div class="muted" style="font-size:.82rem;margin-top:18px">Your ratings and notes are ${mySec("notes").visible!==false?"visible to the family":"private"}. Change this and more under <button class="linkbtn" data-act="account">your account</button>.</div>`;
+}
+
+/* ---------------- family: activity, recommendations, book club, year in books, lending ---------------- */
+const daysSince = d => { if (!d) return null; const n = Math.floor((Date.parse(today()) - Date.parse(String(d).slice(0,10))) / 864e5); return isNaN(n) ? null : n; };
+const agoTxt = d => { const n = daysSince(d); if (n == null) return ""; return n <= 0 ? "Today" : n === 1 ? "Yesterday" : n < 7 ? `${n} days ago` : n < 14 ? "Last week" : n < 60 ? `${Math.round(n/7)} weeks ago` : niceDate(String(d).slice(0,10)); };
+const nameOf = uid => uid && uid === S.user?.uid ? (S.me || "You") : ((S.people[uid] || {}).name || "Someone");
+const metaOf = prefix => Object.entries(S.meta || {}).filter(([k]) => k.startsWith(prefix)).map(([k, v]) => ({...v, _id:k}));
+const avatarOf = (name, big) => `<span class="avatar${big?" big":""}">${esc(((name||"?")[0]||"?").toUpperCase())}</span>`;
+const stars = n => n ? `<span class="fstars">${"★".repeat(n)}${"☆".repeat(5-n)}</span>` : "";
+const nowIso = () => new Date().toISOString();
+S.famView = null; S.feedAll = false; S.spoilOpen = {}; S.recTo = null;
+
+/* everything here is computed from lists people already share, so a private list never shows up */
+function activity(){
+  const ev = [];
+  for (const d of Object.values(allSections())){
+    const mine = !!(S.user && d.uid === S.user.uid);
+    if (!mine && !d.visible) continue;
+    if (d.section === "read") for (const [id, at] of Object.entries(d.books || {})) ev.push({at, uid:d.uid, kind:"read", id});
+    if (d.section === "reading") for (const [id, at] of Object.entries(d.books || {})) ev.push({at, uid:d.uid, kind:"start", id});
+    if (d.section === "notes") for (const [id, arr] of Object.entries(d.notes || {})) for (const n of (arr || [])) ev.push({at:n.at, uid:d.uid, kind:"note", id, text:n.text});
+  }
+  const adds = {};
+  for (const [id, a] of Object.entries(S.added || {})) if (a && a.addedAt && !a.removed){ const k = (a.addedBy||"") + "|" + a.addedAt + "|" + (a.spot||""); (adds[k] = adds[k] || {at:a.addedAt, name:a.addedBy || "Someone", kind:"add", spot:a.spot, ids:[]}).ids.push(id); }
+  ev.push(...Object.values(adds));
+  for (const r of metaOf("rec_")) ev.push({at:r.at, uid:r.from, kind:"rec", id:r.book, to:r.to});
+  for (const c of metaOf("clubc_")) ev.push({at:c.at, uid:c.uid, kind:"club", id:c.book});
+  return ev.filter(e => e.at).sort((a, b) => String(b.at).localeCompare(String(a.at)));
+}
+function feedRow(e){
+  const b = e.id ? byId(e.id) : null;
+  if (e.id && !b) return "";
+  const who = e.name || nameOf(e.uid);
+  const you = e.uid && e.uid === S.user?.uid;
+  const W = you ? "You" : esc(who);
+  const T = b ? `<b>${esc(b.title)}</b> <span class="code mini">${esc(shelfLabel(b.spot))}</span>` : "";
+  let txt = "";
+  if (e.kind === "read"){ const r = b ? (statusOf(b).ratings[you ? S.me : who] || 0) : 0; txt = `${W} finished ${T} ${stars(r)}`; }
+  else if (e.kind === "start") txt = `${W} started ${T}`;
+  else if (e.kind === "note") txt = `${W} added a note to ${T}<span class="fquote">“${esc(String(e.text||"").slice(0,120))}${String(e.text||"").length>120?"…":""}”</span>`;
+  else if (e.kind === "add") txt = e.ids.length === 1 ? `${W} added ${byId(e.ids[0]) ? `<b>${esc(byId(e.ids[0]).title)}</b>` : "a book"}${e.spot?` to ${esc(shelfLabel(e.spot))}`:""}` : `${W} added ${e.ids.length} books${e.spot?` to ${esc(shelfLabel(e.spot))}`:""}`;
+  else if (e.kind === "rec") txt = `${W} recommended ${T} to ${e.to === S.user?.uid ? "you" : esc(nameOf(e.to))}`;
+  else if (e.kind === "club") txt = `${W} shared a thought on ${b ? `<b>${esc(b.title)}</b>` : "the book"} for the book club`;
+  const open = e.kind === "add" ? (e.ids.length === 1 ? `data-book="${esc(e.ids[0])}"` : "") : e.kind === "club" ? `data-famview="club"` : b ? `data-book="${esc(b.id)}"` : "";
+  return `<button class="feed" ${open}>${avatarOf(you ? (S.me||"Y") : who)}<span class="ftxt">${txt}<small>${esc(agoTxt(e.at))}</small></span></button>`;
+}
+
+/* recommendations: meta/rec_<time>_<uid>. The person it's for puts it on their own Want-to-read list. */
+function recsToMe(){ return S.user ? metaOf("rec_").filter(r => r.to === S.user.uid && !r.dismissed && byId(r.book)).sort((a,b) => String(b.at).localeCompare(String(a.at))) : []; }
+const landing = new Set();
+function landRecs(){
+  if (!S.user || !S.dbReady) return;
+  for (const r of metaOf("rec_")){
+    if (r.to !== S.user.uid || r.landed || landing.has(r._id) || !byId(r.book)) continue;
+    landing.add(r._id);
+    if (!myList(r.book)) setList(r.book, "want");
+    writeDoc(base() + "/meta/" + r._id, {...stripId(r), landed:true});
+    toast(`${r.fromName || nameOf(r.from)} recommended ${byId(r.book).title} to you. It's on your Want-to-read list.`);
+  }
+}
+const stripId = o => { const c = {...o}; delete c._id; return c; };
+function sendRec(bookId, to, note){
+  const id = `rec_${Date.now()}_${S.user.uid}`;
+  const doc = {from:S.user.uid, fromName:S.me||"", to, toName:nameOf(to), book:bookId, note:(note||"").slice(0,500), at:nowIso(), landed:false};
+  S.meta = {...S.meta, [id]: doc}; render();
+  writeDoc(base() + "/meta/" + id, doc);
+}
+function renderRec(){
+  const b = byId(S.recBook); if (!b) return closeSheet();
+  const L = document.getElementById("layer");
+  const others = Object.entries(S.people).filter(([uid]) => uid !== S.user?.uid).sort((a,c) => (a[1].name||"").localeCompare(c[1].name||""));
+  L.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="Recommend a book">
+    <div class="grabzone" data-grab><div class="grab"></div><button class="sheetx" data-act="close" aria-label="Close">✕</button></div>
+    <div class="eyebrow">Recommend</div><h2>${esc(b.title)}</h2>
+    ${others.length ? `<div class="f" style="margin-top:12px"><span class="muted" style="font-size:.85rem">To</span><div class="chips wrap" style="margin-top:6px">${others.map(([uid,p]) => `<button class="chip ${S.recTo===uid?"on":""}" data-recto="${esc(uid)}">${esc(p.name||"Someone")}</button>`).join("")}</div></div>
+    <label class="f">Note (optional)<textarea id="recnote" placeholder="Why they'd like it. Where to find it: ${esc(shelfLabel(b.spot))}, ${esc(locate(b).toLowerCase())}."></textarea></label>
+    <div class="muted" style="font-size:.82rem">It goes on their Want-to-read list. The family can see who recommended what.</div>
+    <div class="row" style="margin-top:12px"><button class="btn primary" data-act="sendrec" ${S.recTo?"":"disabled"}>${S.recTo ? `Send to ${esc(nameOf(S.recTo))}` : "Pick someone"}</button><button class="btn" data-act="backbook">Cancel</button></div>`
+    : `<div class="card muted" style="margin-top:12px">Nobody else has joined yet. Send them the link and the family code first.</div><div class="row" style="margin-top:12px"><button class="btn" data-act="backbook">Back</button></div>`}
+  </div></div>`;
+}
+function recLinesFor(b){
+  const rs = metaOf("rec_").filter(r => r.book === b.id && (r.to === S.user?.uid || r.from === S.user?.uid));
+  return rs.map(r => r.to === S.user?.uid
+    ? `<div class="recline">${avatarOf(r.fromName||nameOf(r.from))}<span><b>${esc(r.fromName||nameOf(r.from))}</b> recommended this to you${r.note?`<span class="fquote">“${esc(r.note)}”</span>`:""}</span></div>`
+    : `<div class="recline muted">You recommended this to ${esc(nameOf(r.to))}, ${esc(agoTxt(r.at).toLowerCase())}.</div>`).join("");
+}
+
+/* book club: meta/club holds the book; each member writes their own progress doc and each thought is its own doc,
+   so two people saving at once never overwrite each other */
+const club = () => { const c = (S.meta || {}).club; return c && c.book && byId(c.book) ? c : null; };
+const clubKey = c => c ? c.book + "@" + (c.since || "") : "";
+const STEPS = [[0,"Not started"],[25,"A quarter in"],[50,"Halfway"],[75,"Nearly done"],[100,"Finished"]];
+function clubMembers(c){ return metaOf("clubm_").filter(m => m.club === clubKey(c)).sort((a,b) => (b.pct||0) - (a.pct||0)); }
+function clubThoughts(c){ return metaOf("clubc_").filter(m => m.club === clubKey(c)).sort((a,b) => String(a.at).localeCompare(String(b.at))); }
+function startClub(bookId){
+  const doc = {book:bookId, since:nowIso(), chosenBy:S.user.uid, chosenByName:S.me||"", meet:""};
+  S.meta = {...S.meta, club:doc}; writeDoc(base() + "/meta/club", doc);
+  setClubProgress(0);
+}
+function setClubProgress(pct){
+  const c = club(); if (!c || !S.user) return;
+  const id = "clubm_" + S.user.uid;
+  const doc = {club:clubKey(c), uid:S.user.uid, name:S.me||"", pct, at:nowIso()};
+  S.meta = {...S.meta, [id]: doc}; render();
+  writeDoc(base() + "/meta/" + id, doc);
+  if (pct === 100 && myList(c.book) !== "read") setList(c.book, "read");
+  else if (pct > 0 && pct < 100 && !myList(c.book)) setList(c.book, "reading");
+}
+function clubCard(){
+  const c = club();
+  if (!c) return `<div class="card clubcard empty"><div class="eyebrow">Family book club</div><b>One book a month, for whoever wants to join.</b><div class="muted" style="font-size:.88rem">Open any book and tap “Pick for the book club” to start.</div></div>`;
+  const b = byId(c.book); const ms = clubMembers(c);
+  return `<button class="card clubcard" data-famview="club"><span class="cover2 small" style="background:${b.color};color:${inkOn(b.color)}"><span class="ct">${esc(b.title)}</span>${COVERS.img(b)}</span>
+    <span class="cc-txt"><span class="eyebrow">Book club${c.meet?` · meet ${esc(niceDate(c.meet))}`:""}</span><b>${esc(b.title)}</b><small>${esc(b.author||"")}</small>
+    <span class="cc-people">${ms.length ? ms.slice(0,6).map(m => `<span class="cc-p" title="${esc(m.name)}">${avatarOf(m.name)}<i style="width:${m.pct||0}%"></i></span>`).join("") : `<small>Nobody has joined yet</small>`}</span></span><span class="chev">›</span></button>`;
+}
+function clubView(){
+  const c = club();
+  const back = `<button class="back" data-famview="">‹ Family</button>`;
+  if (!c) return back + header("Book club", "Family") + clubCard();
+  const b = byId(c.book); const ms = clubMembers(c); const th = clubThoughts(c);
+  const me = ms.find(m => m.uid === S.user?.uid);
+  const finished = me && me.pct === 100;
+  return back + `<div class="eyebrow" style="margin-top:6px">Book club</div>
+    <div class="clubhero"><button class="cover2" data-book="${esc(b.id)}" style="background:${b.color};color:${inkOn(b.color)}"><span class="loc2">${esc(shelfLabel(b.spot))}</span><span class="ct">${esc(b.title)}</span>${COVERS.img(b)}</button>
+      <div style="min-width:0"><h1 style="margin:0">${esc(b.title)}</h1><div class="muted">${esc(b.author||"")}${b.pages?` · ~${b.pages} pages`:""}</div>
+      <div class="muted" style="font-size:.86rem;margin-top:6px">Chosen by ${esc(c.chosenBy===S.user?.uid?"you":(c.chosenByName||nameOf(c.chosenBy)))}, ${esc(agoTxt(c.since).toLowerCase())}</div>
+      <label class="f meetf">Meet on<input type="date" id="clubmeet" value="${esc(c.meet||"")}"></label></div></div>
+    <div class="section"><div class="eyebrow">Who's reading</div>
+      ${ms.length ? `<div class="members">${ms.map(m => `<div class="member">${avatarOf(m.name)}<span class="mname">${esc(m.uid===S.user?.uid?"You":m.name)}</span><span class="mbar"><i style="width:${m.pct||0}%"></i></span><span class="mpct">${esc((STEPS.find(s=>s[0]===m.pct)||STEPS[0])[1])}</span></div>`).join("")}</div>` : `<div class="muted">Nobody has joined yet.</div>`}
+      <div class="eyebrow" style="margin-top:14px">${me ? "How far are you?" : "Join in"}</div>
+      <div class="chips wrap">${me ? STEPS.map(([p,l]) => `<button class="chip ${me.pct===p?"on":""}" data-clubpct="${p}">${l}</button>`).join("") : `<button class="btn primary" data-clubpct="0">I'm in</button>`}</div></div>
+    <div class="section"><div class="eyebrow">Thoughts${th.length?` · ${th.length}`:""}</div>
+      ${th.length ? th.map(x => { const hide = x.spoiler && !finished && !S.spoilOpen[x._id] && x.uid !== S.user?.uid;
+        return `<div class="thought">${avatarOf(x.name)}<div style="min-width:0;flex:1"><div class="tmeta"><b>${esc(x.uid===S.user?.uid?"You":x.name)}</b> · ${esc(agoTxt(x.at))}${x.spoiler?` · <span class="spoiltag">spoiler</span>`:""}</div>
+          ${hide ? `<button class="spoiler" data-spoil="${esc(x._id)}">Contains spoilers. Tap to read.</button>` : `<div class="ttext">${esc(x.text)}</div>`}</div></div>`; }).join("") : `<div class="muted">No thoughts yet. Be the first.</div>`}
+      <textarea id="clubnote" placeholder="What did you think so far?" aria-label="Your thought"></textarea>
+      <div class="row"><label class="chip"><input type="checkbox" id="clubspoil"> Contains spoilers</label><button class="btn small primary" data-act="clubpost">Post</button></div>
+      <div class="muted" style="font-size:.82rem">Spoilers stay hidden until someone finishes the book or taps to read.</div></div>
+    <div class="section"><div class="muted" style="font-size:.86rem">Ready for the next one? Open any book and tap “Pick for the book club”.</div></div>`;
+}
+
+/* year in books: from each person's Read list (dates) and the books' pages, places and kinds */
+function yearStats(uid, year){
+  const d = allSections()[secId(uid, "read")];
+  if (!d || (!d.visible && uid !== S.user?.uid)) return null;
+  const all = new Map(allBooks().map(b => [b.id, b])); const byId = id => all.get(id);
+  const books = Object.entries(d.books || {}).filter(([, at]) => String(at).startsWith(String(year))).sort((a,b) => String(a[1]).localeCompare(String(b[1]))).map(([id]) => byId(id)).filter(Boolean);
+  const name = uid === S.user?.uid ? (S.me || "You") : nameOf(uid);
+  const pages = books.reduce((s, b) => s + (b.pages || 0), 0);
+  const count = (arr) => { const m = {}; for (const x of arr) m[x] = (m[x]||0) + 1; return Object.entries(m).sort((a,b) => b[1]-a[1]); };
+  const places = count(books.flatMap(b => b.places.filter(p => p !== "Middle East" && p !== "Arab world")));
+  const kinds = count(books.map(b => b.kind));
+  const shelves = count(books.map(b => b.spot));
+  const rated = books.map(b => [b, statusOf(b).ratings[name] || 0]).filter(x => x[1]).sort((a,b) => b[1]-a[1]);
+  const longest = books.slice().sort((a,b) => (b.pages||0)-(a.pages||0))[0];
+  const want = allSections()[secId(uid, "want")];
+  const fav = rated[0] ? rated[0][0] : null;
+  const next = fav && want && (want.visible || uid === S.user?.uid) ? Object.keys(want.books||{}).map(byId).filter(b => b && b.spot === fav.spot) : [];
+  return {name, year, books, pages, places, kinds, shelves, fav, favR: rated[0] ? rated[0][1] : 0, longest, next};
+}
+function yearsFor(uid){ const d = allSections()[secId(uid, "read")]; const ys = new Set(Object.values((d && d.books) || {}).map(x => String(x).slice(0,4)).filter(y => /^\d{4}$/.test(y))); ys.add(today().slice(0,4)); return [...ys].sort().reverse(); }
+function yearView(uid, year){
+  const back = `<button class="back" data-famview="">‹ Family</button>`;
+  const y = yearStats(uid, year);
+  if (!y) return back + `<div class="card muted" style="margin-top:12px">${esc(nameOf(uid))} keeps their Read list private.</div>`;
+  const WP = 1225;
+  const wp = y.pages / WP;
+  const wpTxt = y.pages < 300 ? "" : wp < 0.9 ? `about ${Math.round(wp*100)}% of War and Peace` : wp < 1.15 ? "about the length of War and Peace" : `about the same as War and Peace ${wp < 2.5 ? (Math.round(wp*2)/2).toString().replace(".5","½") : Math.round(wp)} times over`;
+  const ys = yearsFor(uid);
+  return back + `<div class="chips" style="margin:8px 0 12px">${ys.map(v => `<button class="chip ${v===String(year)?"on":""}" data-yearof="${esc(uid)}" data-year="${v}">${v}</button>`).join("")}</div>
+    <div class="yearcard">
+      <div class="yc-top"><span class="eyebrow">${esc(y.name)} · ${esc(String(year))}</span><span class="yc-mark">Year in books</span></div>
+      ${y.books.length ? `<div class="yc-big"><b data-count="${y.books.length}" data-ck="yc${uid}${year}" data-from0="1">${y.books.length}</b><span>book${y.books.length===1?"":"s"} read</span></div>
+      <div class="yc-line"><b>${y.pages.toLocaleString()}</b> pages${wpTxt?` · ${esc(wpTxt)}`:""}</div>
+      ${y.places.length ? `<div class="yc-line">Travelled to <b>${y.places.length} place${y.places.length===1?"":"s"}</b> through books, most often <b>${esc(y.places[0][0])}</b></div>` : ""}
+      ${y.kinds.length ? `<div class="yc-line">Favourite kind of book: <b>${esc(y.kinds[0][0])}</b></div>` : ""}
+      ${y.fav ? `<div class="yc-line">Top-rated: <b>${esc(y.fav.title)}</b> ${"★".repeat(y.favR)}</div>` : ""}
+      ${y.shelves.length ? `<div class="yc-line">Most-read shelf: <b>${esc(shelfLabel(y.shelves[0][0]))}</b>${y.longest && y.longest.pages ? ` · longest read: <b>${esc(y.longest.title)}</b>` : ""}</div>` : ""}
+      ${y.next.length ? `<div class="yc-next">Next year: ${y.next.length} book${y.next.length===1?"":"s"} on the Want-to-read list ${y.next.length===1?"is":"are"} on the same shelf as ${esc(y.fav.title)}.</div>` : ""}
+      <div class="yc-spines">${y.books.slice(0,40).map(b => `<i style="background:${b.color};height:${28 + Math.min(26, (b.pages||200)/30)}px"></i>`).join("")}</div>`
+      : `<div class="yc-line" style="margin-top:14px">No books marked as read in ${esc(String(year))} yet. Mark a book “Read” and it shows up here.</div>`}
+    </div>
+    ${y.books.length ? `<div class="sec2"><span class="eyebrow">The books</span></div><div class="list">${y.books.map(itemRow).join("")}</div>` : ""}
+    <div class="muted" style="font-size:.82rem;margin-top:12px">Take a screenshot to share it with the family.</div>`;
+}
+
+/* lending: books out of the house, oldest first; after a month they get a reminder button */
+function outBooks(){
+  return allBooks().map(b => [b, b.st || {}]).filter(([, s]) => s.lentTo || s.borrowedBy)
+    .map(([b, s]) => ({b, s, days: daysSince(s.lentAt || s.borrowedAt), lent: !!s.lentTo}))
+    .sort((a, c) => (c.lent - a.lent) || ((c.days ?? -1) - (a.days ?? -1)));
+}
+const remindText = (b, who) => `Hi ${who.split(" ")[0]}! Hope you're enjoying ${b.title}. No rush, just let me know when you're done with it. 📚`;
+function outRow(o){
+  const {b, s, days} = o;
+  const late = o.lent && days != null && days >= 30;
+  return `<div class="outrow ${late?"late":""}"><button class="item" data-book="${esc(b.id)}"><span class="chip-col" style="background:${b.color}"></span>
+    <span style="min-width:0"><div class="t">${esc(b.title)}</div><div class="a">${o.lent ? `Lent to ${esc(s.lentTo)}` : `With ${esc(s.borrowedBy)}`}${days!=null?` · ${days===0?"since today":days===1?"since yesterday":`${days} days ago`}`:""}</div></span>
+    <span class="loc">${esc(shelfLabel(b.spot))}</span></button>
+    ${o.lent ? `<div class="outact">${late?`<button class="btn small primary" data-remind="${esc(b.id)}">Send a reminder</button>`:`<button class="btn small" data-remind="${esc(b.id)}">Reminder</button>`}<button class="btn small" data-back="${esc(b.id)}">It's back</button></div>` : ""}</div>`;
+}
+async function remind(b){
+  const s = b.st || {}; const text = remindText(b, s.lentTo || "");
+  try{ if (navigator.share){ await navigator.share({text}); return; } }catch(e){ if (e && e.name === "AbortError") return; }
+  try{ await navigator.clipboard.writeText(text); toast("Reminder copied. Paste it into a message."); }
+  catch(e){ toast(text); }
 }
 
 /* ---------------- family ---------------- */
@@ -16911,27 +17181,42 @@ function personView(uid){
       ${d && d.visible ? (Object.keys(d.books||{}).length ? bookBlock(listBooks(d), []) : `<div class="card muted">Nothing here yet.</div>`) : `<div class="card muted">${esc(name)} keeps this private.</div>`}`).join("")}`;
 }
 function viewFamily(){
+  if (S.famView === "club") return `<div class="famnarrow">${clubView()}</div>`;
+  if (S.famView && S.famView.startsWith("year:")){ const [, uid, y] = S.famView.split(":"); return `<div class="famnarrow">${yearView(uid, y || today().slice(0,4))}</div>`; }
   if (S.person && S.person !== S.user?.uid && S.people[S.person]) return personView(S.person);
   const books = allBooks();
   const tot = k => books.reduce((s,b)=>s+(b[k]||0),0);
   const reading = books.filter(b => statusOf(b).readingAll.length);
-  const out = books.filter(b => { const s=statusOf(b); return s.borrowed||s.lent; });
-  const recent = books.filter(b => statusOf(b).last).sort((a,b)=>statusOf(b).last.at.localeCompare(statusOf(a).last.at)).slice(0,8);
+  const out = outBooks();
+  const late = out.some(o => o.lent && o.days != null && o.days >= 30);
   const genres = {}; for (const b of books) genres[b.kind]=(genres[b.kind]||0)+1;
   const max = Math.max(...Object.values(genres));
   const check = books.filter(b => b.flag || unknown(b)).length;
   const secs = allSections();
   const people = Object.entries(S.people).sort((a,b) => (a[1].name||"").localeCompare(b[1].name||""));
   const countOf = (uid, s) => { const d = secs[secId(uid,s)]; return d && (d.visible || uid === S.user?.uid) ? Object.keys(d.books||{}).length : null; };
+  const recs = recsToMe().filter(r => (daysSince(r.at) ?? 0) <= 45);
+  const feed = activity();
+  const shown = feed.slice(0, S.feedAll ? 40 : 6);
+  const yr = today().slice(0,4);
+  const yearPeople = people.filter(([uid]) => countOf(uid, "read") != null).sort((a,c) => (c[0]===S.user?.uid) - (a[0]===S.user?.uid));
+  const outBlock = `<div class="stack-v"><div class="eyebrow">Out of the house</div>${out.length?`<div class="list">${out.map(outRow).join("")}</div>`:`<div class="card muted">Every book is on its shelf.</div>`}</div>`;
   return header("Family", "Who's reading what") +
   `<div class="stack-v">
+    ${recs.length ? `<div class="stack-v"><div class="eyebrow">Recommended to you</div>${recs.map(r => { const b = byId(r.book); return `<div class="reccard"><button class="cover2 small" data-book="${esc(b.id)}" style="background:${b.color};color:${inkOn(b.color)}"><span class="ct">${esc(b.title)}</span>${COVERS.img(b)}</button>
+      <div style="min-width:0;flex:1"><div class="muted" style="font-size:.82rem">${esc(r.fromName||nameOf(r.from))} · ${esc(agoTxt(r.at))}</div><b>${esc(b.title)}</b> <span class="code mini">${esc(shelfLabel(b.spot))}</span>${r.note?`<div class="fquote">“${esc(r.note)}”</div>`:""}
+      <div class="row" style="margin-top:6px"><button class="btn small" data-book="${esc(b.id)}">Open</button><button class="linkbtn" data-recdismiss="${esc(r._id)}">Dismiss</button></div></div></div>`; }).join("")}</div>` : ""}
+    ${late ? outBlock : ""}
+    <div class="stack-v"><div class="eyebrow">Lately</div>
+      ${shown.length ? `<div class="feedlist">${shown.map(feedRow).join("")}</div>${feed.length > 6 ? `<button class="linkbtn" data-act="feedmore">${S.feedAll ? "Show less ▴" : `Show more ▾`}</button>` : ""}` : `<div class="card muted">When people finish, start or add books, it shows up here. Lists set to “only me” stay hidden.</div>`}</div>
+    ${clubCard()}
     <div class="stack-v"><div class="eyebrow">People</div>
       <div class="peoplegrid">${people.map(([uid,p]) => { const me = uid === S.user?.uid; const r = countOf(uid,"read"), w = countOf(uid,"want");
         return `<button class="person" ${me?'data-goto="mine"':`data-person="${esc(uid)}"`}><span class="avatar">${esc((p.name||"?")[0].toUpperCase())}</span><span><b>${esc(p.name||"Someone")}${me?" (you)":""}</b><small>${r==null?"Read list private":`${r} read`} · ${w==null?"wishlist private":`${w} to read`}</small></span></button>`; }).join("")}</div>
       <div class="muted" style="font-size:.82rem">To add someone, send them the link and the family code. They create their own account.</div></div>
+    ${yearPeople.length ? `<div class="stack-v"><div class="eyebrow">Year in books</div><div class="chips wrap">${yearPeople.map(([uid,p]) => `<button class="chip yearchip" data-famview="year:${esc(uid)}:${yr}">${uid===S.user?.uid?`Your ${yr}`:`${esc(p.name||"Someone")}'s ${yr}`}</button>`).join("")}</div></div>` : ""}
     <div class="stack-v"><div class="eyebrow">Reading now</div>${reading.length?`<div class="list">${reading.map(itemRow).join("")}</div>`:`<div class="card muted">Nobody is reading anything they've shared yet.</div>`}</div>
-    <div class="stack-v"><div class="eyebrow">Borrowed or lent out</div>${out.length?`<div class="list">${out.map(itemRow).join("")}</div>`:`<div class="card muted">Every book is on its shelf.</div>`}</div>
-    ${recent.length?`<div class="stack-v"><div class="eyebrow">Recently finished</div><div class="list">${recent.map(itemRow).join("")}</div></div>`:""}
+    ${late ? "" : outBlock}
     <div class="eyebrow" style="margin-top:6px">The collection, Wall 1</div>
     <div class="stats">
       <div class="stat"><b>${books.length}</b><small>books and catalogues</small></div>
@@ -17008,6 +17293,7 @@ function _renderSheet(){
   const L = document.getElementById("layer");
   if (S.sheet === "__picker" || S.sheet === "__account") return renderAccount();
   if (S.sheet === "__add") return renderAdd();
+  if (S.sheet === "__rec") return renderRec();
   if (S.sheet === "__filters") return renderFilters();
   if (!S.sheet){ L.innerHTML=""; return; }
   const b = byId(S.sheet); if (!b){ closeSheet(); return; }
@@ -17052,6 +17338,8 @@ function _renderSheet(){
       <div class="seg2 listseg" role="group" aria-label="Put this book on a list">${[["want","Want to read"],["reading","Reading now"],["read","Read"]].map(([k,l]) => `<button class="${myL===k?"on":""}" data-list="${k}" aria-pressed="${myL===k}">${myL===k?"✓ ":""}${l}</button>`).join("")}</div>
       ${myL ? `<div class="muted" style="font-size:.82rem">On your ${esc(SECTION_INFO[myL].title.toLowerCase())} list since ${esc(niceDate((mySec(myL).books||{})[b.id]||""))}. Tap it again to take it off.</div>` : ""}
       <div class="row"><span class="muted" style="font-size:.85rem">Your rating</span><span class="stars">${[1,2,3,4,5].map(n=>`<button class="${n<=myRating?"on":""}" data-rate="${n}" aria-label="${n} star${n>1?"s":""}">★</button>`).join("")}</span></div>
+      ${S.user ? recLinesFor(b) : ""}
+      ${unknown(b) || !S.user ? "" : `<div class="row famacts"><button class="btn small" data-act="rec">↗ Recommend to someone</button>${club() && club().book === b.id ? `<button class="btn small on" data-famview="club">★ This month's book club book</button>` : `<button class="btn small" data-act="clubpick">Pick for the book club</button>`}</div>`}
       ${(otherReaders.length || others.length || otherReading.length) ? `<div class="famline">
         ${otherReading.length ? `<div>Reading now: ${otherReading.map(esc).join(", ")}</div>` : ""}
         ${otherReaders.length ? `<div>Read by ${otherReaders.map(([n,d])=>esc(n)).join(", ")}</div>` : ""}
@@ -17563,7 +17851,7 @@ function go(tab){ S.tab = tab; if (tab!=="shelves"){ S.focus=null; } window.scro
 /* ---------------- events ---------------- */
 document.addEventListener("click", async e => {
   const t = e.target;
-  const tab = t.closest(".tab"); if (tab){ if (tab.dataset.tab==="family") S.person = null; if (tab.dataset.tab==="explore"){ S.author = null; } if (tab.dataset.tab==="shelves" && S.tab==="shelves"){ S.shelf=null; S.focus=null; } go(tab.dataset.tab); return; }
+  const tab = t.closest(".tab"); if (tab){ if (tab.dataset.tab==="family"){ S.person = null; S.famView = null; } if (tab.dataset.tab==="explore"){ S.author = null; } if (tab.dataset.tab==="shelves" && S.tab==="shelves"){ S.shelf=null; S.focus=null; } go(tab.dataset.tab); return; }
   const scrim = t.closest(".scrim");
   if (scrim && t === scrim){ if (S.sheet==="__picker" && S.returnTo){ S.after=null; finishPicker(); } else closeSheet(); return; }
   const actEl = t.closest("[data-act]"); const act = actEl && actEl.dataset.act;
@@ -17619,6 +17907,22 @@ document.addEventListener("click", async e => {
   const pa = t.closest("[data-path]");
   if (pa){ S.path = pa.dataset.path; window.scrollTo(0,0); render(); return; }
   if (t.closest("[data-pathback]")){ S.path = null; render(); return; }
+  const fv = t.closest("[data-famview]");
+  if (fv){ S.famView = fv.dataset.famview || null; S.person = null; if (S.sheet) closeSheet(); S.tab = "family"; window.scrollTo(0,0); render(); return; }
+  const yo = t.closest("[data-yearof]");
+  if (yo){ S.famView = "year:" + yo.dataset.yearof + ":" + yo.dataset.year; render(); return; }
+  const rt = t.closest("[data-recto]");
+  if (rt){ S.recTo = rt.dataset.recto; const keep = document.getElementById("recnote")?.value || ""; renderSheet(); const n = document.getElementById("recnote"); if (n) n.value = keep; return; }
+  const rdis = t.closest("[data-recdismiss]");
+  if (rdis){ const r = (S.meta||{})[rdis.dataset.recdismiss]; if (r){ const doc = {...r, dismissed:true}; S.meta = {...S.meta, [rdis.dataset.recdismiss]: doc}; render(); writeDoc(base()+"/meta/"+rdis.dataset.recdismiss, doc); } return; }
+  const cp = t.closest("[data-clubpct]");
+  if (cp){ needMe(() => setClubProgress(parseInt(cp.dataset.clubpct, 10))); return; }
+  const sp = t.closest("[data-spoil]");
+  if (sp){ S.spoilOpen[sp.dataset.spoil] = true; render(); return; }
+  const rm = t.closest("[data-remind]");
+  if (rm){ const b = byId(rm.dataset.remind); if (b) remind(b); return; }
+  const bk = t.closest("[data-back]");
+  if (bk){ patchBook(bk.dataset.back, s => { delete s.borrowedBy; delete s.borrowedAt; delete s.lentTo; delete s.lentBy; delete s.lentAt; return s; }); toast("Marked as back on the shelf"); return; }
   const aut = t.closest("[data-author]");
   if (aut){ S.author = aut.dataset.author; closeSheet(); S.tab = "explore"; window.scrollTo(0,0); render(); return; }
   if (t.closest("[data-authorback]")){ S.author = null; render(); return; }
@@ -17672,10 +17976,20 @@ document.addEventListener("click", async e => {
     case "signout": closeSheet(); stopSubs(); try{ await FB.A.signOut(FB.auth); }catch(e){} S.user=null; S.code=null; S.authMode="signin"; render(); break;
     case "resetpw": try{ await FB.A.sendPasswordResetEmail(FB.auth, S.user.email); toast("Reset link sent to " + S.user.email); }catch(e){ toast(authErr(e)); } break;
     case "backfamily": S.person = null; window.scrollTo(0,0); render(); break;
+    case "feedmore": S.feedAll = !S.feedAll; render(); break;
+    case "rec": S.recBook = id; S.recTo = null; S.sheet = "__rec"; renderSheet(); break;
+    case "backbook": { const bid = S.recBook; S.sheet = bid; renderSheet(); break; }
+    case "sendrec": { if (!S.recTo) break; const note = (document.getElementById("recnote")?.value || "").trim(); const to = S.recTo, bid = S.recBook;
+      needMe(() => { sendRec(bid, to, note); toast(`Sent to ${nameOf(to)}. It's on their Want-to-read list.`); S.sheet = bid; renderSheet(); }); break; }
+    case "clubpick": { const bid = id; needMe(() => { startClub(bid); toast("It's this month's book club book"); closeSheet(); S.famView = "club"; S.tab = "family"; window.scrollTo(0,0); render(); }); break; }
+    case "clubpost": { const v = (document.getElementById("clubnote")?.value || "").trim(); if (!v){ toast("Write something first."); break; }
+      const c = club(); if (!c) break; const spoiler = !!document.getElementById("clubspoil")?.checked;
+      needMe(() => { const cid = `clubc_${Date.now()}_${S.user.uid}`; const doc = {club:clubKey(c), book:c.book, uid:S.user.uid, name:S.me||"", text:v.slice(0,1500), spoiler, at:nowIso()};
+        S.meta = {...S.meta, [cid]: doc}; render(); writeDoc(base()+"/meta/"+cid, doc); }); break; }
 
-    case "borrow": needMe(() => patchBook(id, s => { s.borrowedBy=S.me; return s; })); break;
-    case "lend": { const v=(document.getElementById("lendto").value||"").trim(); if(!v){ toast("Type who you're lending it to."); break; } needMe(() => patchBook(id, s => { s.lentTo=v; s.lentBy=S.me; return s; })); break; }
-    case "return": patchBook(id, s => { delete s.borrowedBy; delete s.lentTo; delete s.lentBy; return s; }); toast("Marked as back on the shelf"); break;
+    case "borrow": needMe(() => patchBook(id, s => { s.borrowedBy=S.me; s.borrowedAt=today(); return s; })); break;
+    case "lend": { const v=(document.getElementById("lendto").value||"").trim(); if(!v){ toast("Type who you're lending it to."); break; } needMe(() => patchBook(id, s => { s.lentTo=v; s.lentBy=S.me; s.lentAt=today(); return s; })); break; }
+    case "return": patchBook(id, s => { delete s.borrowedBy; delete s.borrowedAt; delete s.lentTo; delete s.lentBy; delete s.lentAt; return s; }); toast("Marked as back on the shelf"); break;
     case "note": { const v=(document.getElementById("note").value||"").trim(); if(!v){ toast("Write something first."); break; } const bid=id;
       writeSection("notes", s => { s.notes = {...(s.notes||{})}; s.notes[bid] = [...(s.notes[bid]||[]), {at:today(), text:v.slice(0,1000)}]; return s; });
       const n=document.getElementById("note"); if(n) n.value=""; renderSheet(); break; }
@@ -17712,7 +18026,9 @@ document.addEventListener("input", e => {
   if (e.target.id === "authq"){ S.authorQ = e.target.value; render(); return; }
   if (e.target.id === "q"){ S.q = e.target.value; store.set("fs-q", S.q); clearTimeout(S.qt); S.qt = setTimeout(render, 120); }
 });
-document.addEventListener("change", e => { if (e.target.id === "sort"){ S.f.sort = e.target.value; store.set("fs-f2", S.f); render(); } });
+document.addEventListener("change", e => {
+  if (e.target.id === "clubmeet"){ const c = club(); if (c){ const doc = {...c, meet:e.target.value||""}; S.meta = {...S.meta, club:doc}; writeDoc(base()+"/meta/club", doc); render(); } return; }
+  if (e.target.id === "sort"){ S.f.sort = e.target.value; store.set("fs-f2", S.f); render(); } });
 let _wide = window.innerWidth >= 1000;
 window.addEventListener("resize", () => { const w = window.innerWidth >= 1000; if (w !== _wide){ _wide = w; if (S.tab === "find") render(); } });
 document.addEventListener("keydown", e => {
