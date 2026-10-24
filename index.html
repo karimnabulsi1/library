@@ -348,6 +348,32 @@ mark{background:#ffe2a8;color:#1c2629;border-radius:2px;padding:0 1px}
 .rlinks{display:flex;flex-wrap:wrap;gap:6px}
 .rlinks a{font-size:.82rem;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--accent);text-decoration:none;font-weight:600}
 
+/* ---------- real covers ---------- */
+.realcover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;z-index:0;animation:coverin .5s ease-out}
+@keyframes coverin{from{opacity:0}}
+.cover{position:relative}
+.cover2 .loc2,.cover2 .badge2,.cover2 .cmpcheck{z-index:1}
+.cover2:has(.realcover)::after,.cover:has(.realcover)::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 4px 0 0 rgba(0,0,0,.18),inset 0 0 0 1px rgba(0,0,0,.08);pointer-events:none;z-index:1}
+.linkbtn.tiny{display:block;font-size:.76rem;font-weight:500;color:var(--muted);padding:2px 0;margin-top:4px}
+/* ---------- the warmer, wooden shelf ---------- */
+.board,.board.cubbyboard{background:linear-gradient(180deg,#5e3d22 0%,#7c5230 35%,#6a4528 100%);border:0;border-radius:6px;box-shadow:0 14px 30px rgba(40,22,8,.35),inset 0 0 0 1px rgba(0,0,0,.25)}
+.board::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;border-radius:6px;
+  background:radial-gradient(ellipse 80% 70% at 50% -12%,rgba(255,226,170,.38),transparent 62%),linear-gradient(90deg,rgba(0,0,0,.28),transparent 7%,transparent 93%,rgba(0,0,0,.28))}
+.board::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;border-radius:6px;opacity:.55;
+  background:repeating-linear-gradient(91deg,rgba(255,255,255,.035) 0 2px,transparent 2px 9px,rgba(0,0,0,.05) 9px 10px,transparent 10px 17px)}
+.board .scroller{position:relative;z-index:1;box-shadow:inset 0 10px 18px -8px rgba(0,0,0,.55)}
+.board .ledge{position:relative;z-index:3;height:16px;border:0;background:linear-gradient(180deg,#b07c48 0%,#8c5e34 45%,#5e3d22 100%);box-shadow:0 5px 9px rgba(0,0,0,.35)}
+.board.cubbyboard .ledge{background:linear-gradient(180deg,#d4a46b,#a8743f 50%,#7a5128)}
+.board .pilecap{color:#f3dfc2;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.board .spine{box-shadow:inset 2px 0 0 rgba(255,255,255,.16),inset -3px 0 0 rgba(0,0,0,.24),2px 0 3px rgba(0,0,0,.3)}
+.board .spine::before{content:"";position:absolute;left:0;right:0;top:9%;height:2px;background:rgba(255,214,140,.5);box-shadow:0 4px 0 rgba(255,214,140,.25);pointer-events:none}
+.board .flat .spine::before{top:0;bottom:0;left:8%;right:auto;width:2px;height:auto;box-shadow:4px 0 0 rgba(255,214,140,.25)}
+.board .spine:nth-child(11n+4):not(.focus){transform:rotate(-1.2deg);transform-origin:bottom left}
+.board .spine:nth-child(13n+9):not(.focus){transform:rotate(1deg);transform-origin:bottom right}
+.board .spine:hover{transform:translateY(-5px)}
+:root[data-theme="dark"] .board::before{background:radial-gradient(ellipse 70% 75% at 50% -15%,rgba(255,180,90,.42),transparent 60%),linear-gradient(90deg,rgba(0,0,0,.45),transparent 8%,transparent 92%,rgba(0,0,0,.45))}
+:root[data-theme="dark"] .board{filter:brightness(.82) saturate(.95)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .board::before{background:radial-gradient(ellipse 70% 75% at 50% -15%,rgba(255,180,90,.42),transparent 60%),linear-gradient(90deg,rgba(0,0,0,.45),transparent 8%,transparent 92%,rgba(0,0,0,.45))}:root:not([data-theme="light"]) .board{filter:brightness(.82) saturate(.95)}}
 /* ---------- recognition filters ---------- */
 .chip.gold{background:#fff1cf;border-color:#f0dca8;color:#6b4a06}
 .chip.gold em{color:#8a6a2a}
@@ -15750,6 +15776,9 @@ function enterLibrary(code){
   subs.push(FB.onSnapshot(FB.collection(FB.db, base(), "added"), snap => {
     const m = {}; snap.forEach(d => { m[d.id] = d.data(); }); S.added = m; render();
   }, onErr("added")));
+  subs.push(FB.onSnapshot(FB.collection(FB.db, base(), "meta"), snap => {
+    const m = {}; snap.forEach(d => { m[d.id] = d.data(); }); S.meta = m; COVERS.fromServer((m.covers||{}).map || {}); render();
+  }, onErr("meta")));
   subs.push(FB.onSnapshot(FB.collection(FB.db, base(), "people"), snap => {
     const m = {}; snap.forEach(d => { m[d.id] = d.data(); }); S.people = m;
     if (m[uid] && m[uid].name && m[uid].name !== S.me){ S.me = m[uid].name; store.set("fs-me-" + uid, S.me); }
@@ -16157,7 +16186,7 @@ function coverCard(b, words){
   const st = statusOf(b);
   const ml = myList(b.id);
   const badge = (st.borrowed||st.lent) ? "Out" : ml === "reading" ? "Reading" : ml === "read" ? "Read" : ml === "want" ? "Want" : st.reading ? "Being read" : "";
-  return `<button class="ccard" data-book="${esc(b.id)}"><span class="cover2" style="background:${b.color};color:${inkOn(b.color)}"><span class="loc2">${esc(shelfLabel(b.spot))}</span>${badge?`<span class="badge2">${badge}</span>`:""}${S.cmp.includes(b.id)?`<span class="cmpcheck" aria-label="Picked to compare">✓</span>`:""}<span class="ct" ${isAr(b.title)?'dir="rtl"':''}>${esc(unknown(b)?"?":b.title)}</span></span>
+  return `<button class="ccard" data-book="${esc(b.id)}"><span class="cover2" style="background:${b.color};color:${inkOn(b.color)}"><span class="loc2">${esc(shelfLabel(b.spot))}</span>${badge?`<span class="badge2">${badge}</span>`:""}${S.cmp.includes(b.id)?`<span class="cmpcheck" aria-label="Picked to compare">✓</span>`:""}<span class="ct" ${isAr(b.title)?'dir="rtl"':''}>${esc(unknown(b)?"?":b.title)}</span>${COVERS.img(b)}</span>
     <span class="cap2"><b ${isAr(b.title)?'dir="rtl"':''}>${hl(b.title, words)}</b><span>${hl(b.author||b.kind, words)}</span></span></button>`;
 }
 function bookBlock(list, words){
@@ -16364,7 +16393,7 @@ function verdictLines(bs){
   return lines;
 }
 function cmpCover(b, w){
-  return `<button class="cover2" data-book="${esc(b.id)}" style="width:${w}px;background:${b.color};color:${inkOn(b.color)};font-size:.62rem;padding:6px"><span class="loc2">${esc(shelfLabel(b.spot))}</span><span class="ct">${esc(b.title)}</span></button>`;
+  return `<button class="cover2" data-book="${esc(b.id)}" style="width:${w}px;background:${b.color};color:${inkOn(b.color)};font-size:.62rem;padding:6px"><span class="loc2">${esc(shelfLabel(b.spot))}</span><span class="ct">${esc(b.title)}</span>${COVERS.img(b)}</button>`;
 }
 function viewCompare(){
   const bs = S.cmp.map(id => byId(id)).filter(Boolean);
@@ -16567,7 +16596,7 @@ function _renderSheet(){
   const rtl = isAr(b.title);
   L.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(b.title)}">
     <div class="grabzone" data-grab><div class="grab"></div><button class="sheetx" data-act="close" aria-label="Close">✕</button></div>
-    <div class="hero"><div class="cover" style="background:${b.color};color:${inkOn(b.color)}"${rtl?' dir="rtl"':''}>${esc(unknown(b)?"?":b.title)}</div>
+    <div class="hero"><div class="cover" style="background:${b.color};color:${inkOn(b.color)}"${rtl?' dir="rtl"':''}>${esc(unknown(b)?"?":b.title)}${COVERS.img(b,"L")}</div>
       <div style="min-width:0"><h2${rtl?' dir="rtl" style="text-align:left"':''}>${esc(b.title)}</h2><div class="muted" style="font-size:.9rem">${esc(metaLine)}</div><div class="meta">${chipsHtml}</div></div></div>
     ${unknown(b) ? "" : `<div class="row" style="margin-top:12px"><button class="btn small ${S.cmp.includes(b.id)?"on":""}" data-cmp="${esc(b.id)}">${S.cmp.includes(b.id)?"✓ Picked to compare":"＋ Compare"}</button>${sim.length?`<button class="btn small" data-cmpsim="${esc(b.id)}">Compare with similar books</button>`:""}</div>`}
     ${b.desc?`<p class="desc">${esc(b.desc)}</p>`:""}
@@ -16577,6 +16606,7 @@ function _renderSheet(){
         ${b.legacy ? `<div class="eyebrow">Legacy</div><p>${esc(b.legacy)}</p>` : ""}
         ${b.bio ? `<div class="eyebrow">About the author</div><p>${esc(b.bio)}</p>` : ""}
         <button class="linkbtn" data-act="more">Show less ▴</button></div>` : `<button class="linkbtn" style="margin-top:8px" data-act="more">Read more ▾</button>`) : ""}
+    ${COVERS.idOf(b) ? `<button class="linkbtn tiny" data-wrongcover="${esc(b.id)}">Wrong cover? Hide it</button>` : ""}
     ${(b.awards||[]).length || (b.shortlists||[]).length ? `<div class="awards">${(b.awards||[]).map(a => { const f = famsOfPrize(a)[0]; return f ? `<button class="award" data-prizefam="${f}" title="See all ${esc(FAM_LABEL[f])} books">🏆 ${esc(a)}</button>` : `<span class="award">🏆 ${esc(a)}</span>`; }).join("")}${(b.shortlists||[]).map(a => { const f = famsOfPrize(a)[0]; return `<button class="award sl" ${f?`data-prizefam="${f}" data-short="1"`:""}>Shortlisted: ${esc(a)}</button>`; }).join("")}</div>` : ""}
     ${unknown(b) ? "" : reviewsBlock(b, st)}
     ${(b.flag||unknown(b))&&!b.st?.edit?`<div class="flagnote" style="margin-top:12px">Needs checking: ${esc(b.flag||"title not readable from the photo")}. Use "Edit details" below to fix it.</div>`:""}
@@ -16608,7 +16638,7 @@ function _renderSheet(){
       <textarea id="note" placeholder="Add a note, a favourite line, or who recommended it" aria-label="New note"></textarea>
       <div><button class="btn small" data-act="note">Add note</button></div>
     </div>
-    ${sim.length ? `<div class="section"><div class="eyebrow">More like this on your shelves</div><div class="simrow">${sim.map(x => `<button class="simcard" data-sim="${esc(x.id)}"><span class="cover2 small" style="background:${x.color};color:${inkOn(x.color)}"><span class="loc2">${esc(shelfLabel(x.spot))}</span><span class="ct">${esc(x.title)}</span></span><span class="simcap">${esc(x.title)}</span></button>`).join("")}</div></div>` : ""}
+    ${sim.length ? `<div class="section"><div class="eyebrow">More like this on your shelves</div><div class="simrow">${sim.map(x => `<button class="simcard" data-sim="${esc(x.id)}"><span class="cover2 small" style="background:${x.color};color:${inkOn(x.color)}"><span class="loc2">${esc(shelfLabel(x.spot))}</span><span class="ct">${esc(x.title)}</span>${COVERS.img(x)}</span><span class="simcap">${esc(x.title)}</span></button>`).join("")}</div></div>` : ""}
     <div class="section">
       <div class="eyebrow">Estimated value</div>
       <div class="kv"><div><b>${usd(b.price||0)}</b><small>new today</small></div><div><b>${usd(b.orig||0)}</b><small>cover price then</small></div><div><b>${usd(b.resale||0)}</b><small>resale used</small></div></div>
@@ -16723,6 +16753,50 @@ try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change", apply
   };
   document.addEventListener("pointerup", end);
   document.addEventListener("pointercancel", end);
+})();
+
+/* ---------------- real covers (Open Library) ---------------- */
+// Each book's cover id is looked up once, then shared with the whole family through meta/covers.
+// 0 = looked up, no cover found; -1 = someone said the cover was wrong.
+const COVERS = (() => {
+  let map = store.get("fs-covers", {}) || {};
+  const queue = []; const queued = new Set(); let running = false, dirty = {}, saveT = null;
+  const skip = b => unknown(b) || !b.author || b.kind === "Reference & Other" || (b.subjects||[]).includes("Colouring") || /catalogue|magazine|pamphlet|box/i.test(b.title + " " + (b.flag||""));
+  function fromServer(m){ map = {...map, ...m}; for (const k of Object.keys(dirty)) map[k] = dirty[k]; try{ store.set("fs-covers", map); }catch(e){} }
+  function idOf(b){ const v = map[b.id]; if (v === undefined && !skip(b)) want(b); return v > 0 ? v : 0; }
+  function url(id, size){ return `https://covers.openlibrary.org/b/id/${id}-${size||"M"}.jpg?default=false`; }
+  function img(b, size){ const id = idOf(b); return id ? `<img class="realcover" src="${url(id,size)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ""; }
+  function want(b){ if (queued.has(b.id) || !navigator.onLine) return; queued.add(b.id); queue.push(b); if (!running) setTimeout(run, 400); }
+  async function run(){
+    running = true;
+    while (queue.length){
+      const b = queue.shift();
+      const title = b.title.replace(/\(.*?\)/g,"").replace(/:.*$/,"").trim();
+      const author = (b.author||"").replace(/\(.*?\)/g,"").split(/&| with |,/)[0].replace(/^(Dr\.?|Sir)\s+/,"").trim();
+      let id = 0;
+      try{
+        const r = await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&author=${encodeURIComponent(author)}&fields=cover_i&limit=3`);
+        if (r.ok){ const j = await r.json(); const hit = (j.docs||[]).find(d => d.cover_i); id = hit ? hit.cover_i : 0; }
+        else { queue.unshift(b); await new Promise(z => setTimeout(z, 4000)); continue; }
+      }catch(e){ queued.delete(b.id); break; }
+      map[b.id] = id; dirty[b.id] = id; scheduleSave();
+      if (id) refresh(b.id);
+      await new Promise(z => setTimeout(z, 350));
+    }
+    running = false;
+  }
+  let refT = null;
+  function refresh(){ clearTimeout(refT); refT = setTimeout(() => { if (!document.querySelector(".scrim") || !FX.busy()) render(); }, 600); }
+  function scheduleSave(){ clearTimeout(saveT); saveT = setTimeout(save, 3000); }
+  function save(){
+    try{ store.set("fs-covers", map); }catch(e){}
+    if (!S.code || !FB.db || !Object.keys(dirty).length) return;
+    const cur = (S.meta && S.meta.covers && S.meta.covers.map) || {};
+    const next = {...cur, ...dirty}; dirty = {};
+    writeDoc(base() + "/meta/covers", {map: next, at: new Date().toISOString()});
+  }
+  function wrong(id){ map[id] = -1; dirty[id] = -1; save(); render(); }
+  return {img, idOf, url, fromServer, wrong};
 })();
 
 /* ---------------- motion ---------------- */
@@ -16993,6 +17067,8 @@ document.addEventListener("click", async e => {
     store.set("fs-f2",S.f); S.tab="find"; window.scrollTo(0,0); render(); return; }
   const dr = t.closest("[data-draft]");
   if (dr && S.draft){ const k=dr.dataset.draft, v=dr.dataset.val; S.draft[k] = S.draft[k]===v && v!=="" ? "" : v; if (v==="unread-me" && !S.me){ toast("Choose who you are first, from the top of the page."); } renderFilters(); return; }
+  const wc = t.closest("[data-wrongcover]");
+  if (wc){ COVERS.wrong(wc.dataset.wrongcover); toast("Cover hidden for everyone"); return; }
   const pre = t.closest("[data-preset]");
   if (pre){ S.q=""; store.set("fs-q",""); S.f = Object.assign(FDEF(), {view:S.f.view}, JSON.parse(JSON.stringify(PRESETS[pre.dataset.preset]))); store.set("fs-f2",S.f); closeSheet(); S.tab="find"; window.scrollTo(0,0); render(); return; }
   const pz = t.closest("[data-prizefam]");
