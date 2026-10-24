@@ -577,6 +577,59 @@ b.mine{color:var(--accent);font-weight:600}
 .outrow.late{background:color-mix(in srgb,var(--glow) 12%,var(--surface))}
 .outact{display:flex;gap:6px;padding:0 12px 10px 28px;flex-wrap:wrap}
 @media (min-width:900px){ .famnarrow{max-width:760px} .clubhero{grid-template-columns:140px 1fr} .yearcard{max-width:520px} }
+
+/* quotes */
+.quotecard{position:relative;display:flex;gap:12px;align-items:flex-start;background:linear-gradient(135deg,var(--maple-soft),var(--surface) 75%);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px}
+.quotecard .qmark{font-family:var(--font-display);font-size:3.2rem;line-height:.8;color:var(--maple);flex:0 0 auto}
+.qbody{background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer;min-width:0;flex:1}
+.qbody blockquote{margin:0;font-family:var(--font-display);font-size:1.12rem;line-height:1.4}
+.qby{display:block;margin-top:8px;font-size:.82rem;color:var(--muted);padding-right:70px}
+.qnext{position:absolute;right:10px;bottom:8px;background:none;border:0;color:var(--accent);font:inherit;font-size:.82rem;cursor:pointer;padding:4px}
+.quotecard.empty{align-items:center}
+.qline{margin:0 0 10px;border-left:3px solid var(--maple);padding:2px 0 2px 12px}
+.qline blockquote{margin:0;font-family:var(--font-display);font-size:1rem;line-height:1.4}
+.qline figcaption{font-size:.78rem;color:var(--muted);margin-top:3px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .quotecard{background:linear-gradient(135deg,color-mix(in srgb,var(--maple) 18%,var(--surface)),var(--surface) 75%)}}
+:root[data-theme="dark"] .quotecard{background:linear-gradient(135deg,color-mix(in srgb,var(--maple) 18%,var(--surface)),var(--surface) 75%)}
+
+/* value list */
+.valuebtn{display:flex;gap:12px;align-items:center;text-align:left;width:100%;color:inherit;font:inherit;cursor:pointer}
+.valuebtn small{display:block;color:var(--muted);font-size:.85rem;margin-top:2px}
+.vdoc{flex:0 0 auto;width:34px;height:42px;border-radius:4px;background:var(--surface);border:1.5px solid var(--line);display:flex;flex-direction:column;justify-content:center;gap:4px;padding:0 6px;box-shadow:2px 2px 0 var(--maple-soft)}
+.vdoc i{display:block;height:2px;background:var(--muted);opacity:.5;border-radius:1px}
+.vdoc i:nth-child(2){width:70%}
+.valuedoc{background:#fff;color:#1c2629;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,.12);padding:28px 24px;max-width:860px;font-size:.86rem}
+.vhead{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-bottom:2px solid #1c2629;padding-bottom:14px;margin-bottom:8px}
+.vkicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#a5641a;font-weight:700}
+.vhead h1{font-family:var(--font-display);font-weight:400;font-size:1.7rem;margin:4px 0 2px}
+.vsub{color:#5f6d70}
+.vtotals{display:flex;gap:18px}
+.vtotals b{display:block;font-family:var(--font-display);font-weight:400;font-size:1.35rem}
+.vtotals small{color:#5f6d70;font-size:.72rem;line-height:1.3;display:block}
+.vsec{margin-top:18px;break-inside:auto}
+.vsec h2{font-size:.95rem;margin:0 0 6px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1px solid #d6dddc;padding-bottom:4px}
+.vsec h2 span{font-weight:400;color:#5f6d70;font-size:.8rem}
+.vtab{width:100%;border-collapse:collapse}
+.vtab th{text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:#5f6d70;font-weight:600;padding:3px 6px 3px 0}
+.vtab td{padding:4px 6px 4px 0;border-bottom:1px solid #eef1f0;vertical-align:top}
+.vtab tr{break-inside:avoid}
+.vtab .vn{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;width:62px}
+.vtab th:nth-child(n+3){text-align:right}
+.vtab .va{color:#5f6d70;width:30%}
+.vy{color:#8a9699}
+.vfoot{margin-top:22px;padding-top:10px;border-top:1px solid #d6dddc;color:#5f6d70;font-size:.74rem}
+@media (max-width:560px){ .valuedoc{padding:18px 14px;font-size:.8rem} .vtab .va{display:none} .vtab th:nth-child(2){display:none} .vtotals{gap:12px} }
+@media print{
+  @page{margin:14mm 12mm}
+  html,body{background:#fff !important}
+  body > *:not(#app){display:none !important}
+  #app > *:not(.valuedoc){display:none !important}
+  #app{padding:0 !important;margin:0 !important;max-width:none !important}
+  .valuedoc{width:100%;max-width:none;box-shadow:none;padding:0;font-size:9.5pt;border-radius:0}
+  .vtab .va,.vtab th:nth-child(2){display:table-cell !important}
+  .vsec h2{break-after:avoid}
+  .tabs,.noprint,#layer{display:none !important}
+}
 </style>
 
 </head>
@@ -16085,7 +16138,7 @@ function mySec(s){
 }
 function buildIndex(){
   IDX = {};
-  const get = id => IDX[id] || (IDX[id] = {reads:{}, reading:[], ratings:{}, notes:[], want:false, last:null});
+  const get = id => IDX[id] || (IDX[id] = {reads:{}, reading:[], ratings:{}, notes:[], quotes:[], want:false, last:null});
   for (const d of Object.values(allSections())){
     const mine = !!(S.user && d.uid === S.user.uid);
     if (!mine && !d.visible) continue;
@@ -16096,12 +16149,13 @@ function buildIndex(){
     if (d.section === "notes"){
       for (const [id, n] of Object.entries(d.ratings||{})) get(id).ratings[name] = n;
       for (const [id, arr] of Object.entries(d.notes||{})) for (const n of (arr||[])) get(id).notes.push({by:name, at:n.at, text:n.text, mine});
+      for (const [id, arr] of Object.entries(d.quotes||{})) (arr||[]).forEach((q, i) => get(id).quotes.push({by:name, at:q.at, text:q.text, mine, i}));
     }
   }
 }
 function statusOf(b){
   if (!IDX) buildIndex();
-  const x = IDX[b.id] || {reads:{}, reading:[], ratings:{}, notes:[], want:false, last:null};
+  const x = IDX[b.id] || {reads:{}, reading:[], ratings:{}, notes:[], quotes:[], want:false, last:null};
   const st = b.st || {};
   return {
     reading: x.reading.includes(S.me) ? S.me : (x.reading[0] || null),
@@ -16111,6 +16165,7 @@ function statusOf(b){
     reads: x.reads, ratings: x.ratings,
     notes: x.notes.slice().sort((a,c) => (a.at||"").localeCompare(c.at||"")),
     last: x.last, want: x.want,
+    quotes: x.quotes.slice().sort((a,c) => (a.at||"").localeCompare(c.at||"")),
   };
 }
 const myList = id => { for (const s of LISTS) if ((mySec(s).books||{})[id]) return s; return null; };
@@ -16412,10 +16467,28 @@ function viewShelves(){
   return header("Wall 1", `${books.length} books · tap a shelf`) +
   wallMap(false, null) +
   `<div class="stack-v" style="margin-top:16px">
+    ${quoteCard()}
     ${reading.length ? `<div class="stack-v"><div class="eyebrow">Being read right now</div><div class="list">${reading.map(itemRow).join("")}</div></div>` : ""}
     <button class="scanbig" data-act="scan" style="margin:0"><span class="scanico" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span><b>Add books by scanning</b><small>Scan barcodes one after another and pick the shelf. Great for wall 2.</small></span></button>
     <div class="card soon"><div class="ph">2</div><div><b>Wall 2, the desk wall</b><div class="muted" style="font-size:.88rem">Shelves C to G will appear here once they're photographed.</div></div></div>
   </div>`;
+}
+/* favourite quotes: saved in each person's notes section (quotes: {bookId: [{text, at}]}), so they follow the notes privacy setting */
+S.quoteSeed = Math.floor(Math.random() * 1e6);
+function allQuotes(){
+  if (!IDX) buildIndex();
+  const all = new Map(allBooks().map(b => [b.id, b]));
+  const out = [];
+  for (const [id, x] of Object.entries(IDX)) for (const q of (x.quotes || [])){ const b = all.get(id); if (b) out.push({...q, b}); }
+  return out.sort((a,c) => String(a.at).localeCompare(String(c.at)) || a.b.id.localeCompare(c.b.id));
+}
+function quoteCard(){
+  const qs = allQuotes();
+  if (!qs.length) return S.user ? `<div class="quotecard empty"><span class="qmark" aria-hidden="true">“</span><div><b>Keep the lines you love</b><div class="muted" style="font-size:.88rem">Open a book and use “Save this line”. A saved line will greet you here.</div></div></div>` : "";
+  const q = qs[S.quoteSeed % qs.length];
+  return `<div class="quotecard"><span class="qmark" aria-hidden="true">“</span><button class="qbody" data-book="${esc(q.b.id)}"><blockquote>${esc(q.text)}</blockquote>
+    <span class="qby">Saved by ${q.mine?"you":esc(q.by)} · <i>${esc(q.b.title)}</i>${q.b.author?`, ${esc(q.b.author.split(" ").slice(-1)[0])}`:""} · <span class="code mini">${esc(shelfLabel(q.b.spot))}</span></span></button>
+    ${qs.length > 1 ? `<button class="qnext" data-act="nextquote" aria-label="Show another saved line">↻ another</button>` : ""}</div>`;
 }
 function spineHtml(b, flat){
   const st = statusOf(b);
@@ -17171,6 +17244,27 @@ async function remind(b){
   catch(e){ toast(text); }
 }
 
+
+/* printable value list: shown as a paper page; "Save as PDF" uses the browser's print, which on iPhone and Mac can save a PDF */
+function valueView(){
+  const books = allBooks().filter(b => !unknown(b) || b.price);
+  const tot = (arr, k) => arr.reduce((s, b) => s + (b[k] || 0), 0);
+  const month = new Date().toLocaleDateString("en-GB", {month:"long", year:"numeric"});
+  const top = books.filter(b => !unknown(b)).sort((a, c) => (c.price||0) - (a.price||0)).slice(0, 10);
+  const rows = arr => arr.map(b => `<tr><td class="vt">${esc(unknown(b) ? "Title still to check" : b.title)}${b.year ? `<span class="vy"> · ${b.year < 0 ? -b.year + " BC" : b.year}</span>` : ""}</td><td class="va">${esc(b.author || "")}</td><td class="vn">${usd(b.price||0)}</td><td class="vn">${usd(b.resale||0)}</td></tr>`).join("");
+  const shelves = SHELF_ORDER.map(sp => { const arr = shelfStructure(sp); const list = [...arr.stacks.flatMap(p => p.books), ...arr.row, ...arr.tops.flatMap(p => p.books)].filter((b, i, a) => a.indexOf(b) === i);
+    return [sp, list.length ? list : books.filter(b => b.spot === sp)]; }).filter(([, l]) => l.length);
+  return `<div class="noprint"><button class="back" data-famview="">‹ Family</button>
+    <div class="row" style="margin:8px 0 14px"><button class="btn primary" data-act="printvalue">Save as PDF or print</button><span class="muted" style="font-size:.84rem">On iPhone: tap it, then Share › Save to Files.</span></div></div>
+  <article class="valuedoc">
+    <header class="vhead"><div><div class="vkicker">Nabulsi Home Library</div><h1>Wall 1 · ${books.length} books</h1><div class="vsub">Valuation estimate, ${esc(month)}</div></div>
+      <div class="vtotals"><div><b>${usd(tot(books,"price"))}</b><small>to replace new<br>${jod(tot(books,"price"))}</small></div><div><b>${usd(tot(books,"resale"))}</b><small>resale value<br>${jod(tot(books,"resale"))}</small></div><div><b>${usd(tot(books,"orig"))}</b><small>original cover prices</small></div></div></header>
+    <section class="vsec"><h2>The ten most valuable to replace</h2><table class="vtab"><thead><tr><th>Title</th><th>Author</th><th>New</th><th>Resale</th></tr></thead><tbody>${rows(top)}</tbody></table></section>
+    ${shelves.map(([sp, list]) => `<section class="vsec"><h2>${esc(shelfLabel(sp))} · ${esc((SHELVES[sp]||{}).name || "")}<span>${list.length} books · ${usd(tot(list,"price"))} new · ${usd(tot(list,"resale"))} resale</span></h2>
+      <table class="vtab"><thead><tr><th>Title</th><th>Author</th><th>New</th><th>Resale</th></tr></thead><tbody>${rows(list)}</tbody></table></section>`).join("")}
+    <footer class="vfoot">Values are estimates by type of book (new price today and typical used resale), not professional appraisals. Rare, signed or out-of-print copies may be worth more. Prices in US dollars; Jordanian dinars at 0.709.</footer>
+  </article>`;
+}
 /* ---------------- family ---------------- */
 function personView(uid){
   const p = S.people[uid] || {}; const name = p.name || "Someone";
@@ -17182,6 +17276,7 @@ function personView(uid){
 }
 function viewFamily(){
   if (S.famView === "club") return `<div class="famnarrow">${clubView()}</div>`;
+  if (S.famView === "value") return valueView();
   if (S.famView && S.famView.startsWith("year:")){ const [, uid, y] = S.famView.split(":"); return `<div class="famnarrow">${yearView(uid, y || today().slice(0,4))}</div>`; }
   if (S.person && S.person !== S.user?.uid && S.people[S.person]) return personView(S.person);
   const books = allBooks();
@@ -17225,6 +17320,7 @@ function viewFamily(){
       <div class="stat"><b data-count="${tot("resale")}" data-ck="fres" data-fmt="usd" data-from0="1">${usd(tot("resale"))}</b><small>if resold used (${jod(tot("resale"))})</small></div>
     </div>
     <div class="muted" style="font-size:.82rem">Values are estimates by type of book, not looked-up prices. Out-of-print titles may be worth more.</div>
+    <button class="card valuebtn" data-famview="value"><span class="vdoc" aria-hidden="true"><i></i><i></i><i></i></span><span><b>Insurance &amp; value list</b><small>Every book, shelf by shelf, with estimated values and totals. Save it as a PDF or print it.</small></span><span class="chev">›</span></button>
     <div class="card stack-v"><div class="eyebrow">By kind of book</div><div class="bars">${Object.entries(genres).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`<div class="bar"><span>${esc(g)}</span><span class="track"><span class="fill" style="display:block;width:${n/max*100}%"></span></span><span>${n}</span></div>`).join("")}</div></div>
     <button class="card" style="text-align:left;cursor:pointer" data-act="needcheck"><b>${check} books need checking</b><div class="muted" style="font-size:.88rem">Titles or authors Claude couldn't read from the photos. Open one and use "Edit details" to fix it.</div></button>
   </div>`;
@@ -17357,6 +17453,12 @@ function _renderSheet(){
       ${st.notes.map(n=>`<div class="note">${esc(n.text)}<small>${n.mine?"You":esc(n.by)}, ${esc(niceDate(n.at))}${n.mine && mySec("notes").visible===false ? " · only you can see this" : ""}</small></div>`).join("")}
       <textarea id="note" placeholder="Add a note, a favourite line, or who recommended it" aria-label="New note"></textarea>
       <div><button class="btn small" data-act="note">Add note</button></div>
+    </div>
+    <div class="section">
+      <div class="eyebrow">Favourite lines${st.quotes.length?` · ${st.quotes.length}`:""}</div>
+      ${st.quotes.map(q => `<figure class="qline"><blockquote>${esc(q.text)}</blockquote><figcaption>${q.mine?"You":esc(q.by)}, ${esc(niceDate(q.at))}${q.mine?` · <button class="linkbtn tiny" data-rmquote="${q.i}">Remove</button>`:""}</figcaption></figure>`).join("")}
+      <textarea id="quote" placeholder="Type a line you loved, exactly as it's written" aria-label="Favourite line"></textarea>
+      <div class="row"><button class="btn small" data-act="quote">＋ Save this line</button><span class="muted" style="font-size:.8rem">${mySec("notes").visible===false ? "Only you can see your lines" : "The family can see your lines, like your notes"}</span></div>
     </div>
     ${sim.length ? `<div class="section"><div class="eyebrow">More like this on your shelves</div><div class="simrow">${sim.map(x => `<button class="simcard" data-sim="${esc(x.id)}"><span class="cover2 small" style="background:${x.color};color:${inkOn(x.color)}"><span class="loc2">${esc(shelfLabel(x.spot))}</span><span class="ct">${esc(x.title)}</span>${COVERS.img(x)}</span><span class="simcap">${esc(x.title)}</span></button>`).join("")}</div></div>` : ""}
     <div class="section">
@@ -17838,7 +17940,7 @@ function render(){
   }
   if (S.sheet && !String(S.sheet).startsWith("__") && S.sheetMode !== "edit"){
     const active = document.activeElement && document.activeElement.closest(".sheet");
-    if (!active || !["note","lendto"].includes(document.activeElement.id)) renderSheet();
+    if (!active || !["note","lendto","quote","recnote"].includes(document.activeElement.id)) renderSheet();
   }
   if (flipPrev) FX.flip(app, flipPrev); else FX.revealCovers(app);
   if (tabChange) FX.tabEnter(app, tabChange);
@@ -17913,6 +18015,8 @@ document.addEventListener("click", async e => {
   if (yo){ S.famView = "year:" + yo.dataset.yearof + ":" + yo.dataset.year; render(); return; }
   const rt = t.closest("[data-recto]");
   if (rt){ S.recTo = rt.dataset.recto; const keep = document.getElementById("recnote")?.value || ""; renderSheet(); const n = document.getElementById("recnote"); if (n) n.value = keep; return; }
+  const rq = t.closest("[data-rmquote]");
+  if (rq){ const bid = S.sheet, i = parseInt(rq.dataset.rmquote, 10); writeSection("notes", s => { s.quotes = {...(s.quotes||{})}; const arr = (s.quotes[bid]||[]).slice(); arr.splice(i, 1); if (arr.length) s.quotes[bid] = arr; else delete s.quotes[bid]; return s; }); renderSheet(); return; }
   const rdis = t.closest("[data-recdismiss]");
   if (rdis){ const r = (S.meta||{})[rdis.dataset.recdismiss]; if (r){ const doc = {...r, dismissed:true}; S.meta = {...S.meta, [rdis.dataset.recdismiss]: doc}; render(); writeDoc(base()+"/meta/"+rdis.dataset.recdismiss, doc); } return; }
   const cp = t.closest("[data-clubpct]");
@@ -17977,6 +18081,10 @@ document.addEventListener("click", async e => {
     case "resetpw": try{ await FB.A.sendPasswordResetEmail(FB.auth, S.user.email); toast("Reset link sent to " + S.user.email); }catch(e){ toast(authErr(e)); } break;
     case "backfamily": S.person = null; window.scrollTo(0,0); render(); break;
     case "feedmore": S.feedAll = !S.feedAll; render(); break;
+    case "printvalue": { const t0 = document.title; document.title = "Nabulsi Library - value list"; document.documentElement.classList.add("printing"); setTimeout(() => { try{ window.print(); }catch(e){} document.title = t0; document.documentElement.classList.remove("printing"); }, 50); break; }
+    case "nextquote": { S.quoteSeed++; const qc = document.querySelector(".quotecard .qbody"); if (qc && !FX.rm()) qc.animate([{opacity:1},{opacity:0}], {duration:180, fill:"forwards"}).onfinish = () => { render(); document.querySelector(".quotecard .qbody")?.animate([{opacity:0, transform:"translateY(4px)"},{opacity:1, transform:"none"}], {duration:320, easing:"ease-out"}); }; else render(); break; }
+    case "quote": { const v = (document.getElementById("quote").value || "").trim(); if (!v){ toast("Type the line first."); break; } const bid = id;
+      needMe(() => { writeSection("notes", s => { s.quotes = {...(s.quotes||{})}; s.quotes[bid] = [...(s.quotes[bid]||[]), {at:today(), text:v.slice(0,600)}]; return s; }); toast("Line saved"); const n = document.getElementById("quote"); if (n) n.value = ""; renderSheet(); }); break; }
     case "rec": S.recBook = id; S.recTo = null; S.sheet = "__rec"; renderSheet(); break;
     case "backbook": { const bid = S.recBook; S.sheet = bid; renderSheet(); break; }
     case "sendrec": { if (!S.recTo) break; const note = (document.getElementById("recnote")?.value || "").trim(); const to = S.recTo, bid = S.recBook;
