@@ -3,30 +3,52 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
 
+    // A family member is someone who joined the library with the family code
+    // (joining creates their record under people/).
+    function isFamily() {
+      return signedIn() && exists(/databases/$(database)/documents/libraries/nabulsi-shelves-4817/people/$(request.auth.uid));
+    }
+
     // Each account remembers which library it belongs to. Only that person can read it.
     match /users/{uid} {
       allow read, write: if signedIn() && request.auth.uid == uid;
     }
 
-    match /libraries/nabulsi-shelves-4817 {
-      // Shelves, borrowing, edits and added books: anyone in the family.
-      match /state/{id} { allow read, write: if signedIn(); }
-      match /added/{id} { allow read, write: if signedIn(); }
-      match /meta/{id}  { allow read, write: if signedIn(); }
+    // Gym Log: each person reads and writes only their own workouts, profile and bodyweight.
+    match /gym/{uid}/{document=**} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
 
-      // Names: everyone can see, each person changes only their own.
+    // Gym Log usernames: one account per name. Names can be looked up, nothing else is stored.
+    match /gymUsernames/{name} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && name.matches('^[a-z0-9_]{3,20}$')
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /libraries/nabulsi-shelves-4817 {
+      // Shelves, borrowing, edits and added books: family members only.
+      match /state/{id} { allow read, write: if isFamily(); }
+      match /added/{id} { allow read, write: if isFamily(); }
+      match /meta/{id}  { allow read, write: if isFamily(); }
+
+      // Names: family can see, each person changes only their own. Creating your own
+      // record is how joining works, so that stays open to anyone with the family code.
       match /people/{uid} {
-        allow read: if signedIn();
+        allow read: if isFamily();
         allow write: if signedIn() && request.auth.uid == uid;
       }
 
-      // Reading lists, ratings and notes: visible to others only when switched on.
+      // Reading lists, ratings and notes: visible to other family only when switched on.
       match /sections/{sid} {
-        allow read: if signedIn() && (resource == null || resource.data.uid == request.auth.uid || resource.data.visible == true);
-        allow create, update: if signedIn()
+        allow read: if isFamily() && (resource == null || resource.data.uid == request.auth.uid || resource.data.visible == true);
+        allow create, update: if isFamily()
           && request.resource.data.uid == request.auth.uid
           && sid.matches(request.auth.uid + '__(want|reading|read|notes)');
-        allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+        allow delete: if isFamily() && resource.data.uid == request.auth.uid;
       }
     }
   }

@@ -98,6 +98,8 @@ h3{font-family:var(--display);font-weight:700;font-size:23px;text-transform:uppe
 .fail{grid-column:3;justify-self:center;border:1px dashed var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:3px 12px;min-height:30px;font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase}
 .fail[aria-pressed="true"]{border:1px solid var(--danger);color:var(--danger);background:rgba(255,122,102,.08)}
 .pr{grid-column:2 / -1;justify-self:start;font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:1px 8px}
+.text{-webkit-appearance:none;appearance:none}
+select.text{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:32px}
 .note,.text{width:100%;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:8px;padding:10px 12px;min-height:46px}
 .note:focus,.text:focus{outline:none;border-color:var(--accent)}
 .bar{position:sticky;top:0;z-index:3;background:var(--bg);padding:10px 0;margin:-10px 0;border-bottom:1px solid var(--line)}
@@ -182,12 +184,12 @@ function ago(t){var n=Math.round((day0(Date.now())-day0(t))/864e5);return n<=0?'
 var FBC={"apiKey":"AIzaSyA63SpccuM6LDWiMn1_BQVjsWcNJGl5_NA","authDomain":"nabulsi-project.firebaseapp.com","projectId":"nabulsi-project","storageBucket":"nabulsi-project.firebasestorage.app","messagingSenderId":"311435368989","appId":"1:311435368989:web:214a7d2e452b9552f284f4"};
 var FBV='10.12.2',FB={},me=null,pending=0,timers={};
 function lsKey(){return LS+(me?'.'+me:'')}
-function loadLocal(){S={config:null,sessions:{}};try{var r=JSON.parse(localStorage.getItem(lsKey())||'null');if(r&&r.sessions)S={config:r.config||null,sessions:r.sessions}}catch(e){}}
+function loadLocal(){S={config:null,sessions:{}};try{var r=JSON.parse(localStorage.getItem(lsKey())||'null');if(r&&r.sessions)S={config:r.config||null,sessions:r.sessions,profile:r.profile||null}}catch(e){}}
 function saveLocal(){try{localStorage.setItem(lsKey(),JSON.stringify(S))}catch(e){}}
 function setSync(s){var el=$('#sync');el.dataset.s=s;el.textContent={loading:'Loading',saving:'Syncing',saved:'Saved',error:'Not saved online',out:''}[s]}
 function ref(id){return FB.doc(FB.db,'gym',me,'docs',id)}
 function track(p){pending++;setSync('saving');p.then(function(){pending--;if(!pending)setSync('saved')},function(e){pending--;UI.dbErr=(e&&e.code)||'error';setSync('error')})}
-function push(id){clearTimeout(timers[id]);delete timers[id];if(!me||!FB.ready)return;var body=id==='config'?S.config:S.sessions[id];if(body)track(FB.setDoc(ref(id),clone(body)))}
+function push(id){clearTimeout(timers[id]);delete timers[id];if(!me||!FB.ready)return;var body=id==='config'?S.config:id==='profile'?S.profile:S.sessions[id];if(body)track(FB.setDoc(ref(id),clone(body)))}
 function touch(id){saveLocal();if(!me||!FB.ready)return;clearTimeout(timers[id]);timers[id]=setTimeout(function(){push(id)},600)}
 function remove(id){delete S.sessions[id];clearTimeout(timers[id]);delete timers[id];saveLocal();if(me&&FB.ready)track(FB.deleteDoc(ref(id)))}
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')Object.keys(timers).forEach(push)});
@@ -205,13 +207,13 @@ async function connect(){
   try{await loadFirebase()}catch(e){UI.auth='offline';render();return}
   FB.A.onAuthStateChanged(FB.auth,async function(u){
     UI.busy=false;
-    if(!u){me=null;UI.auth='out';UI.tab='train';S={config:null,sessions:{}};setSync('out');render();return}
+    if(!u){me=null;UI.auth='out';UI.tab='train';S={config:null,sessions:{},profile:null};setSync('out');render();return}
     me=u.uid;UI.auth='in';UI.email=u.email||'';UI.dbErr=null;loadLocal();render();setSync('loading');
     try{
-      var snap=await FB.getDocs(FB.collection(FB.db,'gym',me,'docs')),cfg=null,ss={},keep=Object.keys(timers);
-      snap.forEach(function(d){var x=d.data();if(d.id==='config')cfg=x;else if(x&&x.kind==='session')ss[d.id]=x});
-      keep.forEach(function(id){if(id==='config')cfg=S.config;else if(S.sessions[id])ss[id]=S.sessions[id]});
-      S.sessions=ss;if(cfg&&cfg.routines)S.config=cfg;
+      var snap=await FB.getDocs(FB.collection(FB.db,'gym',me,'docs')),cfg=null,pf=null,ss={},keep=Object.keys(timers);
+      snap.forEach(function(d){var x=d.data();if(d.id==='config')cfg=x;else if(d.id==='profile')pf=x;else if(x&&x.kind==='session')ss[d.id]=x});
+      keep.forEach(function(id){if(id==='config')cfg=S.config;else if(id==='profile')pf=S.profile;else if(S.sessions[id])ss[id]=S.sessions[id]});
+      S.sessions=ss;if(cfg&&cfg.routines)S.config=cfg;if(pf)S.profile=pf;
       saveLocal();render();
       if(!cfg)touch('config');
       setSync(pending||Object.keys(timers).length?'saving':'saved');
@@ -311,7 +313,12 @@ document.addEventListener('click',function(e){
       if(act==='signup'&&pw.length<6){UI.authErr='Use a password of at least 6 characters.';break}
       UI.busy=true;(act==='signup'?FB.A.createUserWithEmailAndPassword(FB.auth,em,pw):FB.A.signInWithEmailAndPassword(FB.auth,em,pw)).catch(function(e){UI.busy=false;UI.authErr=authMsg(e);render()});break;
     case 'signout':Object.keys(timers).forEach(push);FB.A.signOut(FB.auth);return;
-    case 'tab':UI.tab=b.dataset.t;UI.ex=null;UI.editing=null;window.scrollTo(0,0);break;
+    case 'saveuname':saveUsername();return;
+    case 'logbw':var bv=num($('#bwin').value);UI.bwErr=null;
+      if(bv===''||bv<25||bv>350){UI.bwErr='Enter your bodyweight in kg, between 25 and 350.';break}
+      var pp=prof(),td=day0(Date.now());pp.bw=pp.bw.filter(function(x){return day0(x.t)!==td});pp.bw.push({t:Date.now(),kg:Math.round(bv*10)/10});
+      pp.bw.sort(function(x,y){return x.t-y.t});if(pp.bw.length>400)pp.bw=pp.bw.slice(-400);touch('profile');say('Weigh-in logged: '+f(bv)+' kg.');break;
+    case 'tab':UI.unameErr=UI.unameOk=UI.bwErr=null;UI.unameIn=null;UI.tab=b.dataset.t;UI.ex=null;UI.editing=null;window.scrollTo(0,0);break;
     case 'start':startWorkout(routine(b.dataset.id));break;
     case 'blank':startWorkout(null);break;
     case 'inc':case 'dec':
@@ -379,6 +386,8 @@ document.addEventListener('input',function(e){
 document.addEventListener('keydown',function(e){
   if(e.key!=='Enter')return;
   if(e.target.id==='pw'||e.target.id==='email'){e.preventDefault();($('[data-act="signin"]')||$('[data-act="signup"]')).click()}
+  else if(e.target.id==='uname'){e.preventDefault();saveUsername()}
+  else if(e.target.id==='bwin'){e.preventDefault();$('[data-act="logbw"]').click()}
   else if(e.target.id==='addex'){e.preventDefault();$('[data-act="addex"]').click()}
   else if(e.target.id==='swapin'){e.preventDefault();$('[data-act="swapdo"]').click()}
   else if(e.target.id==='radd'){e.preventDefault();$('[data-act="radd"]').click()}
@@ -502,6 +511,95 @@ function viewTrophies(){
   return h;
 }
 
+/* ---------- stage 1: profile, bodyweight, ranked lifts, estimated max ---------- */
+var RANKED=[
+ {id:'bench',name:'Bench Press',re:/\bbench\b/,not:/incline|decline|dumbbell|\bdb\b|close|machine|smith|floor/},
+ {id:'incline',name:'Incline Bench Press',re:/incline.*(bench|press)/,not:/dumbbell|\bdb\b|machine|smith/},
+ {id:'squat',name:'Squat',re:/squat/,not:/goblet|split|hack|front|bulgarian|smith|jump|pistol|sissy|dumbbell|\bdb\b|leg press/},
+ {id:'deadlift',name:'Deadlift',re:/deadlift/,not:/romanian|\brdl\b|stiff|single|dumbbell|\bdb\b|trap|hex/},
+ {id:'ohp',name:'Overhead Press',re:/overhead press|military|\bohp\b|standing press|shoulder press/,not:/dumbbell|\bdb\b|machine|smith|seated|arnold/},
+ {id:'row',name:'Barbell Row',re:/barbell row|bent.?over row|pendlay/,not:/dumbbell|\bdb\b|cable|machine|t.?bar/},
+ {id:'pullup',name:'Pull-up',re:/pull.?up|chin.?up/,not:/assist|band|machine|lat/,bw:true},
+ {id:'dip',name:'Dip',re:/\bdips?\b/,not:/assist|machine|bench dip/,bw:true}
+];
+function rankedById(id){for(var i=0;i<RANKED.length;i++)if(RANKED[i].id===id)return RANKED[i];return null}
+function rankOf(name){
+  var k=key(name),m=(S.config&&S.config.rankMap)||{};
+  if(Object.prototype.hasOwnProperty.call(m,k))return m[k]==='none'?null:rankedById(m[k]);
+  for(var i=0;i<RANKED.length;i++){var r=RANKED[i];if(r.re.test(k)&&!r.not.test(k))return r}
+  return null;
+}
+function prof(){if(!S.profile)S.profile={kind:'profile',username:'',bw:[]};S.profile.bw=S.profile.bw||[];return S.profile}
+function bwAt(t){var l=prof().bw,best=null,i;for(i=0;i<l.length;i++){if(l[i].t<=t&&(!best||l[i].t>best.t))best=l[i]}if(!best&&l.length)best=l.reduce(function(a,b){return a.t<b.t?a:b});return best?best.kg:0}
+function bwNow(){var l=prof().bw;return l.length?l.reduce(function(a,b){return a.t>b.t?a:b}).kg:0}
+/* Epley estimate. Reps above 12 are counted as 12 so long sets don't inflate it. */
+function e1rm(load,r){r=Math.min(+r||0,12);if(r<1||!(load>0))return 0;return r===1?load:load*(1+r/30)}
+function rankedBests(){
+  var out={};RANKED.forEach(function(r){out[r.id]=null});
+  done().forEach(function(s){s.items.forEach(function(it){var r=rankOf(it.name);if(!r)return;
+    it.sets.forEach(function(x){var bw=bwAt(s.start),load=(+x.w||0)+(r.bw?bw:0),v=e1rm(load,x.r);
+      if(v>0&&(!out[r.id]||v>out[r.id].v))out[r.id]={v:v,t:s.start,w:+x.w||0,r:+x.r,bw:bw,ex:it.name}})})});
+  return out;
+}
+function nf1(n){return (Math.round(n*10)/10).toString()}
+function ratioTxt(b){return b&&b.bw>0?nf1(b.v/b.bw)+'× bodyweight':''}
+function profileNeeds(){var p=prof();return !p.username||!p.bw.length}
+function profileCard(){
+  var p=prof();
+  if(profileNeeds())return '<section class="card" style="border-color:var(--accent)"><div class="row between"><h3>Set up your profile</h3><span class="tag">New</span></div><div class="small muted">Pick a username and add your bodyweight. You\'ll need both for crews and fair rankings. Your bodyweight stays private.</div><button class="btn primary" data-act="tab" data-t="profile">Set up profile</button></section>';
+  return '<button class="card item" style="padding:12px 14px" data-act="tab" data-t="profile"><span class="grow"><b>@'+esc(p.username)+'</b><br><span class="small muted">'+f(bwNow())+' kg · only you see this</span></span><span class="label">Profile ›</span></button>';
+}
+function bwSpark(){
+  var l=prof().bw.slice().sort(function(a,b){return a.t-b.t});if(l.length<2)return '';
+  return chart(l.map(function(x){return {t:x.t,v:x.kg}}));
+}
+function viewProfile(){
+  var p=prof(),bests=rankedBests(),bw=bwNow();
+  var h='<div class="row"><button class="btn" data-act="tab" data-t="train" aria-label="Back to Train">‹ Back</button><h2 class="grow">Profile</h2></div>';
+  h+='<section class="card"><span class="label">Username</span><div class="small muted">Your crew will see this name. 3 to 20 letters, numbers or _.</div>'+
+    '<div class="row"><span class="num" style="font-size:24px">@</span><input class="text grow" id="uname" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="20" value="'+esc(UI.unameIn!=null?UI.unameIn:p.username)+'"><button class="btn primary" data-act="saveuname">'+(UI.unameBusy?'Saving':'Save')+'</button></div>'+
+    (UI.unameErr?'<div class="small" style="color:var(--danger)">'+esc(UI.unameErr)+'</div>':'')+(UI.unameOk?'<div class="small" style="color:var(--accent)">'+esc(UI.unameOk)+'</div>':'')+'</section>';
+  h+='<section class="card"><div class="row between"><span class="label">Bodyweight</span><span class="small muted">Private, only you see it</span></div>'+
+    (bw?'<div class="row" style="align-items:baseline"><span class="num" style="font-size:44px">'+f(bw)+'</span><span class="muted">kg, logged '+ago(p.bw.reduce(function(a,b){return a.t>b.t?a:b}).t)+'</span></div>':'<div class="small muted">Used to rank your lifts fairly against people of different sizes.</div>')+
+    '<div class="row"><input class="text grow" id="bwin" inputmode="decimal" autocomplete="off" placeholder="'+(bw?'New weigh-in, kg':'Your bodyweight, kg')+'"><button class="btn primary" data-act="logbw">Log</button></div>'+
+    (UI.bwErr?'<div class="small" style="color:var(--danger)">'+esc(UI.bwErr)+'</div>':'')+bwSpark()+'</section>';
+  h+='<section class="card"><span class="label">Ranked lifts</span><div class="small muted">Your best estimated one-rep max on each lift, worked out from weight and reps, so 90 kg for 10 beats 100 kg for 1. These are the lifts crews will compete on.</div><div class="list">'+
+    RANKED.map(function(r){var b=bests[r.id];
+      return '<div class="item"><span class="grow"><b>'+esc(r.name)+'</b><br><span class="small muted">'+(b?'From '+f(b.w)+(r.bw?' kg added':' kg')+' × '+b.r+', '+dshort(b.t)+(ratioTxt(b)?' · '+ratioTxt(b):''):'Not logged yet')+'</span></span>'+(b?'<span class="num">'+Math.round(b.v)+'<small>kg</small></span>':'<span class="muted">–</span>')+'</div>'}).join('')+
+    '</div><div class="small muted">Pull-ups and dips count your bodyweight plus any added weight. Reps above 12 count as 12.</div></section>';
+  h+='<div class="row between small muted"><span>'+esc(UI.email||'')+'</span><button class="link" data-act="signout">Sign out</button></div>';
+  return h;
+}
+async function saveUsername(){
+  var raw=($('#uname').value||'').trim().replace(/^@/,''),name=raw.toLowerCase(),p=prof();
+  UI.unameIn=raw;UI.unameErr=UI.unameOk=null;
+  if(!/^[a-z0-9_]{3,20}$/.test(name)){UI.unameErr='Use 3 to 20 letters, numbers or _ (no spaces).';render();return}
+  if(name===p.username){UI.unameOk='That\'s already your username.';render();return}
+  if(!me||!FB.ready){UI.unameErr='You need to be online to pick a username.';render();return}
+  UI.unameBusy=true;render();
+  try{
+    await FB.setDoc(FB.doc(FB.db,'gymUsernames',name),{uid:me});
+    var old=p.username;p.username=name;push('profile');
+    if(old){try{await FB.deleteDoc(FB.doc(FB.db,'gymUsernames',old))}catch(e){}}
+    UI.unameIn=null;UI.unameOk='Saved. You\'re @'+name+'.';
+  }catch(e){
+    var mine=false;try{var d=await FB.getDoc(FB.doc(FB.db,'gymUsernames',name));mine=d.exists()&&d.data().uid===me}catch(x){}
+    if(mine){p.username=name;push('profile');UI.unameIn=null;UI.unameOk='Saved. You\'re @'+name+'.'}
+    else UI.unameErr=(e&&e.code==='permission-denied')?'@'+name+' is taken. Try another.':'Couldn\'t save. Check your connection and try again.';
+  }
+  UI.unameBusy=false;render();
+}
+function rankSelect(e){
+  var cur=rankOf(e.name),k=key(e.name);
+  return '<section class="card"><div class="row between"><label class="label" for="rankmap">Counts as ranked lift</label>'+(cur?'<span class="lv">Ranked</span>':'')+'</div>'+
+    '<select class="text" id="rankmap" data-k="'+esc(k)+'"><option value="none"'+(cur?'':' selected')+'>Not ranked</option>'+RANKED.map(function(r){return '<option value="'+r.id+'"'+(cur&&cur.id===r.id?' selected':'')+'>'+esc(r.name)+'</option>'}).join('')+'</select>'+
+    '<div class="small muted">Only barbell versions and pull-ups or dips count, so everyone in a crew compares the same movement. Change it here if the app guessed wrong.</div></section>';
+}
+document.addEventListener('change',function(ev){
+  var t=ev.target;if(t.id!=='rankmap')return;
+  S.config.rankMap=S.config.rankMap||{};S.config.rankMap[t.dataset.k]=t.value;touch('config');render();
+});
+
 /* ---------- views ---------- */
 function confirmBox(c,q,yes){
   return UI.confirm===c?'<div class="card" style="border-color:var(--danger)"><div>'+q+'</div><div class="row"><button class="btn danger grow" data-act="yes">'+yes+'</button><button class="btn grow" data-act="no">Keep</button></div></div>':'';
@@ -516,7 +614,7 @@ function viewHome(){
   var d=done(),lastBy={};d.forEach(function(s){lastBy[s.routine]=s.start});
   var rs=S.config.routines,next=null;
   if(d.length&&rs.length){next=rs.slice().sort(function(a,b){return (lastBy[a.name]||0)-(lastBy[b.name]||0)})[0].id}
-  var h=weekStrip()+muscleMap(),o=UI.offer,or=o&&routine(o.rid);
+  var h=profileCard()+weekStrip()+muscleMap(),o=UI.offer,or=o&&routine(o.rid);
   if(or)h+='<section class="card" style="border-color:var(--accent)"><div><b>Today was different from your saved '+esc(or.name)+' routine.</b> Use today\'s list from now on?</div><div class="small muted">'+esc(o.ex.join(', '))+'</div><div class="row"><button class="btn primary grow" data-act="offeryes">Update '+esc(or.name)+'</button><button class="btn grow" data-act="offerno">Keep the old one</button></div></section>';
   h+=rs.map(function(r){
     var l=lastBy[r.name];
@@ -526,7 +624,6 @@ function viewHome(){
       '<div class="row"><button class="btn primary grow" data-act="start" data-id="'+esc(r.id)+'">Start '+esc(r.name)+'</button><button class="btn" data-act="edit" data-id="'+esc(r.id)+'">Edit</button></div></section>';
   }).join('');
   h+='<div class="row"><button class="btn grow" data-act="newroutine">New routine</button><button class="btn grow" data-act="blank">Empty workout</button></div>';
-  h+='<div class="row between small muted"><span>'+esc(UI.email||'')+'</span><button class="link" data-act="signout">Sign out</button></div>';
   return h;
 }
 function viewEdit(){
@@ -611,8 +708,11 @@ function viewExercise(e){
   var pts=log.map(function(l){return {t:l.t,v:m==='vol'?vol(l.sets):top(l.sets)}});
   var h='<div class="row"><button class="btn" data-act="exback" aria-label="Back to all exercises">‹ Back</button><h2 class="grow">'+esc(e.name)+'</h2></div>';
   h+='<div class="stats"><div class="stat"><b>'+f(tops[tops.length-1])+'</b><span>Latest kg</span></div><div class="stat"><b>'+f(best)+'</b><span>Best kg</span></div><div class="stat"><b>'+e.st.level+'</b><span>Level</span></div></div>';
+  var rk=rankOf(e.name),eb=0,ebl=null;e.log.forEach(function(l){l.sets.forEach(function(x){var v=e1rm((+x.w||0)+(rk&&rk.bw?bwAt(l.t):0),x.r);if(v>eb){eb=v;ebl={v:v,bw:bwAt(l.t)}}})});
+  if(eb)h+='<div class="row between small"><span class="muted">Estimated one-rep max</span><span><b class="num" style="font-size:22px">'+Math.round(eb)+'</b> kg'+(rk&&ebl.bw?' · '+nf1(eb/ebl.bw)+'× bodyweight':'')+'</span></div>';
   h+='<div class="row between small muted"><span>'+xpBar(e.st)+' &nbsp;'+(50-e.st.into)+' XP to level '+(e.st.level+1)+'</span><span>Session 10 XP, new best 30</span></div>';
   h+='<section class="card"><div class="row between"><span class="small muted">'+(m==='vol'?'Total kg lifted per session':'Heaviest set per session, kg')+'</span><div class="seg"><button data-act="metric" data-m="top" aria-pressed="'+(m!=='vol')+'">Weight</button><button data-act="metric" data-m="vol" aria-pressed="'+(m==='vol')+'">Volume</button></div></div>'+chart(pts)+'</section>';
+  h+=rankSelect(e);
   h+='<section class="card"><span class="small muted">Every session</span><div class="detail" style="border-top:0;padding-top:0">'+log.slice().reverse().map(function(l){return '<div><span>'+dlong(l.t)+'</span><span>'+setsText(l.sets)+'</span></div>'}).join('')+'</div></section>';
   return h;
 }
@@ -636,7 +736,8 @@ function render(){
   if(!S.config||!S.config.routines)S.config={kind:'config',routines:clone(DEFAULTS)};
   buildIndex();
   var a=active(),h;
-  if(UI.tab==='progress')h=viewProgress();
+  if(UI.tab==='profile')h=viewProfile();
+  else if(UI.tab==='progress')h=viewProgress();
   else if(UI.tab==='trophies')h=viewTrophies();
   else if(UI.tab==='history')h=viewHistory();
   else if(a)h=viewWorkout(a);
