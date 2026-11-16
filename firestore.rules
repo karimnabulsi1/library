@@ -42,7 +42,11 @@ service cloud.firestore {
     function okLift(r, k, cap) {
       return !(k in r) || (r[k].v is number && r[k].v > 0 && r[k].v <= cap
         && (!('ratio' in r[k]) || (r[k].ratio is number && r[k].ratio <= 6))
-        && (!('hist' in r[k]) || r[k].hist.size() <= 24));
+        && (!('hist' in r[k]) || r[k].hist.size() <= 24)
+        && (!('h90' in r[k]) || (r[k].h90.v is number && r[k].h90.v <= r[k].v + 0.1))
+        && (!('p90' in r[k]) || (r[k].p90.ratio is number && r[k].p90.ratio <= 6))
+        && (!('s90' in r[k]) || (r[k].s90 is int && r[k].s90 <= 900))
+        && (!('g30' in r[k]) || (r[k].g30 is number && r[k].g30 <= 3)));
     }
     function okStats(d) {
       return d.name is string

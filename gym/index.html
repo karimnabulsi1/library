@@ -150,6 +150,33 @@ nav .dot{position:absolute;top:4px;right:4px;min-width:16px;height:16px;border-r
 .h2h.sel{background:var(--field);border-radius:6px}
 .h2h small{color:var(--muted)}
 nav button[aria-current="page"]{color:var(--accent);border-top-color:var(--accent)}
+.ib{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-left:6px;border-radius:50%;border:1px solid var(--muted);background:transparent;color:var(--muted);font-family:Georgia,serif;font-style:italic;font-weight:700;font-size:12px;line-height:1;padding:0;vertical-align:middle;flex:none;position:relative}
+.ib::after{content:"";position:absolute;inset:-12px}
+.ib.new{border-color:var(--accent);color:var(--accent);animation:ibp 1.4s ease-in-out 3}
+@keyframes ibp{0%,100%{box-shadow:0 0 0 0 rgba(255,178,31,.6)}50%{box-shadow:0 0 0 6px rgba(255,178,31,0)}}
+.sheetbg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-width:520px;margin:0 auto;z-index:21;background:var(--surface);border:1px solid var(--line);border-bottom:0;border-radius:16px 16px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;animation:shup .22s ease-out}
+.sheet p{margin:0;line-height:1.5}
+@keyframes shup{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.profbtn{flex-direction:row;align-items:center;text-align:left;width:100%;padding:12px 14px;color:var(--ink);cursor:pointer}
+.profbtn::before{display:none}
+.tpls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tpl{display:flex;flex-direction:column;gap:2px;text-align:left;background:var(--field);border:1px solid var(--line);border-radius:8px;padding:10px;color:var(--ink);min-height:64px}
+.tpl b{font-family:var(--display);font-size:18px;letter-spacing:.03em;text-transform:uppercase}
+.tpl span{font-size:12px;color:var(--muted)}
+.tpl:active{border-color:var(--accent)}
+.tlegend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
+.tlegend span{display:inline-flex;align-items:center;gap:4px}
+.tlift{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:10px}
+.tlift b{font-family:var(--display);font-size:16px;letter-spacing:.05em;text-transform:uppercase}
+.tcells{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.tcell{background:var(--field);border:1px solid var(--line);border-radius:6px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;text-align:center}
+.tcell.mine{border-color:var(--accent);background:rgba(255,178,31,.08)}
+.tn{font-size:11px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tv{font-size:11px;color:var(--muted);white-space:nowrap}
+.gl{display:flex;gap:8px;align-items:flex-start;margin-top:6px}
+.gl svg{flex:none;margin-top:1px}
+@media (prefers-reduced-motion:reduce){.ib.new,.sheet{animation:none}}
 #toast{position:fixed;left:16px;right:16px;bottom:80px;margin:0 auto;max-width:420px;background:var(--ink);color:var(--bg);border-radius:8px;padding:12px 16px;font-weight:500;text-align:center;z-index:9;opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s;pointer-events:none}
 #toast.show{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){#toast{transition:none}}
@@ -168,6 +195,7 @@ nav button[aria-current="page"]{color:var(--accent);border-top-color:var(--accen
   <button data-act="tab" data-t="history" id="nav-history">History</button>
 </div></nav>
 <div id="toast" role="status" aria-live="polite"></div>
+<div id="sheet"></div>
 <datalist id="exnames"></datalist>
 <script>
 (function(){
@@ -395,7 +423,11 @@ document.addEventListener('click',function(e){
       break;
     case 'edit':UI.editing=b.dataset.id;window.scrollTo(0,0);break;
     case 'editdone':r=routine(UI.editing);if(r&&r.name==='New routine'&&!r.ex.length){S.config.routines=S.config.routines.filter(function(x){return x!==r});touch('config')}UI.editing=null;window.scrollTo(0,0);break;
-    case 'newroutine':r={id:uid('r'),name:'New routine',ex:[]};S.config.routines.push(r);UI.editing=r.id;touch('config');window.scrollTo(0,0);break;
+    case 'newroutine':UI.newRt=true;render();var nr=document.getElementById('newrt');if(nr&&nr.scrollIntoView)nr.scrollIntoView({behavior:'smooth',block:'start'});return;
+    case 'newrtclose':UI.newRt=false;break;
+    case 'newrtpick':var ti=+b.dataset.i,tp=TEMPLATES[ti];r={id:uid('r'),name:tp?tp.name:'New routine',ex:tp?tp.ex.slice():[]};S.config.routines.push(r);UI.newRt=false;UI.editing=r.id;touch('config');window.scrollTo(0,0);break;
+    case 'info':UI.info=b.dataset.k;var sn=lsGet('gymlog.info',{});sn[UI.info]=1;lsSet('gymlog.info',sn);break;
+    case 'infoclose':UI.info=null;break;
     case 'rup':case 'rdown':r=routine(UI.editing);var k=act==='rup'?i-1:i+1;if(k>=0&&k<r.ex.length){v=r.ex[i];r.ex[i]=r.ex[k];r.ex[k]=v;touch('config')}break;
     case 'rrm':routine(UI.editing).ex.splice(i,1);touch('config');break;
     case 'radd':inp=$('#radd');v=inp.value.trim();if(!v){inp.focus();return}routine(UI.editing).ex.push(v);touch('config');break;
@@ -514,7 +546,7 @@ function muscleMap(){
   done().forEach(function(s){if(s.start<since)return;s.items.forEach(function(it){var m=muscles(it.name);Object.keys(m).forEach(function(k){v[k]=(v[k]||0)+m[k]*it.sets.length})})});
   var hard=[],some=[],none=[];Object.keys(MNAME).forEach(function(k){var x=v[k]||0;(x>=4?hard:x>0?some:none).push(MNAME[k])});
   function line(t,a){return a.length?'<div><b>'+t+'</b>'+a.join(', ')+'</div>':''}
-  return '<section class="card"><div class="row between"><span class="label">Muscles, last 7 days</span></div><div class="mm">'+figure(v,false)+figure(v,true)+'<div class="grow">'+
+  return '<section class="card"><div class="row between"><span class="label">Muscles, last 7 days'+ib('muscles')+'</span></div><div class="mm">'+figure(v,false)+figure(v,true)+'<div class="grow">'+
     (hard.length||some.length?line('Hit hard',hard)+line('Touched',some)+line('Waiting',none):'<div class="muted">Nothing trained in the last 7 days. The map lights up as you log workouts.</div>')+'</div></div></section>';
 }
 
@@ -543,7 +575,7 @@ function viewTrophies(){
   function run(list,val,label,unit){var locked=false;list.forEach(function(n){if(val>=n)cells+='<div class="trophy">'+medal('#ffb21f')+'<b>'+nf(n)+'</b>'+label+'</div>';else if(!locked){locked=true;cells+='<div class="trophy locked">'+LOCK+'<b>'+nf(n)+'</b>'+label+'<span>'+nf(val)+' so far</span></div>'}})}
   run([1,5,10,25,50,100,200],d.length,'workouts');
   run([1000,10000,50000,100000,250000,500000,1000000],total,'kg lifted');
-  h+='<section class="card"><span class="label">Milestones</span><div class="shelf">'+cells+'</div></section>';
+  h+='<section class="card"><span class="label">Milestones'+ib('trophies')+'</span><div class="shelf">'+cells+'</div></section>';
   var ks=Object.keys(IDX).sort(function(a,b){return IDX[b].st.level-IDX[a].st.level||IDX[b].st.best-IDX[a].st.best});
   h+='<section class="card"><span class="label">Best lifts</span><div class="shelf">'+ks.map(function(k){var e=IDX[k],st=e.st,c=st.level>=6?'#ffb21f':st.level>=3?'#c9c4b8':'#b0703a';
     return '<div class="trophy">'+cup(c)+'<b>'+f(st.best)+' kg</b>'+esc(e.name)+'<span class="muted">Lv '+st.level+' · '+dshort(st.bestT)+'</span></div>'}).join('')+'</div>'+
@@ -588,7 +620,7 @@ function profileNeeds(){var p=prof();return !p.username||!p.bw.length}
 function profileCard(){
   var p=prof();
   if(profileNeeds())return '<section class="card" style="border-color:var(--accent)"><div class="row between"><h3>Set up your profile</h3><span class="tag">New</span></div><div class="small muted">Pick a username and add your bodyweight. You\'ll need both for crews and fair rankings. Your bodyweight stays private.</div><button class="btn primary" data-act="tab" data-t="profile">Set up profile</button></section>';
-  return '<button class="card item" style="padding:12px 14px" data-act="tab" data-t="profile"><span class="grow"><b>@'+esc(p.username)+'</b><br><span class="small muted">'+f(bwNow())+' kg · only you see this</span></span><span class="label">Profile ›</span></button>';
+  return '<button class="card profbtn" data-act="tab" data-t="profile"><span class="grow"><b>@'+esc(p.username)+'</b><br><span class="small muted">'+f(bwNow())+' kg · only you see this</span></span><span class="label">Profile ›</span></button>';
 }
 function bwSpark(){
   var l=prof().bw.slice().sort(function(a,b){return a.t-b.t});if(l.length<2)return '';
@@ -600,11 +632,11 @@ function viewProfile(){
   h+='<section class="card"><span class="label">Username</span><div class="small muted">Your crew will see this name. 3 to 20 letters, numbers or _.</div>'+
     '<div class="row"><span class="num" style="font-size:24px">@</span><input class="text grow" id="uname" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="20" value="'+esc(UI.unameIn!=null?UI.unameIn:p.username)+'"><button class="btn primary" data-act="saveuname">'+(UI.unameBusy?'Saving':'Save')+'</button></div>'+
     (UI.unameErr?'<div class="small" style="color:var(--danger)">'+esc(UI.unameErr)+'</div>':'')+(UI.unameOk?'<div class="small" style="color:var(--accent)">'+esc(UI.unameOk)+'</div>':'')+'</section>';
-  h+='<section class="card"><div class="row between"><span class="label">Bodyweight</span><span class="small muted">Private, only you see it</span></div>'+
+  h+='<section class="card"><div class="row between"><span class="label">Bodyweight'+ib('bw')+'</span><span class="small muted">Private, only you see it</span></div>'+
     (bw?'<div class="row" style="align-items:baseline"><span class="num" style="font-size:44px">'+f(bw)+'</span><span class="muted">kg, logged '+ago(p.bw.reduce(function(a,b){return a.t>b.t?a:b}).t)+'</span></div>':'<div class="small muted">Used to rank your lifts fairly against people of different sizes.</div>')+
     '<div class="row"><input class="text grow" id="bwin" inputmode="decimal" autocomplete="off" placeholder="'+(bw?'New weigh-in, kg':'Your bodyweight, kg')+'"><button class="btn primary" data-act="logbw">Log</button></div>'+
     (UI.bwErr?'<div class="small" style="color:var(--danger)">'+esc(UI.bwErr)+'</div>':'')+bwSpark()+'</section>';
-  h+='<section class="card"><span class="label">Ranked lifts</span><div class="small muted">Your best estimated one-rep max on each lift, worked out from weight and reps, so 90 kg for 10 beats 100 kg for 1. These are the lifts crews will compete on.</div><div class="list">'+
+  h+='<section class="card"><span class="label">Ranked lifts'+ib('ranked')+ib('estmax')+'</span><div class="small muted">Your best estimated one-rep max on each lift, worked out from weight and reps, so 90 kg for 10 beats 100 kg for 1. These are the lifts crews will compete on.</div><div class="list">'+
     RANKED.map(function(r){var b=bests[r.id];
       return '<div class="item"><span class="grow"><b>'+esc(r.name)+'</b><br><span class="small muted">'+(b?'From '+f(b.w)+(r.bw?' kg added':' kg')+' × '+b.r+', '+dshort(b.t)+(ratioTxt(b)?' · '+ratioTxt(b):''):'Not logged yet')+'</span></span>'+(b?'<span class="num">'+Math.round(b.v)+'<small>kg</small></span>':'<span class="muted">–</span>')+'</div>'}).join('')+
     '</div><div class="small muted">Pull-ups and dips count your bodyweight plus any added weight. Reps above 12 count as 12.</div></section>';
@@ -632,7 +664,7 @@ async function saveUsername(){
 }
 function rankSelect(e){
   var cur=rankOf(e.name),k=key(e.name);
-  return '<section class="card"><div class="row between"><label class="label" for="rankmap">Counts as ranked lift</label>'+(cur?'<span class="lv">Ranked</span>':'')+'</div>'+
+  return '<section class="card"><div class="row between"><span><label class="label" for="rankmap">Counts as ranked lift</label>'+ib('ranked')+'</span>'+(cur?'<span class="lv">Ranked</span>':'')+'</div>'+
     '<select class="text" id="rankmap" data-k="'+esc(k)+'"><option value="none"'+(cur?'':' selected')+'>Not ranked</option>'+RANKED.map(function(r){return '<option value="'+r.id+'"'+(cur&&cur.id===r.id?' selected':'')+'>'+esc(r.name)+'</option>'}).join('')+'</select>'+
     '<div class="small muted">Only barbell versions and pull-ups or dips count, so everyone in a crew compares the same movement. Change it here if the app guessed wrong.</div></section>';
 }
@@ -663,7 +695,9 @@ function rankedHist(){
 }
 function myStats(){
   var p=prof(),b=rankedBests(),hist=rankedHist(),ranked={},ws=weekStart(Date.now()),wk={start:ws,sessions:0,volume:0,prs:0},tot={sessions:0,volume:0};
-  RANKED.forEach(function(r){var x=b[r.id];if(!x)return;var o={v:Math.round(x.v*10)/10,w:x.w,r:x.r,t:x.t,hist:hist[r.id]};if(x.bw>0)o.ratio=Math.round(x.v/x.bw*100)/100;ranked[r.id]=o});
+  var win=windowStats();
+  RANKED.forEach(function(r){var x=b[r.id];if(!x)return;var o={v:Math.round(x.v*10)/10,w:x.w,r:x.r,t:x.t,hist:hist[r.id]};if(x.bw>0)o.ratio=Math.round(x.v/x.bw*100)/100;
+    var wn=win[r.id];if(wn.h)o.h90=wn.h;if(wn.p)o.p90=wn.p;o.s90=wn.s;if(wn.g>0)o.g30=wn.g;ranked[r.id]=o});
   done().forEach(function(s){var v=0;s.items.forEach(function(it){v+=vol(it.sets)});tot.sessions++;tot.volume+=v;if(s.start>=ws){wk.sessions++;wk.volume+=v}});
   (p.events||[]).forEach(function(e){if(e.type==='pr'&&e.t>=ws)wk.prs++});
   wk.volume=Math.round(wk.volume);tot.volume=Math.round(tot.volume);
@@ -715,14 +749,14 @@ function crownKey(cid){return 'gymlog.crowns.'+me+'.'+cid}
 function inboxItems(cid){
   var seen=lsGet(seenKey(cid),0),items=[];
   crewFeed(cid).forEach(function(f){if(f.uid!==me&&f.e.t>seen)items.push({t:f.e.t,text:'@'+f.name+': '+f.e.text})});
-  var prev=lsGet(crownKey(cid),null),now=crownHolders(cid);
-  if(prev)RANKED.forEach(function(r){var p=prev[r.id],n=now[r.id]&&now[r.id].uid;
-    if(p===me&&n&&n!==me)items.push({t:Date.now(),hot:true,text:'@'+now[r.id].name+' took your '+r.name+' crown. Your move.'});
-    else if(n===me&&p!==me)items.push({t:Date.now(),text:'You hold the '+r.name+' crown.'})});
+  var prev=lsGet(crownKey(cid),null),now=titleHolders(cid);
+  if(prev&&prev._v===2)RANKED.forEach(function(r){TITLES.forEach(function(T){var k=T.id+':'+r.id,p=prev[k],x=now[r.id][T.id],n=x&&x.uid;
+    if(p===me&&n&&n!==me)items.push({t:Date.now(),hot:true,text:'@'+x.name+' took your '+r.name+' '+T.name+'. Your move.'});
+    else if(n===me&&p!==me)items.push({t:Date.now(),text:'You took the '+r.name+' '+T.name+'.'})})});
   return items.sort(function(a,b){return b.t-a.t}).slice(0,12);
 }
 function markSeen(cid){
-  lsSet(seenKey(cid),Date.now());var h={},now=crownHolders(cid);Object.keys(now).forEach(function(k){h[k]=now[k]?now[k].uid:null});lsSet(crownKey(cid),h);
+  lsSet(seenKey(cid),Date.now());var h={_v:2},now=titleHolders(cid);RANKED.forEach(function(r){TITLES.forEach(function(T){var x=now[r.id][T.id];h[T.id+':'+r.id]=x?x.uid:null})});lsSet(crownKey(cid),h);
 }
 function unseenCount(){var n=0;myCrews().forEach(function(cid){if(CREW[cid]&&Object.keys(CREW[cid].stats).length)n+=inboxItems(cid).length});return n}
 
@@ -769,16 +803,20 @@ function toggleRespect(cid,eid){
 /* --- ghost mode inside a workout --- */
 function ghostHTML(a,i){
   var it=a.items[i],r=rankOf(it.name),cid=activeCrew();if(!r||!cid||!CREW[cid])return '';
-  var crown=crownHolders(cid)[r.id],bw=bwNow(),best=0;
+  var th=titleHolders(cid)[r.id],bw=bwNow(),best=0;
   it.sets.forEach(function(x){var v=e1rm((+x.w||0)+(r.bw?bw:0),x.r);if(v>best)best=v});
-  var mine=best&&bw?best/bw:0,h='<div class="ghost">'+CROWN_ICON+'<div class="grow">';
-  if(!crown)h+='<b>No one holds the '+esc(r.name)+' crown yet.</b><br><span class="muted">'+(bw?'Finish this workout to take it.':'Add your bodyweight in Profile to compete for crowns.')+'</span>';
-  else if(crown.uid===me)h+='<b>You hold the crown</b> at '+r2(crown.x.ratio)+'×.<br><span class="muted">'+(mine>crown.x.ratio?'This workout beats your own record.':'Defend it.')+'</span>';
-  else{h+='<b>@'+esc(crown.name)+' holds it</b>: '+f(crown.x.w)+' × '+crown.x.r+', '+Math.round(crown.x.v)+' kg est., '+r2(crown.x.ratio)+'×.<br>';
-    if(!bw)h+='<span class="muted">Add your bodyweight in Profile to compete.</span>';
-    else if(!best)h+='<span class="muted">You need '+Math.round(crown.x.ratio*bw)+' kg est. to take it.</span>';
-    else if(mine>crown.x.ratio)h+='<span class="win">This workout takes the crown: '+Math.round(best)+' kg est., '+r2(mine)+'×.</span>';
-    else h+='<span class="muted">This workout: '+Math.round(best)+' kg est. You need '+Math.max(1,Math.ceil(crown.x.ratio*bw-best))+' kg more on your estimated max.</span>'}
+  var mr=best&&bw?best/bw:0,c=th.crown,hv=th.heavy,h='<div class="ghost"><div class="grow"><div class="row between" style="gap:6px"><b>'+esc(r.name)+' titles</b>'+ib('ghost')+'</div>';
+  function line(T,x,mine,need,unit){
+    var s='<div class="gl">'+titleIcon(T,16)+'<span>';
+    if(!x)return s+'<b>'+(T==='crown'?'Crown':'Heavyweight')+' is open.</b> '+(T==='crown'&&!bw?'Add your bodyweight in Profile to compete.':'Finish this workout to take it.')+'</span></div>';
+    if(x.uid===me)return s+'<b>You hold the '+(T==='crown'?'Crown':'Heavyweight')+'</b> ('+esc(x.txt)+'). '+(mine>x.val?'This workout beats it.':'Defend it.')+'</span></div>';
+    s+='<b>@'+esc(x.name)+'</b> '+esc(x.txt)+' ('+esc(x.sub)+'). ';
+    if(T==='crown'&&!bw)return s+'<span class="muted">Add your bodyweight to compete.</span></span></div>';
+    if(!best)return s+'<span class="muted">Need '+Math.round(need)+' kg est.</span></span></div>';
+    if(mine>x.val)return s+'<span class="win">This workout takes it.</span></span></div>';
+    return s+'<span class="muted">'+Math.max(1,Math.ceil(need-best))+' kg short.</span></span></div>';
+  }
+  h+=line('crown',c,mr,c?c.val*bw:0)+line('heavy',hv,best,hv?hv.val:0);
   return h+'</div></div>';
 }
 function updateGhost(a,i){var el=document.getElementById('ghost-'+i);if(el)el.innerHTML=ghostHTML(a,i)}
@@ -802,22 +840,20 @@ function viewCrew(){
   if(c.lost||c.gone)return h+'<section class="card"><h3>You\'re no longer in this crew</h3><div class="small muted">It was deleted or you were removed.</div><button class="btn" data-act="forgetcrew" data-c="'+esc(cid)+'">Remove it from my list</button></section>';
   if(myCrews().length>1)h+='<div class="row" style="flex-wrap:wrap">'+myCrews().map(function(x){var n=CREW[x]&&CREW[x].name||'Crew';return '<button class="btn'+(x===cid?' primary':'')+'" data-act="pickcrew" data-c="'+esc(x)+'">'+esc(n)+'</button>'}).join('')+'</div>';
   var ms=memberStats(cid),nm=Object.keys(c.members).length;
-  h+='<section class="card"><div class="row between"><div class="grow"><h2>'+esc(c.name||'Crew')+'</h2><div class="small muted">'+nm+(nm===1?' member':' members')+'</div></div><button class="btn primary" data-act="invite">Invite</button></div>';
+  h+='<section class="card"><div class="row between"><div class="grow"><h2>'+esc(c.name||'Crew')+'</h2><div class="small muted">'+nm+(nm===1?' member':' members')+ib('crew')+'</div></div><button class="btn primary" data-act="invite">Invite</button></div>';
   if(UI.showInvite){var link=inviteLink(cid);
     h+=link?'<div class="small muted">Send this link. Anyone with it can join, so only share it with friends.</div><input class="text" id="invlink" readonly value="'+esc(link)+'"><div class="row"><a class="btn primary grow" style="font-size:15px;padding:10px 8px;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center" href="https://wa.me/?text='+encodeURIComponent('Join my crew "'+(c.name||'')+'" on Gym Log: '+link)+'" target="_blank" rel="noopener">WhatsApp</a><button class="btn grow" style="font-size:15px;padding:10px 8px" data-act="sharelink">Share</button><button class="btn grow" style="font-size:15px;padding:10px 8px" data-act="copylink">Copy</button></div>':'<div class="small muted">Getting the invite link…</div>';
   }
   h+='</section>';
   var inbox=UI.inbox&&UI.inbox.cid===cid?UI.inbox.items:[];
   if(inbox.length)h+='<section class="card" style="border-color:var(--accent)"><span class="label">While you were away</span><div class="list">'+inbox.map(function(x){return '<div class="item"'+(x.hot?' style="color:var(--accent)"':'')+'><span class="grow">'+esc(x.text)+'</span><span class="small muted">'+agoShort(x.t)+'</span></div>'}).join('')+'</div></section>';
-  var crowns=crownHolders(cid),mineN=0;Object.keys(crowns).forEach(function(k){if(crowns[k]&&crowns[k].uid===me)mineN++});
-  h+='<section class="card"><div class="row between"><span class="label">Crowns</span><span class="small muted">You hold '+mineN+'</span></div><div class="small muted">Each crown goes to the best estimated max relative to bodyweight.</div><div class="crowns">'+RANKED.map(function(r){var x=crowns[r.id];
-    return '<div class="crown'+(x&&x.uid===me?' mine':'')+'">'+(x?CROWN_ICON:'')+'<b>'+esc(r.name)+'</b>'+(x?'<span>@'+esc(x.name)+'</span><small>'+r2(x.x.ratio)+'× · '+Math.round(x.x.v)+' kg est.</small>':'<small>Up for grabs</small>')+'</div>'}).join('')+'</div></section>';
+  h+=titlesCard(cid);
   var ws=weekStart(Date.now()),board=ms.map(function(m){var w=m.s.week&&m.s.week.start===ws?m.s.week:{sessions:0,volume:0,prs:0};return {m:m,w:w}}).sort(function(a,b){return b.w.sessions-a.w.sessions||b.w.volume-a.w.volume});
-  h+='<section class="card"><div class="row between"><span class="label">This week</span><span class="small muted">Resets Monday</span></div><div class="list">'+board.map(function(x,i){
+  h+='<section class="card"><div class="row between"><span class="label">This week'+ib('week')+'</span><span class="small muted">Resets Monday</span></div><div class="list">'+board.map(function(x,i){
     return '<button class="item" data-act="member" data-u="'+esc(x.m.uid)+'"><span class="num" style="font-size:20px;width:22px">'+(i+1)+'</span><span class="grow"><b>@'+esc(x.m.name)+(x.m.uid===me?' (you)':'')+'</b><br><span class="small muted">'+x.w.sessions+(x.w.sessions===1?' session':' sessions')+' · '+nfmt(x.w.volume)+' kg · '+x.w.prs+(x.w.prs===1?' new best':' new bests')+'</span></span></button>'}).join('')+'</div>'+
     (nm<2?'<div class="small muted">Invite a friend to start competing.</div>':'')+'</section>';
   var feed=crewFeed(cid).slice(0,UI.feedAll?60:15);
-  h+='<section class="card"><span class="label">Crew feed</span>'+(feed.length?'<div class="list">'+feed.map(function(f){var eid=f.e.id,rs=c.respect[eid]||{},n=Object.keys(rs).length,mineR=!!rs[me];
+  h+='<section class="card"><span class="label">Crew feed'+ib('feed')+'</span>'+(feed.length?'<div class="list">'+feed.map(function(f){var eid=f.e.id,rs=c.respect[eid]||{},n=Object.keys(rs).length,mineR=!!rs[me];
     return '<div class="item"><span class="grow"><b>@'+esc(f.name)+'</b> <span class="small muted">'+agoShort(f.e.t)+'</span><br>'+esc(f.e.text)+(f.e.flag?' <span class="small" style="color:var(--danger)">big jump</span>':'')+'</span>'+
       (f.uid===me?(n?'<span class="small muted">'+n+' respect</span>':''):'<button class="respect" data-act="respect" data-e="'+esc(eid)+'" aria-pressed="'+mineR+'">Respect'+(n?' '+n:'')+'</button>')+'</div>'}).join('')+'</div>'+(crewFeed(cid).length>15?'<button class="link" data-act="feedall">'+(UI.feedAll?'Show less':'Show more')+'</button>':''):'<div class="small muted">Nothing yet. Finish a workout and it shows up here.</div>')+'</section>';
   h+=confirmBox('leave:'+cid,'Leave '+esc(c.name||'this crew')+'? Your stats disappear from it. You can rejoin with a new invite.','Leave crew');
@@ -860,6 +896,95 @@ function viewMember(){
   return h;
 }
 
+/* ---------- stage 3 round 1: routine templates, info cards, four titles per lift ---------- */
+var TEMPLATES=[
+ {name:'Lower',ex:['Squat','Romanian Deadlift','Leg Press','Walking Lunge','Leg Curl','Calf Raise']},
+ {name:'Core',ex:['Plank','Hanging Leg Raise','Cable Crunch','Ab Wheel Rollout','Russian Twist']},
+ {name:'Arms',ex:['Barbell Curl','Hammer Curl','Preacher Curl','Triceps Pushdown','Skull Crusher','Overhead Triceps Extension']},
+ {name:'Full Body',ex:['Squat','Bench Press','Barbell Row','Overhead Press','Romanian Deadlift','Pull-up']},
+ {name:'Shoulders',ex:['Overhead Press','Lateral Raise','Rear Delt Fly','Face Pull','Shrug']},
+ {name:'Chest & Back',ex:['Bench Press','Incline Dumbbell Press','Cable Fly','Pull-up','Barbell Row','Lat Pulldown']},
+ {name:'Glutes',ex:['Hip Thrust','Romanian Deadlift','Bulgarian Split Squat','Glute Kickback','Cable Pull-through']}
+];
+function newRoutineCard(){
+  return '<section class="card" id="newrt" style="border-color:var(--accent)"><div class="row between"><h3>New routine</h3><button class="btn ghost" data-act="newrtclose">Cancel</button></div>'+
+    '<div class="small muted">Pick a starting point. You can rename it and change every exercise afterwards.</div>'+
+    '<div class="tpls">'+TEMPLATES.map(function(t,i){return '<button class="tpl" data-act="newrtpick" data-i="'+i+'"><b>'+esc(t.name)+'</b><span>'+esc(t.ex.slice(0,3).join(', '))+'…</span></button>'}).join('')+
+    '<button class="tpl" data-act="newrtpick" data-i="-1"><b>From scratch</b><span>Empty, add your own</span></button></div></section>';
+}
+
+/* --- the little i buttons --- */
+var INFO={
+ estmax:['Estimated max','What you could probably lift for one rep, worked out from your sets. 90 kg × 10 beats 100 kg × 1. Sorry, ego lifters.','Reps above 12 count as 12, because past that the maths gets wishful.'],
+ ratio:['× bodyweight','Your estimated max divided by your bodyweight. It lets a 65 kg lifter fairly beat a 95 kg one.','1.0× on bench is solid. 1.5× is strong. 2.0× and people start filming you.'],
+ ranked:['Ranked lifts','The 8 big lifts your crew competes on: bench, incline bench, squat, deadlift, overhead press, barbell row, pull-up and dip.','Only barbell versions count, so everyone compares the same movement. Dumbbell bench is great, it just isn\'t ranked.'],
+ titles:['Titles','Each ranked lift has four titles, and anyone in the crew can hold them.','👑 Crown: strongest for your size (× bodyweight).\n🏋 Heavyweight: heaviest estimated max, plain kg.\n🌿 Laurel: most sets of that lift.\n🚀 Rocket: biggest improvement in the last 30 days.\n\nCrown, Heavyweight and Laurel only count the last 90 days, so you have to keep proving it. Old glory expires.'],
+ ghost:['Ghost mode','While you log a ranked lift, this box shows who holds the titles and what you\'d need to take them. It updates as you change the weight and reps.','Nobody can see your sets until you finish the workout.'],
+ xp:['Levels','Every exercise has its own level. A session earns 10 XP, a new best earns 30, and every 50 XP is a level.','Levels are yours only. Crowns are where it gets competitive.'],
+ crew:['Crews','A private group of friends. Only crew members see each other, and only invited people can join.','Your crew sees your username, your workout highlights and your best ranked lifts in kg and × bodyweight (so they could roughly work out your weight). Your full log, notes and bodyweight history stay private.'],
+ week:['This week','Sessions, kg lifted and new bests since Monday. Resets every Monday at midnight.','Tap someone to go head to head.'],
+ feed:['Crew feed','Finished workouts, new bests and level-ups from your crew. Tap Respect when someone earns it.','A "big jump" tag means a best jumped more than 30% at once. Could be real. Could be optimism.'],
+ failure:['To failure','Tap it when you went until you couldn\'t do another rep. You can tick the set without typing a rep count.','History shows it as F, or 8F if you also entered the reps.'],
+ bar:['Plates on a bar','Shows the plates to load for the weight you typed, per side, on a 20 kg bar.','Colours follow the usual gym plates: red 25, blue 20, yellow 15, green 10, white 5.'],
+ muscles:['Muscle map','Lights up what you trained in the last 7 days. Bright means 4+ sets, dim means some.','It guesses from exercise names, so unusual names may not light anything up.'],
+ bw:['Bodyweight','Used to rank your lifts fairly against people of different sizes.','Only you see your weigh-ins. Your crew sees × bodyweight scores, not this log.'],
+ trophies:['Trophies','Milestones for workouts and kg lifted, and a cup for each exercise\'s best lift.','Cups turn silver at level 3 and gold at level 6. More trophies are on the way.']
+};
+function ib(k){var seen=lsGet('gymlog.info',{});return '<button class="ib'+(seen[k]?'':' new')+'" data-act="info" data-k="'+k+'" aria-label="What is '+esc((INFO[k]||[''])[0])+'?">i</button>'}
+function infoSheet(){
+  var x=UI.info&&INFO[UI.info];if(!x)return '';
+  return '<div class="sheetbg" data-act="infoclose"></div><div class="sheet" role="dialog" aria-label="'+esc(x[0])+'"><div class="row between"><h3>'+esc(x[0])+'</h3><button class="icon" data-act="infoclose" aria-label="Close">×</button></div><p>'+esc(x[1])+'</p>'+(x[2]?'<p class="muted" style="white-space:pre-line">'+esc(x[2])+'</p>':'')+'<button class="btn primary" data-act="infoclose">Got it</button></div>';
+}
+
+/* --- four titles per lift --- */
+var TITLES=[
+ {id:'crown',name:'Crown',desc:'strongest for size',color:'#ffb21f'},
+ {id:'heavy',name:'Heavyweight',desc:'heaviest',color:'#c9c4b8'},
+ {id:'laurel',name:'Laurel',desc:'most sets',color:'#7fc77a'},
+ {id:'rocket',name:'Rocket',desc:'biggest glow-up',color:'#ff7a66'}
+];
+function titleIcon(id,sz){sz=sz||18;
+  if(id==='crown')return '<svg viewBox="0 0 24 18" width="'+sz+'" height="'+Math.round(sz*.75)+'" aria-hidden="true"><path d="M2 16h20l-2-11-5 5-3-8-3 8-5-5z" fill="#ffb21f"/></svg>';
+  if(id==='heavy')return '<svg viewBox="0 0 24 24" width="'+sz+'" height="'+sz+'" aria-hidden="true"><path d="M8 7a4 4 0 0 1 8 0" stroke="#c9c4b8" stroke-width="2.4" fill="none"/><path d="M5 10h14l1.5 10h-17z" fill="#c9c4b8"/></svg>';
+  if(id==='laurel')return '<svg viewBox="0 0 24 24" width="'+sz+'" height="'+sz+'" aria-hidden="true"><path d="M12 21c-5-2-8-6-8-11M12 21c5-2 8-6 8-11" stroke="#7fc77a" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="5" cy="8" r="1.9" fill="#7fc77a"/><circle cx="19" cy="8" r="1.9" fill="#7fc77a"/><circle cx="6.5" cy="13" r="1.9" fill="#7fc77a"/><circle cx="17.5" cy="13" r="1.9" fill="#7fc77a"/></svg>';
+  return '<svg viewBox="0 0 24 24" width="'+sz+'" height="'+sz+'" aria-hidden="true"><path d="M12 2c4 3 5 8 3 13H9C7 10 8 5 12 2z" fill="#ff7a66"/><path d="M9 15l-3 4 4-1M15 15l3 4-4-1" fill="#ff7a66"/></svg>';
+}
+/* What you publish per lift: last-90-day bests, set count, 30-day glow-up */
+function windowStats(){
+  var now=Date.now(),D90=now-90*864e5,D30=now-30*864e5,out={};
+  RANKED.forEach(function(r){out[r.id]={h:null,p:null,s:0,b30:0,bOld:0}});
+  done().forEach(function(s){var bw=bwAt(s.start);s.items.forEach(function(it){var r=rankOf(it.name);if(!r)return;var o=out[r.id];
+    it.sets.forEach(function(x){var v=e1rm((+x.w||0)+(r.bw?bw:0),x.r);if(!v)return;
+      if(s.start>=D30){if(v>o.b30)o.b30=v}else if(v>o.bOld)o.bOld=v;
+      if(s.start<D90)return;o.s++;
+      if(!o.h||v>o.h.v)o.h={v:Math.round(v*10)/10,w:+x.w||0,r:+x.r,t:s.start};
+      if(bw>0&&(!o.p||v/bw>o.p.ratio))o.p={ratio:Math.round(v/bw*100)/100,v:Math.round(v*10)/10,w:+x.w||0,r:+x.r,t:s.start}})})});
+  Object.keys(out).forEach(function(k){var o=out[k];o.g=o.b30&&o.bOld&&o.b30>o.bOld?Math.round((o.b30/o.bOld-1)*1000)/1000:0});
+  return out;
+}
+function titleHolders(cid){
+  var out={},ms=memberStats(cid);
+  RANKED.forEach(function(r){var t={crown:null,heavy:null,laurel:null,rocket:null};
+    ms.forEach(function(m){var x=m.s.ranked&&m.s.ranked[r.id];if(!x)return;
+      if(x.p90&&x.p90.ratio>0&&(!t.crown||x.p90.ratio>t.crown.val))t.crown={uid:m.uid,name:m.name,val:x.p90.ratio,txt:r2(x.p90.ratio)+'×',sub:f(x.p90.w)+' × '+x.p90.r,x:x.p90};
+      if(x.h90&&x.h90.v>0&&(!t.heavy||x.h90.v>t.heavy.val))t.heavy={uid:m.uid,name:m.name,val:x.h90.v,txt:Math.round(x.h90.v)+' kg',sub:f(x.h90.w)+' × '+x.h90.r,x:x.h90};
+      if(x.s90>0&&(!t.laurel||x.s90>t.laurel.val))t.laurel={uid:m.uid,name:m.name,val:x.s90,txt:x.s90+(x.s90===1?' set':' sets'),sub:'last 90 days'};
+      if(x.g30>0&&(!t.rocket||x.g30>t.rocket.val))t.rocket={uid:m.uid,name:m.name,val:x.g30,txt:'+'+Math.round(x.g30*100)+'%',sub:'last 30 days'}});
+    out[r.id]=t});
+  return out;
+}
+function titlesCard(cid){
+  var th=titleHolders(cid),n=0;Object.keys(th).forEach(function(k){TITLES.forEach(function(T){if(th[k][T.id]&&th[k][T.id].uid===me)n++})});
+  var h='<section class="card"><div class="row between"><span class="label">Titles'+ib('titles')+'</span><span class="small muted">You hold '+n+' of '+(RANKED.length*4)+'</span></div>';
+  h+='<div class="tlegend">'+TITLES.map(function(T){return '<span>'+titleIcon(T.id,14)+' '+T.name+'</span>'}).join('')+'</div>';
+  h+=RANKED.map(function(r){var t=th[r.id];if(!TITLES.some(function(T){return t[T.id]}))return '';
+    return '<div class="tlift"><b>'+esc(r.name)+'</b><div class="tcells">'+TITLES.map(function(T){var x=t[T.id];
+      return '<div class="tcell'+(x&&x.uid===me?' mine':'')+'" title="'+T.name+'">'+titleIcon(T.id,16)+(x?'<span class="tn">@'+esc(x.name)+'</span><span class="tv">'+esc(x.txt)+'</span>':'<span class="tv muted">open</span>')+'</div>'}).join('')+'</div></div>'}).join('');
+  var empty=RANKED.filter(function(r){var t=th[r.id];return !TITLES.some(function(T){return t[T.id]})}).map(function(r){return r.name});
+  if(empty.length)h+='<div class="small muted">Up for grabs: '+esc(empty.join(', '))+'. Log one to claim all four titles.</div>';
+  return h+'</section>';
+}
+
 /* ---------- views ---------- */
 function confirmBox(c,q,yes){
   return UI.confirm===c?'<div class="card" style="border-color:var(--danger)"><div>'+q+'</div><div class="row"><button class="btn danger grow" data-act="yes">'+yes+'</button><button class="btn grow" data-act="no">Keep</button></div></div>':'';
@@ -883,7 +1008,7 @@ function viewHome(){
       '<div class="small muted">'+esc(r.ex.join(', '))+'</div>'+
       '<div class="row"><button class="btn primary grow" data-act="start" data-id="'+esc(r.id)+'">Start '+esc(r.name)+'</button><button class="btn" data-act="edit" data-id="'+esc(r.id)+'">Edit</button></div></section>';
   }).join('');
-  h+='<div class="row"><button class="btn grow" data-act="newroutine">New routine</button><button class="btn grow" data-act="blank">Empty workout</button></div>';
+  h+=UI.newRt?newRoutineCard():'<div class="row"><button class="btn grow" data-act="newroutine">+ New routine</button><button class="btn grow" data-act="blank">Empty workout</button></div>';
   return h;
 }
 function viewEdit(){
@@ -910,10 +1035,10 @@ function viewWorkout(a){
   h+=a.items.map(function(it,i){
     var hx=IDX[key(it.name)],last=hx&&hx.log[hx.log.length-1];
     var s='<section class="card ex"><div class="row between"><h3 class="grow">'+esc(it.name)+(hx?' <span class="lv">Lv '+hx.st.level+'</span>':'')+'</h3><button class="icon" data-act="mvup" data-i="'+i+'" aria-label="Move '+esc(it.name)+' up">↑</button><button class="icon" data-act="mvdown" data-i="'+i+'" aria-label="Move '+esc(it.name)+' down">↓</button><button class="icon" data-act="rmex" data-i="'+i+'" aria-label="Remove '+esc(it.name)+'">×</button></div>';
-    s+=UI.swap===i?'<div class="row"><input class="text grow" id="swapin" list="exnames" placeholder="Swap for which exercise?" autocomplete="off"><button class="btn primary" data-act="swapdo" data-i="'+i+'">Swap</button><button class="btn" data-act="swapopen" data-i="'+i+'">Cancel</button></div>':'<div class="row between"><button class="link" data-act="swapopen" data-i="'+i+'">Swap exercise</button><button class="link" data-act="bar" data-i="'+i+'">'+(isBar(it.name)?'Hide the bar':'Show plates on a bar')+'</button></div>';
+    s+=UI.swap===i?'<div class="row"><input class="text grow" id="swapin" list="exnames" placeholder="Swap for which exercise?" autocomplete="off"><button class="btn primary" data-act="swapdo" data-i="'+i+'">Swap</button><button class="btn" data-act="swapopen" data-i="'+i+'">Cancel</button></div>':'<div class="row between"><button class="link" data-act="swapopen" data-i="'+i+'">Swap exercise</button><span><button class="link" data-act="bar" data-i="'+i+'">'+(isBar(it.name)?'Hide the bar':'Show plates on a bar')+'</button>'+ib('bar')+'</span></div>';
     if(isBar(it.name))s+='<div class="barbox" id="bar-'+i+'">'+barSVG(curW(it))+'</div>';
     s+='<div id="ghost-'+i+'">'+ghostHTML(a,i)+'</div>';
-    s+='<p class="last">'+(last?'Last time, '+dshort(last.t)+': '+setsText(last.sets):'First time logging this')+'</p><div class="sets">';
+    s+=''+(i===0?'<div class="small muted">Went until you couldn\'t do another rep? Tap To failure under the reps.'+ib('failure')+'</div>':'')+'<p class="last">'+(last?'Last time, '+dshort(last.t)+': '+setsText(last.sets):'First time logging this')+'</p><div class="sets">';
     s+=it.sets.map(function(st,j){
       return '<div class="set'+(st.ok?' done':'')+'"><span class="n">'+(j+1)+'</span>'+stepper('w',i,j,st.w,'kg')+stepper('r',i,j,st.r,st.f?'to failure':'reps',st.f?'F':'')+
         '<button class="tick" data-act="tick" data-i="'+i+'" data-j="'+j+'" aria-pressed="'+(st.ok?'true':'false')+'" aria-label="Set '+(j+1)+' done">✓</button>'+
@@ -970,8 +1095,8 @@ function viewExercise(e){
   var h='<div class="row"><button class="btn" data-act="exback" aria-label="Back to all exercises">‹ Back</button><h2 class="grow">'+esc(e.name)+'</h2></div>';
   h+='<div class="stats"><div class="stat"><b>'+f(tops[tops.length-1])+'</b><span>Latest kg</span></div><div class="stat"><b>'+f(best)+'</b><span>Best kg</span></div><div class="stat"><b>'+e.st.level+'</b><span>Level</span></div></div>';
   var rk=rankOf(e.name),eb=0,ebl=null;e.log.forEach(function(l){l.sets.forEach(function(x){var v=e1rm((+x.w||0)+(rk&&rk.bw?bwAt(l.t):0),x.r);if(v>eb){eb=v;ebl={v:v,bw:bwAt(l.t)}}})});
-  if(eb)h+='<div class="row between small"><span class="muted">Estimated one-rep max</span><span><b class="num" style="font-size:22px">'+Math.round(eb)+'</b> kg'+(rk&&ebl.bw?' · '+nf1(eb/ebl.bw)+'× bodyweight':'')+'</span></div>';
-  h+='<div class="row between small muted"><span>'+xpBar(e.st)+' &nbsp;'+(50-e.st.into)+' XP to level '+(e.st.level+1)+'</span><span>Session 10 XP, new best 30</span></div>';
+  if(eb)h+='<div class="row between small"><span class="muted">Estimated one-rep max'+ib('estmax')+'</span><span><b class="num" style="font-size:22px">'+Math.round(eb)+'</b> kg'+(rk&&ebl.bw?' · '+nf1(eb/ebl.bw)+'× bodyweight':'')+'</span></div>';
+  h+='<div class="row between small muted"><span>'+ib('xp')+' '+xpBar(e.st)+' &nbsp;'+(50-e.st.into)+' XP to level '+(e.st.level+1)+'</span><span>Session 10 XP, new best 30</span></div>';
   h+='<section class="card"><div class="row between"><span class="small muted">'+(m==='vol'?'Total kg lifted per session':'Heaviest set per session, kg')+'</span><div class="seg"><button data-act="metric" data-m="top" aria-pressed="'+(m!=='vol')+'">Weight</button><button data-act="metric" data-m="vol" aria-pressed="'+(m==='vol')+'">Volume</button></div></div>'+chart(pts)+'</section>';
   h+=rankSelect(e);
   h+='<section class="card"><span class="small muted">Every session</span><div class="detail" style="border-top:0;padding-top:0">'+log.slice().reverse().map(function(l){return '<div><span>'+dlong(l.t)+'</span><span>'+setsText(l.sets)+'</span></div>'}).join('')+'</div></section>';
@@ -992,7 +1117,7 @@ function viewHistory(){
 }
 function render(){
   var nav=$('nav');
-  if(UI.auth!=='in'){nav.hidden=true;$('#bear').innerHTML='';$('#app').innerHTML=viewAuth();return}
+  if(UI.auth!=='in'){$('#sheet').innerHTML='';nav.hidden=true;$('#bear').innerHTML='';$('#app').innerHTML=viewAuth();return}
   nav.hidden=false;
   if(!S.config||!S.config.routines)S.config={kind:'config',routines:clone(DEFAULTS)};
   buildIndex();
@@ -1008,6 +1133,7 @@ function render(){
   else h=viewHome();
   if(UI.dbErr)h='<div class="card" style="border-color:var(--danger)"><b>Your workouts aren\'t saving online yet.</b><div class="small muted">'+(UI.dbErr==='permission-denied'?'The database rule for Gym Log hasn\'t been added in Firebase.':'Check your connection. They\'re kept on this phone until it works.')+'</div></div>'+h;
   $('#app').innerHTML=h;
+  $('#sheet').innerHTML=infoSheet();
   ['train','progress','trophies','crew','history'].forEach(function(t){var b=$('#nav-'+t);if(UI.tab===t)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   $('#nav-train').textContent=a?'Workout':'Train';
   var un=UI.tab==='crew'?0:unseenCount();$('#nav-crew').innerHTML='Crew'+(un?'<span class="dot">'+(un>9?'9+':un)+'</span>':'');
