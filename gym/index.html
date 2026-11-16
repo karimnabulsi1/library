@@ -653,7 +653,7 @@ function stats(e){
 }
 function xpBar(st){var h='',n=Math.floor(st.into/10);for(var i=0;i<5;i++)h+='<i'+(i<n?' class="on"':'')+'></i>';return '<span class="xp" aria-label="'+st.into+' of 50 XP">'+h+'</span>'}
 function cup(c){return '<svg viewBox="0 0 48 48" width="46" height="46" aria-hidden="true"><path d="M12 5h24v12a12 12 0 0 1-24 0z" fill="'+c+'"/><path d="M12 9H6v3a7 7 0 0 0 7 7M36 9h6v3a7 7 0 0 1-7 7" fill="none" stroke="'+c+'" stroke-width="3"/><rect x="21" y="28" width="6" height="9" fill="'+c+'"/><rect x="13" y="37" width="22" height="6" rx="1" fill="'+c+'"/></svg>'}
-function medal(c){return '<svg viewBox="0 0 48 48" width="46" height="46" aria-hidden="true"><circle cx="24" cy="24" r="19" fill="'+c+'"/><circle cx="24" cy="24" r="13" fill="none" stroke="#0e0d0b" stroke-width="2" opacity=".35"/><circle cx="24" cy="24" r="4.5" fill="#0e0d0b"/></svg>'}
+function coinSvg(c){return '<svg viewBox="0 0 48 48" width="46" height="46" aria-hidden="true"><circle cx="24" cy="24" r="19" fill="'+c+'"/><circle cx="24" cy="24" r="13" fill="none" stroke="#0e0d0b" stroke-width="2" opacity=".35"/><circle cx="24" cy="24" r="4.5" fill="#0e0d0b"/></svg>'}
 var LOCK='<svg viewBox="0 0 48 48" width="46" height="46" aria-hidden="true"><rect x="7" y="7" width="34" height="34" rx="6" fill="none" stroke="#5a5446" stroke-width="2" stroke-dasharray="4 4"/><text x="24" y="31" text-anchor="middle" font-size="18" fill="#5a5446" font-family="sans-serif">?</text></svg>';
 function nf(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,',')}
 function viewTrophies(sub){
@@ -661,7 +661,7 @@ function viewTrophies(sub){
   var h=sub?'':'<div class="row"><button class="btn" data-act="tab" data-t="train" aria-label="Back to Train">‹ Back</button><h2 class="grow">Trophy room</h2></div>';
   if(!d.length)return h+(sub?'':'<div class="card empty">Empty shelves for now. Finish a workout to earn your first trophy.</div>');
   var cells='',next;
-  function run(list,val,label,unit){var locked=false;list.forEach(function(n){if(val>=n)cells+='<div class="trophy">'+medal('#ffb21f')+'<b>'+nf(n)+'</b>'+label+'</div>';else if(!locked){locked=true;cells+='<div class="trophy locked">'+LOCK+'<b>'+nf(n)+'</b>'+label+'<span>'+nf(val)+' so far</span></div>'}})}
+  function run(list,val,label,unit){var locked=false;list.forEach(function(n){if(val>=n)cells+='<div class="trophy">'+coinSvg('#ffb21f')+'<b>'+nf(n)+'</b>'+label+'</div>';else if(!locked){locked=true;cells+='<div class="trophy locked">'+LOCK+'<b>'+nf(n)+'</b>'+label+'<span>'+nf(val)+' so far</span></div>'}})}
   run([1,5,10,25,50,100,200],d.length,'workouts');
   run([1000,10000,50000,100000,250000,500000,1000000],total,'kg lifted');
   h+='<section class="card"><span class="label">Milestones'+ib('trophies')+'</span><div class="shelf">'+cells+'</div></section>';
