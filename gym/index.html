@@ -411,11 +411,13 @@ function finish(){
   evs.unshift({id:me+'_'+now+'_w',type:'workout',t:now,routine:a.routine,ex:a.items.map(function(it){return it.name}).slice(0,10),text:'Finished '+a.routine+': '+nset+(nset===1?' set':' sets')+', '+nfmt(wv)+' kg lifted'});
   var lost=prof().lost||{};Object.keys(thBefore).forEach(function(cid){var af=titleHolders(cid);RANKED.forEach(function(r){TITLES.forEach(function(T){
     var b0=thBefore[cid][r.id][T.id],a0=af[r.id][T.id];if(!b0||!a0||b0.uid===me||a0.uid!==me)return;
+    pushNotify(cid,[b0.uid],'steal','👑 Title stolen','@'+(prof().username||'someone')+' took your '+r.name+' '+T.name+'. Your move.');
     evs.push({id:me+'_'+now+'_s'+T.id+r.id,type:'steal',t:now,text:'Took the '+r.name+' '+T.name+' from @'+b0.name+'.'});
     if(b0.x&&b0.x.t&&now-b0.x.t<864e5)cnt('thief');
     if(lost[T.id+':'+r.id]===b0.uid){cnt('revenge');delete lost[T.id+':'+r.id]}})})});
   ups.forEach(function(u,i){evs.push({id:me+'_'+now+'_l'+i,type:'level',t:now,text:u})});
   addEvents(evs);
+  evs.filter(function(e){return e.type==='pr'}).forEach(function(e){myCrews().forEach(function(cid){pushNotify(cid,crewMates(cid),'crewpr','💪 New best in the crew','@'+(prof().username||'someone')+': '+e.text)})});
   var r=a.rid&&routine(a.rid),names=a.items.map(function(it){return it.name});
   UI.offer=r&&names.map(key).join('|')!==r.ex.map(key).join('|')?{rid:r.id,ex:names}:null;
 }
@@ -500,6 +502,9 @@ document.addEventListener('click',function(e){
     case 'info':UI.info=b.dataset.k;var sn=lsGet('gymlog.info',{});sn[UI.info]=1;lsSet('gymlog.info',sn);break;
     case 'infoclose':UI.info=null;break;
     case 'tinspect':UI.tsheet=b.dataset.id;break;
+    case 'pushon':turnOnPush();return;
+    case 'pushoff':turnOffPush();return;
+    case 'pushtest':pushCall('/test',{}).then(function(r){toast(r.sent?'Sent. Lock your phone to see it.':'No device found. Turn notifications off and on again.')},function(){toast('Couldn\'t reach the notification server')});return;
     case 'var':setVariant(a,i,b.dataset.k,b.dataset.o);UI.addOpt=null;break;
     case 'vopen':UI.vopen=UI.vopen||{};UI.vopen[i]=!UI.vopen[i];break;
     case 'vadd':UI.addOpt=i+':'+b.dataset.k;render();var vi=$('#vaddin');if(vi)vi.focus();return;
@@ -509,19 +514,19 @@ document.addEventListener('click',function(e){
     case 'tidyback':UI.tidy=false;break;
     case 'tidyok':var tl=tidyList(),tx=tl[+b.dataset.n];if(tx){var tv={};tx.e.d.forEach(function(d){var el=$('#td'+b.dataset.n+'_'+d[0]);tv[d[0]]=el?el.value:tx.v[d[0]]});var tn=fullName(tx.e,tv);renameEverywhere(tx.from,tn);toast('Renamed to '+tn)}break;
     case 'tidyskip':var tl2=tidyList(),tx2=tl2[+b.dataset.n];if(tx2){S.config.tidy=S.config.tidy||{};S.config.tidy[key(tx2.from)]=1;touch('config')}break;
-    case 'bet':addDoc(activeCrew(),'bets',{by:me,a:me,b:b.dataset.o,stake:b.dataset.s,week:weekStart(Date.now()),t:Date.now(),accepted:false,paid:false}).then(function(){toast('Bet sent')},function(){toast('Couldn\'t send the bet')});return;
+    case 'bet':pushNotify(activeCrew(),[b.dataset.o],'bet','🧀 Bet on your duel','@'+prof().username+' bets '+b.dataset.s+' on this week\'s duel. Accept it?');addDoc(activeCrew(),'bets',{by:me,a:me,b:b.dataset.o,stake:b.dataset.s,week:weekStart(Date.now()),t:Date.now(),accepted:false,paid:false}).then(function(){toast('Bet sent')},function(){toast('Couldn\'t send the bet')});return;
     case 'betok':FB.updateDoc(FB.doc(FB.db,'gymCrews',activeCrew(),'bets',b.dataset.id),{accepted:true}).then(function(){toast('Bet accepted. No backing out.')},function(){toast('Couldn\'t accept')});return;
     case 'paid':FB.updateDoc(FB.doc(FB.db,'gymCrews',activeCrew(),'bets',b.dataset.id),{paid:true}).catch(function(){toast('Couldn\'t update')});return;
-    case 'taunt':addDoc(activeCrew(),'taunts',{from:me,to:b.dataset.o,text:TAUNTS[+b.dataset.i],t:Date.now()}).then(function(){toast('Sent. They\'ll see it next time they open the app.')},function(){toast('Couldn\'t send')});return;
+    case 'taunt':pushNotify(activeCrew(),[b.dataset.o],'taunt','@'+prof().username,'"'+TAUNTS[+b.dataset.i]+'"');addDoc(activeCrew(),'taunts',{from:me,to:b.dataset.o,text:TAUNTS[+b.dataset.i],t:Date.now()}).then(function(){toast('Sent. They\'ll see it next time they open the app.')},function(){toast('Couldn\'t send')});return;
     case 'moretaunts':UI.allTaunts=true;break;
-    case 'hat':var hws=weekStart(Date.now())-7*864e5;FB.setDoc(FB.doc(FB.db,'gymCrews',activeCrew(),'hats',hws+'_'+b.dataset.o),{by:me,to:b.dataset.o,hat:b.dataset.h,t:Date.now()}).then(function(){toast('Hat chosen '+b.dataset.h)},function(){toast('Couldn\'t set the hat')});return;
+    case 'hat':pushNotify(activeCrew(),[b.dataset.o],'hat','🎩 Your hat for the week','@'+prof().username+' picked '+b.dataset.h+' for you. Should have won.');var hws=weekStart(Date.now())-7*864e5;FB.setDoc(FB.doc(FB.db,'gymCrews',activeCrew(),'hats',hws+'_'+b.dataset.o),{by:me,to:b.dataset.o,hat:b.dataset.h,t:Date.now()}).then(function(){toast('Hat chosen '+b.dataset.h)},function(){toast('Couldn\'t set the hat')});return;
     case 'newcallout':UI.newCallout=!UI.newCallout;break;
-    case 'sendcallout':var lid=$('#colift').value,to=$('#coto').value,hx=myStats().ranked[lid].h90;addDoc(activeCrew(),'callouts',{by:me,to:to,lift:lid,w:hx.w,r:hx.r,v:hx.v,t:Date.now()}).then(function(){toast('Called out. 7 days on the clock.')},function(){toast('Couldn\'t send')});UI.newCallout=false;break;
+    case 'sendcallout':var lid=$('#colift').value,to=$('#coto').value,hx=myStats().ranked[lid].h90;pushNotify(activeCrew(),[to],'callout','📞 You\'ve been called out','@'+prof().username+' did '+rankedById(lid).name+' '+f(hx.w)+' × '+hx.r+'. Beat it within 7 days.');addDoc(activeCrew(),'callouts',{by:me,to:to,lift:lid,w:hx.w,r:hx.r,v:hx.v,t:Date.now()}).then(function(){toast('Called out. 7 days on the clock.')},function(){toast('Couldn\'t send')});UI.newCallout=false;break;
     case 'sendoracle':var ol=$('#orlift').value,okg=num($('#orkg').value),wks=+$('#orweeks').value;if(!(okg>0)){toast('Enter a target in kg');return}
       addDoc(activeCrew(),'oracle',{by:me,target:b.dataset.u,lift:ol,kg:okg,t:Date.now(),until:Date.now()+wks*7*864e5,votes:{}}).then(function(){toast('Prediction posted to the crew')},function(){toast('Couldn\'t post')});return;
     case 'vote':var vv={};vv['votes.'+me]=b.dataset.v==='1';FB.updateDoc(FB.doc(FB.db,'gymCrews',activeCrew(),'oracle',b.dataset.id),vv).catch(function(){toast('Couldn\'t vote')});return;
     case 'spot':var sref=FB.doc(FB.db,'gymCrews',activeCrew(),'spots',b.dataset.e),so={},had2=(((X[activeCrew()]||{}).spots||{})[b.dataset.e]||{})[me];
-      if(had2){so[me]=FB.deleteField();FB.updateDoc(sref,so).catch(function(){})}else{so[me]=Date.now();FB.setDoc(sref,so,{merge:true}).then(function(){toast('Spotted ✓')},function(){toast('Couldn\'t spot')})}return;
+      if(had2){so[me]=FB.deleteField();FB.updateDoc(sref,so).catch(function(){})}else{so[me]=Date.now();pushNotify(activeCrew(),[b.dataset.e.split('_')[0]],'spot','✓ Spotted','@'+prof().username+' confirmed your new best.');FB.setDoc(sref,so,{merge:true}).then(function(){toast('Spotted ✓')},function(){toast('Couldn\'t spot')})}return;
     case 'setav':var pa=prof();pa.avatar=Object.assign({c:'#ffb21f'},pa.avatar||{},{a:b.dataset.a});touch('profile');publishSoon();break;
     case 'setring':var pr=prof();pr.avatar=Object.assign({a:'🐻'},pr.avatar||{},{c:b.dataset.c});touch('profile');publishSoon();break;
     case 'share':UI.share=!UI.share;break;
@@ -752,7 +757,7 @@ function viewProfile(){
     RANKED.map(function(r){var b=bests[r.id];
       return '<div class="item"><span class="grow"><b>'+esc(r.name)+'</b><br><span class="small muted">'+(b?'From '+f(b.w)+(r.bw?' kg added':' kg')+' × '+b.r+', '+dshort(b.t)+(ratioTxt(b)?' · '+ratioTxt(b):''):'Not logged yet')+'</span></span>'+(b?'<span class="num">'+Math.round(b.v)+'<small>kg</small></span>':'<span class="muted">–</span>')+'</div>'}).join('')+
     '</div><div class="small muted">Pull-ups and dips count your bodyweight plus any added weight. Reps above 12 count as 12.</div></section>';
-  h+=avatarPicker();
+  h+=avatarPicker()+pushCard();
   h+='<div class="row between small muted"><span>'+esc(UI.email||'')+'</span><button class="link" data-act="signout">Sign out</button></div>';
   return h;
 }
@@ -782,7 +787,8 @@ function rankSelect(e){
     '<div class="small muted">Only barbell versions and pull-ups or dips count, so everyone in a crew compares the same movement. Change it here if the app guessed wrong.</div></section>';
 }
 document.addEventListener('change',function(ev){
-  var t=ev.target;if(t.id==='muteroast'){prof().muteRoast=t.checked;touch('profile');render();return}
+  var t=ev.target;if(t.classList&&t.classList.contains('pushpref')){var pp=Object.assign({},PUSH_DEFAULT,prof().pushPrefs||{});pp[t.dataset.c]=t.checked;prof().pushPrefs=pp;touch('profile');pushCall('/prefs',{prefs:pp}).catch(function(){toast('Couldn\'t save that setting')});return}
+  if(t.id==='muteroast'){prof().muteRoast=t.checked;touch('profile');render();return}
   if(t.id!=='rankmap')return;
   S.config.rankMap=S.config.rankMap||{};S.config.rankMap[t.dataset.k]=t.value;touch('config');render();
 });
@@ -924,7 +930,7 @@ function inviteLink(cid){var c=CREW[cid];return c&&c.code?location.origin+locati
 function toggleRespect(cid,eid){
   var c=CREW[cid],has=c&&c.respect[eid]&&c.respect[eid][me],ref=FB.doc(FB.db,'gymCrews',cid,'respect',eid),o={};
   if(has){o[me]=FB.deleteField();FB.updateDoc(ref,o).catch(function(){toast('Couldn\'t update. Try again.')})}
-  else{o[me]=Date.now();FB.setDoc(ref,o,{merge:true}).catch(function(){toast('Couldn\'t send respect. Try again.')})}
+  else{o[me]=Date.now();pushNotify(cid,[eid.split('_')[0]],'respect','🙌 Respect','@'+prof().username+' gave you Respect.');FB.setDoc(ref,o,{merge:true}).catch(function(){toast('Couldn\'t send respect. Try again.')})}
 }
 
 /* --- ghost mode inside a workout --- */
@@ -1062,6 +1068,7 @@ var INFO={
  bar:['Plates on a bar','Shows the plates to load for the weight you typed, per side, on a 20 kg bar.','Colours follow the usual gym plates: red 25, blue 20, yellow 15, green 10, white 5.'],
  muscles:['Muscle map','Lights up what you trained in the last 7 days. Bright means 4+ sets, dim means some.','It guesses from exercise names, so unusual names may not light anything up.'],
  bw:['Bodyweight','Used to rank your lifts fairly against people of different sizes.','Only you see your weigh-ins. Your crew sees × bodyweight scores, not this log.'],
+ push:['Notifications','Your phone buzzes when something happens in your crew, even with the app closed. Pick which ones below.','They come from a small free server that only sends to people in the same crew. On iPhone they only work from the home-screen icon.'],
  duel:['Weekly duel','Every Monday you\'re paired with someone in your crew. You score up to 500 points a day: 100 for training, 10 per set (up to 20), and 100 per new best (up to 2).','The daily cap means one monster session can\'t win the week, so show up. Odd number in the crew? You face The Bear, which scores 150 a day.'],
  ledger:['The ledger','Bets you accepted on duels, and who owes what. Just for keeping score. No money goes through the app.','Winner taps Mark paid once the knafeh has been handed over.'],
  callout:['Call-outs','Pick one of your ranked sets and dare someone to beat it. They have 7 days.','Beat it and they earn Answered the Call. Let it run out and they get 🐔 Chickened Out on their shame shelf.'],
@@ -1687,6 +1694,54 @@ function viewTidy(){
 }
 function tidyBanner(){var n=tidyList().length;return n?'<button class="card profbtn" data-act="tidy" style="border-color:var(--accent)"><span class="grow"><b>Tidy up '+n+' exercise name'+(n===1?'':'s')+'</b><br><span class="small muted">Say which grip or equipment you used, so each version gets its own stats.</span></span><span class="label">Start ›</span></button>':''}
 
+/* ---------- stage 4: real phone notifications through the Cloudflare push server ---------- */
+var PUSH_URL='https://gymlog-push.karim-nabulsi-54.workers.dev';
+var PUSH_CATS=[['steal','Someone takes one of your titles'],['taunt','Taunts'],['callout','Call-outs'],['bet','Bets on your duel'],['hat','Your loser\'s hat'],['spot','Someone spots your new best'],['respect','Respect on your posts'],['crewpr','Crew mates\' new bests']];
+var PUSH_DEFAULT={steal:true,taunt:true,callout:true,bet:true,hat:true,spot:true,respect:false,crewpr:false};
+function pushReady(){return PUSH_URL.indexOf('__')<0&&'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window}
+function isStandalone(){try{return (window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true}catch(e){return false}}
+function isIOS(){return /iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)}
+async function pushCall(path,body){
+  var u=FB.auth&&FB.auth.currentUser;if(!u)throw new Error('signed out');var tok=await u.getIdToken();
+  var r=await fetch(PUSH_URL+path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},body:JSON.stringify(body||{})});
+  if(!r.ok)throw new Error('push '+r.status);return r.json();
+}
+function pushNotify(cid,to,cat,title,body){
+  if(!pushReady()||!cid)return;to=(to||[]).filter(function(u){return u&&u!==me&&u!=='bear'});if(!to.length)return;
+  pushCall('/notify',{cid:cid,to:to,cat:cat,title:title,body:body}).catch(function(){});
+}
+function crewMates(cid){var c=CREW[cid];return c?Object.keys(c.members).filter(function(u){return u!==me}):[]}
+function b64uToBytes(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var b=atob(s),o=new Uint8Array(b.length);for(var i=0;i<b.length;i++)o[i]=b.charCodeAt(i);return o}
+async function turnOnPush(){
+  UI.pushErr=null;UI.pushBusy=true;render();
+  try{
+    var perm=await Notification.requestPermission();
+    if(perm!=='granted'){UI.pushErr=perm==='denied'?'Notifications are blocked for Gym Log. Turn them on in your phone\'s Settings, under Notifications, then try again.':'You didn\'t allow notifications. Tap the button again when you\'re ready.';UI.pushBusy=false;render();return}
+    var reg=await navigator.serviceWorker.ready,k=await (await fetch(PUSH_URL+'/vapid')).json();
+    var sub=await reg.pushManager.getSubscription();
+    if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64uToBytes(k.key)});
+    var res=await pushCall('/subscribe',{sub:sub.toJSON(),prefs:prof().pushPrefs||PUSH_DEFAULT});
+    prof().pushOn=true;prof().pushPrefs=res.prefs;touch('profile');UI.pushOk='Notifications are on for this phone.';
+  }catch(e){UI.pushErr='Couldn\'t turn them on. Check your connection and try again.'}
+  UI.pushBusy=false;render();
+}
+async function turnOffPush(){
+  try{var reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(sub){await pushCall('/unsubscribe',{endpoint:sub.endpoint});await sub.unsubscribe()}}catch(e){}
+  prof().pushOn=false;touch('profile');UI.pushOk='Notifications are off for this phone.';render();
+}
+function pushCard(){
+  var p=prof(),h='<section class="card"><span class="label">Notifications'+ib('push')+'</span>';
+  if(PUSH_URL.indexOf('__')>=0)return h+'<div class="small muted">Coming soon.</div></section>';
+  if(isIOS()&&!isStandalone())return h+'<div class="small muted">On iPhone, notifications only work from the Gym Log icon on your home screen. Open the app from that icon, then come back here.</div></section>';
+  if(!pushReady())return h+'<div class="small muted">This browser can\'t do notifications. On iPhone, update to iOS 16.4 or later and open Gym Log from your home screen.</div></section>';
+  var granted=Notification.permission==='granted'&&p.pushOn;
+  if(UI.pushErr)h+='<div class="small" style="color:var(--danger)">'+esc(UI.pushErr)+'</div>';
+  if(UI.pushOk)h+='<div class="small win">'+esc(UI.pushOk)+'</div>';
+  if(!granted)return h+'<div class="small muted">Get a buzz when someone takes your title, taunts you, calls you out or bets on your duel.</div><button class="btn primary" data-act="pushon">'+(UI.pushBusy?'One moment':'Turn on notifications')+'</button></section>';
+  var pr=Object.assign({},PUSH_DEFAULT,p.pushPrefs||{});
+  h+='<div class="list">'+PUSH_CATS.map(function(c){return '<label class="item" style="cursor:pointer"><span class="grow">'+esc(c[1])+'</span><input type="checkbox" class="pushpref" data-c="'+c[0]+'"'+(pr[c[0]]?' checked':'')+'></label>'}).join('')+'</div>';
+  return h+'<div class="row"><button class="btn grow" data-act="pushtest">Send me a test</button><button class="btn ghost" data-act="pushoff">Turn off</button></div></section>';
+}
 /* ---------- views ---------- */
 function confirmBox(c,q,yes){
   return UI.confirm===c?'<div class="card" style="border-color:var(--danger)"><div>'+q+'</div><div class="row"><button class="btn danger grow" data-act="yes">'+yes+'</button><button class="btn grow" data-act="no">Keep</button></div></div>':'';
@@ -1865,6 +1920,7 @@ function render(){
   var un=UI.tab==='crew'?0:unseenCount();$('#nav-crew').innerHTML='Crew'+(un?'<span class="dot">'+(un>9?'9+':un)+'</span>':'');
   bear();
 }
+if(location.hash==='#crew'){UI.tab='crew';try{history.replaceState(null,'',location.pathname)}catch(e){}}
 render();connect();
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(function(){});
 })();
