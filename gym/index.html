@@ -289,7 +289,7 @@ function routine(id){return S.config.routines.filter(function(r){return r.id===i
 document.addEventListener('click',function(e){
   var b=e.target.closest('[data-act]');if(!b)return;
   var act=b.dataset.act,a=active(),i=+b.dataset.i,j=+b.dataset.j,r,it,st,inp,v;
-  if(act!=='ask'&&act!=='yes')UI.confirm=null;
+  if(act!=='ask'&&act!=='yes'&&act!=='back')UI.confirm=null;
   if(act!=='swapopen'&&act!=='swapdo')UI.swap=null;
   switch(act){
     case 'reload':location.reload();return;
@@ -324,7 +324,10 @@ document.addEventListener('click',function(e){
     case 'reopen':if(a){toast('Finish your current workout first');return}st=S.sessions[b.dataset.id];if(st){st.done=false;UI.tab='train';UI.open=null;UI.offer=null;touch(st.id);window.scrollTo(0,0)}break;
     case 'addex':inp=$('#addex');v=inp.value.trim();if(!v){inp.focus();return}a.items.push(newItem(v));touch(a.id);break;
     case 'finish':finish();break;
-    case 'ask':UI.confirm=b.dataset.c;break;
+    case 'ask':UI.confirm=b.dataset.c;if(UI.confirm==='cancel')window.scrollTo(0,0);break;
+    case 'back':if(!a)break;
+      if(a.items.some(function(it){return it.sets.some(function(x){return x.ok})})){UI.confirm='cancel';window.scrollTo(0,0)}
+      else{remove(a.id);window.scrollTo(0,0)}break;
     case 'no':break;
     case 'yes':
       var c=UI.confirm||'';UI.confirm=null;
@@ -532,7 +535,8 @@ function stepper(fld,i,j,v,unit){
     '<button data-act="inc" data-f="'+fld+'" data-i="'+i+'" data-j="'+j+'" aria-label="More">+</button><span class="u">'+unit+'</span></div>';
 }
 function viewWorkout(a){
-  var h='<div class="bar"><div class="row between"><div class="grow"><h2>'+esc(a.routine)+'</h2><div class="small muted">'+dlong(a.start)+'</div></div><button class="btn primary" data-act="finish">Finish</button></div></div>';
+  var h='<div class="bar"><div class="row between"><button class="btn" data-act="back" aria-label="Back to routines">‹ Back</button><div class="grow"><h2>'+esc(a.routine)+'</h2><div class="small muted">'+dlong(a.start)+'</div></div><button class="btn primary" data-act="finish">Finish</button></div></div>';
+  h+=confirmBox('cancel','Discard this workout? The sets you ticked won\'t be saved.','Discard');
   h+=a.items.map(function(it,i){
     var hx=IDX[key(it.name)],last=hx&&hx.log[hx.log.length-1];
     var s='<section class="card ex"><div class="row between"><h3 class="grow">'+esc(it.name)+(hx?' <span class="lv">Lv '+hx.st.level+'</span>':'')+'</h3><button class="icon" data-act="mvup" data-i="'+i+'" aria-label="Move '+esc(it.name)+' up">↑</button><button class="icon" data-act="mvdown" data-i="'+i+'" aria-label="Move '+esc(it.name)+' down">↓</button><button class="icon" data-act="rmex" data-i="'+i+'" aria-label="Remove '+esc(it.name)+'">×</button></div>';
@@ -550,7 +554,6 @@ function viewWorkout(a){
   }).join('');
   h+='<section class="card"><div class="row"><input class="text grow" id="addex" list="exnames" placeholder="Add an exercise" autocomplete="off"><button class="btn" data-act="addex">Add</button></div></section>';
   h+='<button class="btn primary big" data-act="finish">Finish workout</button>';
-  h+=confirmBox('cancel','Discard this workout? Nothing from it will be saved.','Discard');
   if(UI.confirm!=='cancel')h+='<button class="btn ghost danger" data-act="ask" data-c="cancel">Discard workout</button>';
   return h;
 }
