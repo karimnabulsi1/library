@@ -132,8 +132,23 @@ svg{display:block;max-width:100%}
 /* nav + toast */
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);z-index:5;padding-bottom:env(safe-area-inset-bottom)}
 nav[hidden]{display:none}
-nav div{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
-nav button{border:0;background:transparent;padding:14px 2px 16px;font-family:var(--display);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.02em;color:var(--muted);border-top:3px solid transparent;margin-top:-1px;white-space:nowrap;overflow:hidden}
+nav div{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+nav button{border:0;background:transparent;padding:14px 2px 16px;font-family:var(--display);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0;color:var(--muted);border-top:3px solid transparent;margin-top:-1px;white-space:nowrap;overflow:hidden;position:relative}
+nav .dot{position:absolute;top:4px;right:4px;min-width:16px;height:16px;border-radius:8px;background:var(--danger);color:#fff;font-family:var(--body);font-size:10px;line-height:16px;padding:0 4px}
+.ghost{display:flex;gap:10px;align-items:flex-start;background:var(--field);border:1px solid var(--dim);border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.35}
+.ghost svg{flex:none;margin-top:2px}
+.win{color:var(--accent);font-weight:700}
+.crowns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.crown{background:var(--field);border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:2px;font-size:13px;min-width:0;overflow-wrap:anywhere}
+.crown b{font-family:var(--display);font-size:16px;letter-spacing:.04em;text-transform:uppercase}
+.crown small{color:var(--muted)}
+.crown.mine{border-color:var(--accent);background:rgba(255,178,31,.07)}
+.respect{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:6px 12px;min-height:36px;font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.respect[aria-pressed="true"]{border-color:var(--accent);color:var(--accent-ink);background:var(--accent)}
+.h2h{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;align-items:center;width:100%;text-align:left;border:0;border-top:1px solid var(--line);background:transparent;padding:10px 4px;font-size:14px;color:var(--ink)}
+.h2h.head{border-top:0;padding-top:0;font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.h2h.sel{background:var(--field);border-radius:6px}
+.h2h small{color:var(--muted)}
 nav button[aria-current="page"]{color:var(--accent);border-top-color:var(--accent)}
 #toast{position:fixed;left:16px;right:16px;bottom:80px;margin:0 auto;max-width:420px;background:var(--ink);color:var(--bg);border-radius:8px;padding:12px 16px;font-weight:500;text-align:center;z-index:9;opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s;pointer-events:none}
 #toast.show{opacity:1;transform:none}
@@ -149,6 +164,7 @@ nav button[aria-current="page"]{color:var(--accent);border-top-color:var(--accen
   <button data-act="tab" data-t="train" id="nav-train">Train</button>
   <button data-act="tab" data-t="progress" id="nav-progress">Progress</button>
   <button data-act="tab" data-t="trophies" id="nav-trophies">Trophies</button>
+  <button data-act="tab" data-t="crew" id="nav-crew">Crew</button>
   <button data-act="tab" data-t="history" id="nav-history">History</button>
 </div></nav>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -190,7 +206,7 @@ function setSync(s){var el=$('#sync');el.dataset.s=s;el.textContent={loading:'Lo
 function ref(id){return FB.doc(FB.db,'gym',me,'docs',id)}
 function track(p){pending++;setSync('saving');p.then(function(){pending--;if(!pending)setSync('saved')},function(e){pending--;UI.dbErr=(e&&e.code)||'error';setSync('error')})}
 function push(id){clearTimeout(timers[id]);delete timers[id];if(!me||!FB.ready)return;var body=id==='config'?S.config:id==='profile'?S.profile:S.sessions[id];if(body)track(FB.setDoc(ref(id),clone(body)))}
-function touch(id){saveLocal();if(!me||!FB.ready)return;clearTimeout(timers[id]);timers[id]=setTimeout(function(){push(id)},600)}
+function touch(id){saveLocal();if(typeof publishSoon==='function'&&id!=='config')publishSoon();if(!me||!FB.ready)return;clearTimeout(timers[id]);timers[id]=setTimeout(function(){push(id)},600)}
 function remove(id){delete S.sessions[id];clearTimeout(timers[id]);delete timers[id];saveLocal();if(me&&FB.ready)track(FB.deleteDoc(ref(id)))}
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')Object.keys(timers).forEach(push)});
 async function loadFirebase(){
@@ -207,7 +223,7 @@ async function connect(){
   try{await loadFirebase()}catch(e){UI.auth='offline';render();return}
   FB.A.onAuthStateChanged(FB.auth,async function(u){
     UI.busy=false;
-    if(!u){me=null;UI.auth='out';UI.tab='train';S={config:null,sessions:{},profile:null};setSync('out');render();return}
+    if(!u){stopCrews();PUBLISHED={};me=null;UI.auth='out';UI.tab='train';S={config:null,sessions:{},profile:null};setSync('out');render();return}
     me=u.uid;UI.auth='in';UI.email=u.email||'';UI.dbErr=null;loadLocal();render();setSync('loading');
     try{
       var snap=await FB.getDocs(FB.collection(FB.db,'gym',me,'docs')),cfg=null,pf=null,ss={},keep=Object.keys(timers);
@@ -217,6 +233,7 @@ async function connect(){
       saveLocal();render();
       if(!cfg)touch('config');
       setSync(pending||Object.keys(timers).length?'saving':'saved');
+      startCrews();
     }catch(e){UI.dbErr=(e&&e.code)||'error';setSync('error');render()}
   });
 }
@@ -289,10 +306,17 @@ function finish(){
   a.items.forEach(function(it){it.sets=it.sets.filter(function(x){return x.ok})});
   a.items=a.items.filter(function(it){return it.sets.length});
   if(!a.items.length){remove(a.id);toast('Nothing ticked, so nothing was saved');return}
-  var before={};a.items.forEach(function(it){var e=IDX[key(it.name)];before[key(it.name)]=e?e.st.level:0});
+  var before={},rb=rankedBests();a.items.forEach(function(it){var e=IDX[key(it.name)];before[key(it.name)]=e?e.st.level:0});
   a.done=true;a.end=Date.now();touch(a.id);window.scrollTo(0,0);buildIndex();
   var ups=[];a.items.forEach(function(it){var k=key(it.name),e=IDX[k];if(e&&before[k]&&e.st.level>before[k])ups.push(it.name+' is now level '+e.st.level)});
   say(ups.length?'Level up. '+ups.join(', ')+'.':'Workout saved. Good session.');
+  var ra=rankedBests(),now=Date.now(),evs=[],nset=0,wv=0;a.items.forEach(function(it){nset+=it.sets.length;wv+=vol(it.sets)});
+  RANKED.forEach(function(r){var x=ra[r.id],y=rb[r.id];if(!x||x.t!==a.start||(y&&x.v<=y.v+0.01))return;
+    var ev={id:me+'_'+now+'_'+r.id,type:'pr',lift:r.id,t:now,text:(y?'New ':'First ')+r.name+' best: '+f(x.w)+(r.bw?' kg added':' kg')+' × '+x.r+' ('+Math.round(x.v)+' kg est.)'};
+    if(y&&x.v>y.v*1.3+5)ev.flag=1;evs.push(ev)});
+  evs.unshift({id:me+'_'+now+'_w',type:'workout',t:now,text:'Finished '+a.routine+': '+nset+(nset===1?' set':' sets')+', '+nfmt(wv)+' kg lifted'});
+  ups.forEach(function(u,i){evs.push({id:me+'_'+now+'_l'+i,type:'level',t:now,text:u})});
+  addEvents(evs);
   var r=a.rid&&routine(a.rid),names=a.items.map(function(it){return it.name});
   UI.offer=r&&names.map(key).join('|')!==r.ex.map(key).join('|')?{rid:r.id,ex:names}:null;
 }
@@ -314,11 +338,24 @@ document.addEventListener('click',function(e){
       UI.busy=true;(act==='signup'?FB.A.createUserWithEmailAndPassword(FB.auth,em,pw):FB.A.signInWithEmailAndPassword(FB.auth,em,pw)).catch(function(e){UI.busy=false;UI.authErr=authMsg(e);render()});break;
     case 'signout':Object.keys(timers).forEach(push);FB.A.signOut(FB.auth);return;
     case 'saveuname':saveUsername();return;
+    case 'joinyes':joinCrew();return;
+    case 'joinno':UI.join=null;try{sessionStorage.removeItem('gymlog.join')}catch(x){}break;
+    case 'mkcrew':createCrew();return;
+    case 'pickcrew':UI.crew=b.dataset.c;UI.inbox=null;UI.showInvite=false;break;
+    case 'forgetcrew':var fc=b.dataset.c;unsubCrew(fc);prof().crews=myCrews().filter(function(x){return x!==fc});touch('profile');UI.crew=null;break;
+    case 'invite':UI.showInvite=!UI.showInvite;break;
+    case 'copylink':var lk=inviteLink(activeCrew());if(navigator.clipboard)navigator.clipboard.writeText(lk).then(function(){toast('Invite link copied')},function(){var el=$('#invlink');if(el){el.select();toast('Select and copy the link')}});return;
+    case 'sharelink':var lk2=inviteLink(activeCrew()),cn=(CREW[activeCrew()]||{}).name||'';if(navigator.share)navigator.share({title:'Gym Log crew',text:'Join my crew "'+cn+'" on Gym Log',url:lk2}).catch(function(){});else toast('Use WhatsApp or Copy instead');return;
+    case 'respect':toggleRespect(activeCrew(),b.dataset.e);return;
+    case 'feedall':UI.feedAll=!UI.feedAll;break;
+    case 'member':if(b.dataset.u===me)break;UI.member=b.dataset.u;UI.h2hLift=null;window.scrollTo(0,0);break;
+    case 'memberback':UI.member=null;window.scrollTo(0,0);break;
+    case 'h2hlift':UI.h2hLift=b.dataset.l;break;
     case 'logbw':var bv=num($('#bwin').value);UI.bwErr=null;
       if(bv===''||bv<25||bv>350){UI.bwErr='Enter your bodyweight in kg, between 25 and 350.';break}
       var pp=prof(),td=day0(Date.now());pp.bw=pp.bw.filter(function(x){return day0(x.t)!==td});pp.bw.push({t:Date.now(),kg:Math.round(bv*10)/10});
       pp.bw.sort(function(x,y){return x.t-y.t});if(pp.bw.length>400)pp.bw=pp.bw.slice(-400);touch('profile');say('Weigh-in logged: '+f(bv)+' kg.');break;
-    case 'tab':UI.unameErr=UI.unameOk=UI.bwErr=null;UI.unameIn=null;UI.tab=b.dataset.t;UI.ex=null;UI.editing=null;window.scrollTo(0,0);break;
+    case 'tab':UI.unameErr=UI.unameOk=UI.bwErr=null;UI.unameIn=null;UI.member=null;UI.crewErr=null;if(b.dataset.t==='crew'&&UI.tab!=='crew')UI.inbox=null;UI.tab=b.dataset.t;UI.ex=null;UI.editing=null;window.scrollTo(0,0);break;
     case 'start':startWorkout(routine(b.dataset.id));break;
     case 'blank':startWorkout(null);break;
     case 'inc':case 'dec':
@@ -353,6 +390,7 @@ document.addEventListener('click',function(e){
       var c=UI.confirm||'';UI.confirm=null;
       if(c==='cancel'&&a){remove(a.id);toast('Workout discarded')}
       else if(c.indexOf('del:')===0){remove(c.slice(4));UI.open=null;toast('Workout deleted')}
+      else if(c.indexOf('leave:')===0){leaveCrew(c.slice(6));return}
       else if(c.indexOf('rdel:')===0){S.config.routines=S.config.routines.filter(function(x){return x.id!==c.slice(5)});UI.editing=null;touch('config')}
       break;
     case 'edit':UI.editing=b.dataset.id;window.scrollTo(0,0);break;
@@ -376,6 +414,7 @@ function setField(a,i,j,fld,v){
     if(sets[k][fld]===''||sets[k][fld]===old){sets[k][fld]=v;el=document.getElementById(fld+'-'+i+'-'+k);if(el)el.value=v===''?'':f(v)}else break;
   }
   if(fld==='w')updateBar(a,i);
+  updateGhost(a,i);
 }
 document.addEventListener('input',function(e){
   var t=e.target,fld=t.dataset.f;if(!fld)return;var a=active();
@@ -411,6 +450,7 @@ function bearState(){
     if(!n)return {m:'ok',t:a.routine+' day. First set, let\'s go.'};
     if(n>=tot)return {m:'happy',t:'Every set ticked. Hit finish.'};
     return {m:'ok',t:n+' of '+tot+' sets done. Keep moving.'}}
+  var un=unseenCount();if(un)return {m:'happy',t:un+' new in your crew. Check the Crew tab.'};
   if(!last)return {m:'ok',t:'Ready when you are.'};
   var days=Math.round((day0(now)-day0(last.start))/864e5);
   if(days<=0)return {m:'happy',t:'Good work today. Go eat.'};
@@ -542,6 +582,7 @@ function rankedBests(){
   return out;
 }
 function nf1(n){return (Math.round(n*10)/10).toString()}
+function r2(n){return (Math.round(n*100)/100).toFixed(2)}
 function ratioTxt(b){return b&&b.bw>0?nf1(b.v/b.bw)+'× bodyweight':''}
 function profileNeeds(){var p=prof();return !p.username||!p.bw.length}
 function profileCard(){
@@ -600,6 +641,225 @@ document.addEventListener('change',function(ev){
   S.config.rankMap=S.config.rankMap||{};S.config.rankMap[t.dataset.k]=t.value;touch('config');render();
 });
 
+/* ---------- stage 2: crews, crowns, ghost mode, feed, inbox, head to head ---------- */
+var CREW={};            /* cid -> {name, owner, code, members:{uid:1}, stats:{uid:doc}, respect:{eid:{uid:t}}, unsub:[]} */
+var PUBLISHED={};       /* cid -> json string last written */
+var CROWN_ICON='<svg viewBox="0 0 24 18" width="18" height="14" aria-hidden="true"><path d="M2 16h20l-2-11-5 5-3-8-3 8-5-5z" fill="var(--accent)"/></svg>';
+function myCrews(){var p=prof();p.crews=p.crews||[];return p.crews}
+function activeCrew(){var l=myCrews();if(!l.length)return null;if(!UI.crew||l.indexOf(UI.crew)<0)UI.crew=l[0];return UI.crew}
+function lsGet(k,d){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function randCode(n){var c='abcdefghjkmnpqrstuvwxyz23456789',s='',a=new Uint32Array(n);try{crypto.getRandomValues(a)}catch(e){for(var j=0;j<n;j++)a[j]=Math.floor(Math.random()*1e9)}for(var i=0;i<n;i++)s+=c[a[i]%c.length];return s}
+function weekStart(t){var d=new Date(t);d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d.getTime()}
+
+/* --- what the crew sees about you --- */
+function rankedHist(){
+  var h={};RANKED.forEach(function(r){h[r.id]=[]});
+  done().forEach(function(s){var best={};
+    s.items.forEach(function(it){var r=rankOf(it.name);if(!r)return;it.sets.forEach(function(x){var v=e1rm((+x.w||0)+(r.bw?bwAt(s.start):0),x.r);if(v>(best[r.id]||0))best[r.id]=v})});
+    Object.keys(best).forEach(function(id){var l=h[id],last=l.length?l[l.length-1][1]:0;if(best[id]>last+0.01)l.push([s.start,Math.round(best[id]*10)/10])})});
+  Object.keys(h).forEach(function(id){h[id]=h[id].slice(-24)});
+  return h;
+}
+function myStats(){
+  var p=prof(),b=rankedBests(),hist=rankedHist(),ranked={},ws=weekStart(Date.now()),wk={start:ws,sessions:0,volume:0,prs:0},tot={sessions:0,volume:0};
+  RANKED.forEach(function(r){var x=b[r.id];if(!x)return;var o={v:Math.round(x.v*10)/10,w:x.w,r:x.r,t:x.t,hist:hist[r.id]};if(x.bw>0)o.ratio=Math.round(x.v/x.bw*100)/100;ranked[r.id]=o});
+  done().forEach(function(s){var v=0;s.items.forEach(function(it){v+=vol(it.sets)});tot.sessions++;tot.volume+=v;if(s.start>=ws){wk.sessions++;wk.volume+=v}});
+  (p.events||[]).forEach(function(e){if(e.type==='pr'&&e.t>=ws)wk.prs++});
+  wk.volume=Math.round(wk.volume);tot.volume=Math.round(tot.volume);
+  return {name:p.username,ranked:ranked,week:wk,total:tot,feed:(p.events||[]).slice(-20)};
+}
+var pubTimer=null;
+function publishSoon(){clearTimeout(pubTimer);pubTimer=setTimeout(publishStats,1200)}
+function publishStats(){
+  if(!me||!FB.ready||!prof().username)return;
+  var d=myStats(),js=JSON.stringify(d);
+  myCrews().forEach(function(cid){
+    if(PUBLISHED[cid]===js)return;PUBLISHED[cid]=js;
+    var body=clone(d);body.at=Date.now();
+    FB.setDoc(FB.doc(FB.db,'gymCrews',cid,'stats',me),body).catch(function(e){delete PUBLISHED[cid];if(e&&e.code==='permission-denied')UI.crewErr='Your stats were refused by the crew rules. If you logged something very unusual, check it in History.';render()});
+  });
+}
+function addEvents(list){
+  if(!list.length)return;var p=prof();p.events=(p.events||[]).concat(list).slice(-40);touch('profile');publishSoon();
+}
+
+/* --- live crew data --- */
+function subCrew(cid){
+  if(CREW[cid])return;var c=CREW[cid]={name:'',owner:'',code:'',members:{},stats:{},respect:{},unsub:[]};
+  FB.getDoc(FB.doc(FB.db,'gymCrews',cid)).then(function(d){if(d.exists()){c.name=d.data().name;c.owner=d.data().owner}else c.gone=true;render()},function(){});
+  FB.getDoc(FB.doc(FB.db,'gymCrews',cid,'secret','join')).then(function(d){if(d.exists())c.code=d.data().code;render()},function(){});
+  var err=function(e){if(e&&e.code==='permission-denied'){c.lost=true;render()}};
+  c.unsub.push(FB.onSnapshot(FB.collection(FB.db,'gymCrews',cid,'members'),function(s){var m={};s.forEach(function(d){m[d.id]=d.data()});c.members=m;render()},err));
+  c.unsub.push(FB.onSnapshot(FB.collection(FB.db,'gymCrews',cid,'stats'),function(s){var m={};s.forEach(function(d){m[d.id]=d.data()});c.stats=m;render()},err));
+  c.unsub.push(FB.onSnapshot(FB.collection(FB.db,'gymCrews',cid,'respect'),function(s){var m={};s.forEach(function(d){m[d.id]=d.data()});c.respect=m;render()},err));
+}
+function unsubCrew(cid){var c=CREW[cid];if(!c)return;c.unsub.forEach(function(f){try{f()}catch(e){}});delete CREW[cid]}
+function startCrews(){myCrews().forEach(subCrew);publishStats();checkJoinLink()}
+function stopCrews(){Object.keys(CREW).forEach(unsubCrew)}
+function memberStats(cid){var c=CREW[cid];if(!c)return [];var l=Object.keys(c.stats).filter(function(u){return c.members[u]&&u!==me}).map(function(u){var s=c.stats[u];return {uid:u,name:s.name||'someone',s:s}});
+  if(prof().username)l.push({uid:me,name:prof().username,s:myStats()});return l}
+function crownHolders(cid){
+  var out={};RANKED.forEach(function(r){var best=null;memberStats(cid).forEach(function(m){var x=m.s.ranked&&m.s.ranked[r.id];if(!x||!(x.ratio>0))return;
+    if(!best||x.ratio>best.x.ratio||(x.ratio===best.x.ratio&&x.t<best.x.t))best={uid:m.uid,name:m.name,x:x}});out[r.id]=best});
+  return out;
+}
+function crewFeed(cid){
+  var l=[];memberStats(cid).forEach(function(m){(m.s.feed||[]).forEach(function(e){l.push({uid:m.uid,name:m.name,e:e})})});
+  return l.sort(function(a,b){return b.e.t-a.e.t});
+}
+
+/* --- inbox: what happened since you last looked --- */
+function seenKey(cid){return 'gymlog.seen.'+me+'.'+cid}
+function crownKey(cid){return 'gymlog.crowns.'+me+'.'+cid}
+function inboxItems(cid){
+  var seen=lsGet(seenKey(cid),0),items=[];
+  crewFeed(cid).forEach(function(f){if(f.uid!==me&&f.e.t>seen)items.push({t:f.e.t,text:'@'+f.name+': '+f.e.text})});
+  var prev=lsGet(crownKey(cid),null),now=crownHolders(cid);
+  if(prev)RANKED.forEach(function(r){var p=prev[r.id],n=now[r.id]&&now[r.id].uid;
+    if(p===me&&n&&n!==me)items.push({t:Date.now(),hot:true,text:'@'+now[r.id].name+' took your '+r.name+' crown. Your move.'});
+    else if(n===me&&p!==me)items.push({t:Date.now(),text:'You hold the '+r.name+' crown.'})});
+  return items.sort(function(a,b){return b.t-a.t}).slice(0,12);
+}
+function markSeen(cid){
+  lsSet(seenKey(cid),Date.now());var h={},now=crownHolders(cid);Object.keys(now).forEach(function(k){h[k]=now[k]?now[k].uid:null});lsSet(crownKey(cid),h);
+}
+function unseenCount(){var n=0;myCrews().forEach(function(cid){if(CREW[cid]&&Object.keys(CREW[cid].stats).length)n+=inboxItems(cid).length});return n}
+
+/* --- joining, creating, leaving --- */
+(function(){try{var q=new URLSearchParams(location.search),c=q.get('crew'),k=q.get('k');
+  if(c&&k&&/^[A-Za-z0-9_-]{4,40}$/.test(c)&&/^[a-z0-9]{4,20}$/.test(k)){sessionStorage.setItem('gymlog.join',JSON.stringify({c:c,k:k}));history.replaceState(null,'',location.pathname)}}catch(e){}})();
+function checkJoinLink(){
+  var j=null;try{j=JSON.parse(sessionStorage.getItem('gymlog.join')||'null')}catch(e){}
+  if(!j)return;if(myCrews().indexOf(j.c)>=0){sessionStorage.removeItem('gymlog.join');UI.crew=j.c;return}
+  UI.join={cid:j.c,k:j.k,name:''};UI.tab='crew';
+  FB.getDoc(FB.doc(FB.db,'gymCrews',j.c)).then(function(d){if(UI.join){if(d.exists())UI.join.name=d.data().name;else UI.join.bad=true;render()}},function(){if(UI.join){UI.join.bad=true;render()}});
+  render();
+}
+async function joinCrew(){
+  var j=UI.join;if(!j)return;UI.crewBusy=true;UI.crewErr=null;render();
+  try{await FB.setDoc(FB.doc(FB.db,'gymCrews',j.cid,'members',me),{code:j.k,at:Date.now()});
+    myCrews().push(j.cid);touch('profile');UI.crew=j.cid;UI.join=null;sessionStorage.removeItem('gymlog.join');subCrew(j.cid);PUBLISHED={};publishStats();say('You\'re in '+(j.name||'the crew')+'. Go take a crown.');
+  }catch(e){UI.crewErr=e&&e.code==='permission-denied'?'That invite link doesn\'t work any more. Ask for a new one.':'Couldn\'t join. Check your connection and try again.'}
+  UI.crewBusy=false;render();
+}
+async function createCrew(){
+  var nm=($('#crewname').value||'').trim().replace(/\s+/g,' ');UI.crewErr=null;
+  if(nm.length<2||nm.length>30){UI.crewErr='Give your crew a name, 2 to 30 characters.';render();return}
+  var cid='c'+randCode(10),code=randCode(8);UI.crewBusy=true;render();
+  try{await FB.setDoc(FB.doc(FB.db,'gymCrews',cid),{name:nm,owner:me,at:Date.now()});
+    await FB.setDoc(FB.doc(FB.db,'gymCrews',cid,'secret','join'),{code:code});
+    await FB.setDoc(FB.doc(FB.db,'gymCrews',cid,'members',me),{code:code,at:Date.now()});
+    myCrews().push(cid);touch('profile');UI.crew=cid;subCrew(cid);PUBLISHED={};publishStats();UI.showInvite=true;
+  }catch(e){UI.crewErr='Couldn\'t create the crew. Check your connection and try again.'}
+  UI.crewBusy=false;render();
+}
+async function leaveCrew(cid){
+  try{await FB.deleteDoc(FB.doc(FB.db,'gymCrews',cid,'stats',me))}catch(e){}
+  try{await FB.deleteDoc(FB.doc(FB.db,'gymCrews',cid,'members',me))}catch(e){}
+  unsubCrew(cid);var p=prof();p.crews=myCrews().filter(function(x){return x!==cid});touch('profile');UI.crew=null;delete PUBLISHED[cid];toast('You left the crew');render();
+}
+function inviteLink(cid){var c=CREW[cid];return c&&c.code?location.origin+location.pathname+'?crew='+cid+'&k='+c.code:''}
+function toggleRespect(cid,eid){
+  var c=CREW[cid],has=c&&c.respect[eid]&&c.respect[eid][me],ref=FB.doc(FB.db,'gymCrews',cid,'respect',eid),o={};
+  if(has){o[me]=FB.deleteField();FB.updateDoc(ref,o).catch(function(){toast('Couldn\'t update. Try again.')})}
+  else{o[me]=Date.now();FB.setDoc(ref,o,{merge:true}).catch(function(){toast('Couldn\'t send respect. Try again.')})}
+}
+
+/* --- ghost mode inside a workout --- */
+function ghostHTML(a,i){
+  var it=a.items[i],r=rankOf(it.name),cid=activeCrew();if(!r||!cid||!CREW[cid])return '';
+  var crown=crownHolders(cid)[r.id],bw=bwNow(),best=0;
+  it.sets.forEach(function(x){var v=e1rm((+x.w||0)+(r.bw?bw:0),x.r);if(v>best)best=v});
+  var mine=best&&bw?best/bw:0,h='<div class="ghost">'+CROWN_ICON+'<div class="grow">';
+  if(!crown)h+='<b>No one holds the '+esc(r.name)+' crown yet.</b><br><span class="muted">'+(bw?'Finish this workout to take it.':'Add your bodyweight in Profile to compete for crowns.')+'</span>';
+  else if(crown.uid===me)h+='<b>You hold the crown</b> at '+r2(crown.x.ratio)+'×.<br><span class="muted">'+(mine>crown.x.ratio?'This workout beats your own record.':'Defend it.')+'</span>';
+  else{h+='<b>@'+esc(crown.name)+' holds it</b>: '+f(crown.x.w)+' × '+crown.x.r+', '+Math.round(crown.x.v)+' kg est., '+r2(crown.x.ratio)+'×.<br>';
+    if(!bw)h+='<span class="muted">Add your bodyweight in Profile to compete.</span>';
+    else if(!best)h+='<span class="muted">You need '+Math.round(crown.x.ratio*bw)+' kg est. to take it.</span>';
+    else if(mine>crown.x.ratio)h+='<span class="win">This workout takes the crown: '+Math.round(best)+' kg est., '+r2(mine)+'×.</span>';
+    else h+='<span class="muted">This workout: '+Math.round(best)+' kg est. You need '+Math.max(1,Math.ceil(crown.x.ratio*bw-best))+' kg more on your estimated max.</span>'}
+  return h+'</div></div>';
+}
+function updateGhost(a,i){var el=document.getElementById('ghost-'+i);if(el)el.innerHTML=ghostHTML(a,i)}
+
+/* --- screens --- */
+function viewCrew(){
+  var p=prof(),h='<div class="row"><button class="btn" data-act="tab" data-t="train" aria-label="Back to Train">‹ Back</button><h2 class="grow">Crew</h2></div>';
+  if(!p.username)return h+'<section class="card"><h3>Set up your profile first</h3><div class="small muted">Your crew sees you by your username, and crowns need your bodyweight.</div><button class="btn primary" data-act="tab" data-t="profile">Set up profile</button></section>';
+  if(UI.crewErr)h+='<div class="card" style="border-color:var(--danger)"><div class="small">'+esc(UI.crewErr)+'</div></div>';
+  if(UI.join){var j=UI.join;
+    h+='<section class="card" style="border-color:var(--accent)"><span class="label">Invite</span>'+(j.bad?'<h3>This invite link doesn\'t work</h3><div class="small muted">Ask your friend to send a new one.</div><button class="btn" data-act="joinno">Close</button>':
+      '<h3>Join '+esc(j.name||'this crew')+'?</h3><div class="small muted">Crew members see your username, your workouts\' highlights, and your best ranked lifts in kg and × bodyweight (which is enough to work out roughly what you weigh). Your full log and notes stay private.</div><div class="row"><button class="btn primary grow" data-act="joinyes">'+(UI.crewBusy?'Joining':'Join crew')+'</button><button class="btn" data-act="joinno">Not now</button></div>')+'</section>';
+  }
+  var cid=activeCrew();
+  if(!cid){
+    if(!UI.join)h+='<section class="card"><h3>Start a crew</h3><div class="small muted">Make a crew, then send the invite link to your friends on WhatsApp. Only people in the crew see each other.</div><input class="text" id="crewname" maxlength="30" placeholder="Crew name, e.g. Abdoun Iron" autocomplete="off"><button class="btn primary" data-act="mkcrew">'+(UI.crewBusy?'Creating':'Create crew')+'</button></section>'+
+      '<section class="card"><h3>Got an invite?</h3><div class="small muted">Open the link your friend sent you. It brings you straight here.</div></section>';
+    return h;
+  }
+  var c=CREW[cid]||{members:{},stats:{}};
+  if(c.lost||c.gone)return h+'<section class="card"><h3>You\'re no longer in this crew</h3><div class="small muted">It was deleted or you were removed.</div><button class="btn" data-act="forgetcrew" data-c="'+esc(cid)+'">Remove it from my list</button></section>';
+  if(myCrews().length>1)h+='<div class="row" style="flex-wrap:wrap">'+myCrews().map(function(x){var n=CREW[x]&&CREW[x].name||'Crew';return '<button class="btn'+(x===cid?' primary':'')+'" data-act="pickcrew" data-c="'+esc(x)+'">'+esc(n)+'</button>'}).join('')+'</div>';
+  var ms=memberStats(cid),nm=Object.keys(c.members).length;
+  h+='<section class="card"><div class="row between"><div class="grow"><h2>'+esc(c.name||'Crew')+'</h2><div class="small muted">'+nm+(nm===1?' member':' members')+'</div></div><button class="btn primary" data-act="invite">Invite</button></div>';
+  if(UI.showInvite){var link=inviteLink(cid);
+    h+=link?'<div class="small muted">Send this link. Anyone with it can join, so only share it with friends.</div><input class="text" id="invlink" readonly value="'+esc(link)+'"><div class="row"><a class="btn primary grow" style="font-size:15px;padding:10px 8px;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center" href="https://wa.me/?text='+encodeURIComponent('Join my crew "'+(c.name||'')+'" on Gym Log: '+link)+'" target="_blank" rel="noopener">WhatsApp</a><button class="btn grow" style="font-size:15px;padding:10px 8px" data-act="sharelink">Share</button><button class="btn grow" style="font-size:15px;padding:10px 8px" data-act="copylink">Copy</button></div>':'<div class="small muted">Getting the invite link…</div>';
+  }
+  h+='</section>';
+  var inbox=UI.inbox&&UI.inbox.cid===cid?UI.inbox.items:[];
+  if(inbox.length)h+='<section class="card" style="border-color:var(--accent)"><span class="label">While you were away</span><div class="list">'+inbox.map(function(x){return '<div class="item"'+(x.hot?' style="color:var(--accent)"':'')+'><span class="grow">'+esc(x.text)+'</span><span class="small muted">'+agoShort(x.t)+'</span></div>'}).join('')+'</div></section>';
+  var crowns=crownHolders(cid),mineN=0;Object.keys(crowns).forEach(function(k){if(crowns[k]&&crowns[k].uid===me)mineN++});
+  h+='<section class="card"><div class="row between"><span class="label">Crowns</span><span class="small muted">You hold '+mineN+'</span></div><div class="small muted">Each crown goes to the best estimated max relative to bodyweight.</div><div class="crowns">'+RANKED.map(function(r){var x=crowns[r.id];
+    return '<div class="crown'+(x&&x.uid===me?' mine':'')+'">'+(x?CROWN_ICON:'')+'<b>'+esc(r.name)+'</b>'+(x?'<span>@'+esc(x.name)+'</span><small>'+r2(x.x.ratio)+'× · '+Math.round(x.x.v)+' kg est.</small>':'<small>Up for grabs</small>')+'</div>'}).join('')+'</div></section>';
+  var ws=weekStart(Date.now()),board=ms.map(function(m){var w=m.s.week&&m.s.week.start===ws?m.s.week:{sessions:0,volume:0,prs:0};return {m:m,w:w}}).sort(function(a,b){return b.w.sessions-a.w.sessions||b.w.volume-a.w.volume});
+  h+='<section class="card"><div class="row between"><span class="label">This week</span><span class="small muted">Resets Monday</span></div><div class="list">'+board.map(function(x,i){
+    return '<button class="item" data-act="member" data-u="'+esc(x.m.uid)+'"><span class="num" style="font-size:20px;width:22px">'+(i+1)+'</span><span class="grow"><b>@'+esc(x.m.name)+(x.m.uid===me?' (you)':'')+'</b><br><span class="small muted">'+x.w.sessions+(x.w.sessions===1?' session':' sessions')+' · '+nfmt(x.w.volume)+' kg · '+x.w.prs+(x.w.prs===1?' new best':' new bests')+'</span></span></button>'}).join('')+'</div>'+
+    (nm<2?'<div class="small muted">Invite a friend to start competing.</div>':'')+'</section>';
+  var feed=crewFeed(cid).slice(0,UI.feedAll?60:15);
+  h+='<section class="card"><span class="label">Crew feed</span>'+(feed.length?'<div class="list">'+feed.map(function(f){var eid=f.e.id,rs=c.respect[eid]||{},n=Object.keys(rs).length,mineR=!!rs[me];
+    return '<div class="item"><span class="grow"><b>@'+esc(f.name)+'</b> <span class="small muted">'+agoShort(f.e.t)+'</span><br>'+esc(f.e.text)+(f.e.flag?' <span class="small" style="color:var(--danger)">big jump</span>':'')+'</span>'+
+      (f.uid===me?(n?'<span class="small muted">'+n+' respect</span>':''):'<button class="respect" data-act="respect" data-e="'+esc(eid)+'" aria-pressed="'+mineR+'">Respect'+(n?' '+n:'')+'</button>')+'</div>'}).join('')+'</div>'+(crewFeed(cid).length>15?'<button class="link" data-act="feedall">'+(UI.feedAll?'Show less':'Show more')+'</button>':''):'<div class="small muted">Nothing yet. Finish a workout and it shows up here.</div>')+'</section>';
+  h+=confirmBox('leave:'+cid,'Leave '+esc(c.name||'this crew')+'? Your stats disappear from it. You can rejoin with a new invite.','Leave crew');
+  if(UI.confirm!=='leave:'+cid)h+='<button class="btn ghost danger" data-act="ask" data-c="leave:'+esc(cid)+'">Leave this crew</button>';
+  return h;
+}
+function nfmt(n){return String(Math.round(n||0)).replace(/\B(?=(\d{3})+(?!\d))/g,',')}
+function agoShort(t){var m=Math.round((Date.now()-t)/6e4);if(m<1)return 'now';if(m<60)return m+'m';var hh=Math.round(m/60);if(hh<24)return hh+'h';return Math.round(hh/24)+'d'}
+function chart2(a,b,labA,labB){
+  var all=a.concat(b);if(!all.length)return '';
+  var W=340,H=180,L=38,R=16,T=18,B=34,lo=Infinity,hi=-Infinity,t0=Infinity,t1=-Infinity;
+  all.forEach(function(p){lo=Math.min(lo,p[1]);hi=Math.max(hi,p[1]);t0=Math.min(t0,p[0]);t1=Math.max(t1,p[0])});
+  if(lo===hi){lo-=5;hi+=5}var st=niceStep((hi-lo)/3);lo=Math.floor(lo/st)*st;hi=Math.ceil(hi/st)*st;if(hi===lo)hi=lo+st;
+  function x(t){return t1===t0?(L+W-R)/2:L+(t-t0)/(t1-t0)*(W-L-R)}function y(v){return T+(1-(v-lo)/(hi-lo))*(H-T-B)}
+  var g='',v,n=0;for(v=lo;v<=hi+st/1e3&&n<12;v+=st,n++)g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v).toFixed(1)+'" y2="'+y(v).toFixed(1)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(y(v)+3).toFixed(1)+'" text-anchor="end">'+f(v)+'</text>';
+  function line(pts,col,dash){if(!pts.length)return '';var d=pts.map(function(p,i){return (i?'L':'M')+x(p[0]).toFixed(1)+' '+y(p[1]).toFixed(1)}).join(' '),e=pts[pts.length-1];
+    return '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2.5"'+(dash?' stroke-dasharray="5 4"':'')+' stroke-linejoin="round"/><circle cx="'+x(e[0]).toFixed(1)+'" cy="'+y(e[1]).toFixed(1)+'" r="4.5" fill="'+col+'"/>'}
+  return '<svg class="chart" viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Estimated max over time, you and your friend">'+g+line(b,'var(--ink)',true)+line(a,'var(--accent)',false)+
+    '<text x="'+L+'" y="'+(H-16)+'">'+dshort(t0)+'</text><text x="'+(W-R)+'" y="'+(H-16)+'" text-anchor="end">'+dshort(t1)+'</text>'+
+    '<rect x="'+L+'" y="'+(H-9)+'" width="14" height="3" fill="var(--accent)"/><text x="'+(L+18)+'" y="'+(H-5)+'">'+esc(labA)+'</text><rect x="'+(L+110)+'" y="'+(H-9)+'" width="14" height="3" fill="var(--ink)"/><text x="'+(L+128)+'" y="'+(H-5)+'">'+esc(labB)+'</text></svg>';
+}
+function pct(h){if(!h||h.length<2)return null;return Math.round((h[h.length-1][1]/h[0][1]-1)*100)}
+function viewMember(){
+  var cid=activeCrew(),c=CREW[cid],m=c&&c.stats[UI.member];if(!m)return viewCrew();
+  var mine=myStats(),them=m,name=them.name||'someone',h='<div class="row"><button class="btn" data-act="memberback" aria-label="Back to crew">‹ Back</button><h2 class="grow">You vs @'+esc(name)+'</h2></div>';
+  var you=0,they=0,rows=RANKED.map(function(r){var a=mine.ranked[r.id],b=them.ranked&&them.ranked[r.id];
+    var wa=a&&b&&(a.ratio||0)>(b.ratio||0),wb=a&&b&&(b.ratio||0)>(a.ratio||0);if(wa)you++;if(wb)they++;
+    function cell(x,win){return x?'<span class="'+(win?'win':'')+'"><b>'+Math.round(x.v)+'</b> kg'+(x.ratio?'<br><small>'+r2(x.ratio)+'×</small>':'')+'</span>':'<span class="muted">–</span>'}
+    return '<button class="h2h'+(UI.h2hLift===r.id?' sel':'')+'" data-act="h2hlift" data-l="'+r.id+'"><span>'+esc(r.name)+'</span>'+cell(a,wa)+cell(b,wb)+'</button>'}).join('');
+  h+='<div class="stats" style="grid-template-columns:1fr 1fr"><div class="stat"><b>'+you+'</b><span>Lifts you lead</span></div><div class="stat"><b>'+they+'</b><span>@'+esc(name)+' leads</span></div></div>';
+  h+='<section class="card"><div class="h2h head"><span></span><span>You</span><span>@'+esc(name)+'</span></div>'+rows+'<div class="small muted">Tap a lift to compare progress. The lead goes to the higher × bodyweight.</div></section>';
+  var lid=UI.h2hLift||(RANKED.filter(function(r){return mine.ranked[r.id]&&them.ranked&&them.ranked[r.id]})[0]||RANKED[0]).id,lr=rankedById(lid);
+  var ha=(mine.ranked[lid]||{}).hist||[],hb=(them.ranked&&them.ranked[lid]||{}).hist||[];
+  h+='<section class="card"><span class="label">'+esc(lr.name)+': estimated max over time</span>'+((ha.length||hb.length)?chart2(ha,hb,'You','@'+name):'<div class="small muted">Neither of you has logged this yet.</div>');
+  var pa=pct(ha),pb=pct(hb);
+  if(pa!=null||pb!=null)h+='<div class="small">'+(pa!=null?'You: <b class="'+(pa>=(pb||-1e9)?'win':'')+'">'+(pa>=0?'+':'')+pa+'%</b> since '+dshort(ha[0][0]):'')+(pa!=null&&pb!=null?' · ':'')+(pb!=null?'@'+esc(name)+': <b class="'+(pb>(pa==null?-1e9:pa)?'win':'')+'">'+(pb>=0?'+':'')+pb+'%</b> since '+dshort(hb[0][0]):'')+'</div>';
+  h+='</section>';
+  var tt=them.total||{sessions:0,volume:0};
+  h+='<section class="card"><span class="label">All time</span><div class="detail" style="border-top:0;padding-top:0"><div><span>Workouts</span><span>You '+mine.total.sessions+' · @'+esc(name)+' '+tt.sessions+'</span></div><div><span>Total lifted</span><span>You '+nfmt(mine.total.volume)+' kg · @'+esc(name)+' '+nfmt(tt.volume)+' kg</span></div></div></section>';
+  return h;
+}
+
 /* ---------- views ---------- */
 function confirmBox(c,q,yes){
   return UI.confirm===c?'<div class="card" style="border-color:var(--danger)"><div>'+q+'</div><div class="row"><button class="btn danger grow" data-act="yes">'+yes+'</button><button class="btn grow" data-act="no">Keep</button></div></div>':'';
@@ -652,6 +912,7 @@ function viewWorkout(a){
     var s='<section class="card ex"><div class="row between"><h3 class="grow">'+esc(it.name)+(hx?' <span class="lv">Lv '+hx.st.level+'</span>':'')+'</h3><button class="icon" data-act="mvup" data-i="'+i+'" aria-label="Move '+esc(it.name)+' up">↑</button><button class="icon" data-act="mvdown" data-i="'+i+'" aria-label="Move '+esc(it.name)+' down">↓</button><button class="icon" data-act="rmex" data-i="'+i+'" aria-label="Remove '+esc(it.name)+'">×</button></div>';
     s+=UI.swap===i?'<div class="row"><input class="text grow" id="swapin" list="exnames" placeholder="Swap for which exercise?" autocomplete="off"><button class="btn primary" data-act="swapdo" data-i="'+i+'">Swap</button><button class="btn" data-act="swapopen" data-i="'+i+'">Cancel</button></div>':'<div class="row between"><button class="link" data-act="swapopen" data-i="'+i+'">Swap exercise</button><button class="link" data-act="bar" data-i="'+i+'">'+(isBar(it.name)?'Hide the bar':'Show plates on a bar')+'</button></div>';
     if(isBar(it.name))s+='<div class="barbox" id="bar-'+i+'">'+barSVG(curW(it))+'</div>';
+    s+='<div id="ghost-'+i+'">'+ghostHTML(a,i)+'</div>';
     s+='<p class="last">'+(last?'Last time, '+dshort(last.t)+': '+setsText(last.sets):'First time logging this')+'</p><div class="sets">';
     s+=it.sets.map(function(st,j){
       return '<div class="set'+(st.ok?' done':'')+'"><span class="n">'+(j+1)+'</span>'+stepper('w',i,j,st.w,'kg')+stepper('r',i,j,st.r,st.f?'to failure':'reps',st.f?'F':'')+
@@ -736,7 +997,9 @@ function render(){
   if(!S.config||!S.config.routines)S.config={kind:'config',routines:clone(DEFAULTS)};
   buildIndex();
   var a=active(),h;
+  if(UI.tab==='crew'){var ac=activeCrew();if(ac&&!UI.inbox&&CREW[ac]&&Object.keys(CREW[ac].stats).length){UI.inbox={cid:ac,items:inboxItems(ac)};markSeen(ac)}}
   if(UI.tab==='profile')h=viewProfile();
+  else if(UI.tab==='crew')h=UI.member?viewMember():viewCrew();
   else if(UI.tab==='progress')h=viewProgress();
   else if(UI.tab==='trophies')h=viewTrophies();
   else if(UI.tab==='history')h=viewHistory();
@@ -745,8 +1008,9 @@ function render(){
   else h=viewHome();
   if(UI.dbErr)h='<div class="card" style="border-color:var(--danger)"><b>Your workouts aren\'t saving online yet.</b><div class="small muted">'+(UI.dbErr==='permission-denied'?'The database rule for Gym Log hasn\'t been added in Firebase.':'Check your connection. They\'re kept on this phone until it works.')+'</div></div>'+h;
   $('#app').innerHTML=h;
-  ['train','progress','trophies','history'].forEach(function(t){var b=$('#nav-'+t);if(UI.tab===t)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+  ['train','progress','trophies','crew','history'].forEach(function(t){var b=$('#nav-'+t);if(UI.tab===t)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   $('#nav-train').textContent=a?'Workout':'Train';
+  var un=UI.tab==='crew'?0:unseenCount();$('#nav-crew').innerHTML='Crew'+(un?'<span class="dot">'+(un>9?'9+':un)+'</span>':'');
   bear();
 }
 render();connect();

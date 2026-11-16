@@ -29,6 +29,66 @@ service cloud.firestore {
       allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
 
+    // ---------- Gym Log crews ----------
+    function crewPath(cid) { return /databases/$(database)/documents/gymCrews/$(cid); }
+    function crewMember(cid) {
+      return signedIn() && exists(/databases/$(database)/documents/gymCrews/$(cid)/members/$(request.auth.uid));
+    }
+    function crewOwner(cid) {
+      return signedIn() && get(crewPath(cid)).data.owner == request.auth.uid;
+    }
+    function okName(n) { return n is string && n.size() >= 2 && n.size() <= 30; }
+    // A ranked lift must be a believable number: estimated max under the cap, ratio under 6x bodyweight.
+    function okLift(r, k, cap) {
+      return !(k in r) || (r[k].v is number && r[k].v > 0 && r[k].v <= cap
+        && (!('ratio' in r[k]) || (r[k].ratio is number && r[k].ratio <= 6))
+        && (!('hist' in r[k]) || r[k].hist.size() <= 24));
+    }
+    function okStats(d) {
+      return d.name is string
+        && get(/databases/$(database)/documents/gymUsernames/$(d.name)).data.uid == request.auth.uid
+        && d.ranked is map
+        && okLift(d.ranked, 'bench', 400) && okLift(d.ranked, 'incline', 350)
+        && okLift(d.ranked, 'squat', 500) && okLift(d.ranked, 'deadlift', 550)
+        && okLift(d.ranked, 'ohp', 250) && okLift(d.ranked, 'row', 350)
+        && okLift(d.ranked, 'pullup', 350) && okLift(d.ranked, 'dip', 350)
+        && d.week.sessions <= 21 && d.week.volume <= 250000
+        && d.feed.size() <= 25;
+    }
+
+    match /gymCrews/{cid} {
+      // Anyone signed in can see a crew's name (shown on its invite); nothing else.
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.owner == request.auth.uid && okName(request.resource.data.name);
+      allow update: if crewOwner(cid) && request.resource.data.owner == resource.data.owner && okName(request.resource.data.name);
+      allow delete: if crewOwner(cid);
+
+      // The invite code: members can see it (to share the link), only the owner sets it.
+      match /secret/{doc} {
+        allow read: if crewMember(cid);
+        allow write: if crewOwner(cid);
+      }
+      // Joining needs the invite code. You can leave; the owner can remove people.
+      match /members/{uid} {
+        allow read: if crewMember(cid);
+        allow create: if signedIn() && request.auth.uid == uid
+          && request.resource.data.code == get(/databases/$(database)/documents/gymCrews/$(cid)/secret/join).data.code;
+        allow delete: if signedIn() && (request.auth.uid == uid || crewOwner(cid));
+      }
+      // What each member shares with the crew. Only you write yours, and it must pass the checks.
+      match /stats/{uid} {
+        allow read: if crewMember(cid);
+        allow create, update: if crewMember(cid) && request.auth.uid == uid && okStats(request.resource.data);
+        allow delete: if signedIn() && request.auth.uid == uid;
+      }
+      // Respect: each member can only add or remove their own.
+      match /respect/{eid} {
+        allow read: if crewMember(cid);
+        allow create: if crewMember(cid) && request.resource.data.keys().hasOnly([request.auth.uid]);
+        allow update: if crewMember(cid) && request.resource.data.diff(resource.data).affectedKeys().hasOnly([request.auth.uid]);
+      }
+    }
+
     match /libraries/nabulsi-shelves-4817 {
       // Shelves, borrowing, edits and added books: family members only.
       match /state/{id} { allow read, write: if isFamily(); }
