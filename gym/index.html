@@ -336,7 +336,7 @@ document.addEventListener('click',function(e){
       else if(c.indexOf('rdel:')===0){S.config.routines=S.config.routines.filter(function(x){return x.id!==c.slice(5)});UI.editing=null;touch('config')}
       break;
     case 'edit':UI.editing=b.dataset.id;window.scrollTo(0,0);break;
-    case 'editdone':UI.editing=null;break;
+    case 'editdone':r=routine(UI.editing);if(r&&r.name==='New routine'&&!r.ex.length){S.config.routines=S.config.routines.filter(function(x){return x!==r});touch('config')}UI.editing=null;window.scrollTo(0,0);break;
     case 'newroutine':r={id:uid('r'),name:'New routine',ex:[]};S.config.routines.push(r);UI.editing=r.id;touch('config');window.scrollTo(0,0);break;
     case 'rup':case 'rdown':r=routine(UI.editing);var k=act==='rup'?i-1:i+1;if(k>=0&&k<r.ex.length){v=r.ex[i];r.ex[i]=r.ex[k];r.ex[k]=v;touch('config')}break;
     case 'rrm':routine(UI.editing).ex.splice(i,1);touch('config');break;
@@ -475,7 +475,7 @@ var LOCK='<svg viewBox="0 0 48 48" width="46" height="46" aria-hidden="true"><re
 function nf(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,',')}
 function viewTrophies(){
   var d=done(),total=0;d.forEach(function(s){s.items.forEach(function(it){total+=vol(it.sets)})});
-  var h='<h2>Trophy room</h2>';
+  var h='<div class="row"><button class="btn" data-act="tab" data-t="train" aria-label="Back to Train">‹ Back</button><h2 class="grow">Trophy room</h2></div>';
   if(!d.length)return h+'<div class="card empty">Empty shelves for now. Finish a workout to earn your first trophy.</div>';
   var cells='',next;
   function run(list,val,label,unit){var locked=false;list.forEach(function(n){if(val>=n)cells+='<div class="trophy">'+medal('#ffb21f')+'<b>'+nf(n)+'</b>'+label+'</div>';else if(!locked){locked=true;cells+='<div class="trophy locked">'+LOCK+'<b>'+nf(n)+'</b>'+label+'<span>'+nf(val)+' so far</span></div>'}})}
@@ -518,7 +518,7 @@ function viewHome(){
 }
 function viewEdit(){
   var r=routine(UI.editing);if(!r){UI.editing=null;return viewHome()}
-  var h='<div class="row between"><h2>Edit routine</h2><button class="btn primary" data-act="editdone">Done</button></div>';
+  var h='<div class="row between"><button class="btn" data-act="editdone" aria-label="Back to routines">‹ Back</button><h2 class="grow">Edit routine</h2><button class="btn primary" data-act="editdone">Done</button></div>';
   h+='<section class="card"><label class="small muted" for="rname">Name</label><input class="text" id="rname" data-f="rname" value="'+esc(r.name)+'">';
   h+='<div class="list">'+(r.ex.length?r.ex.map(function(n,i){
     return '<div class="item"><span class="grow">'+esc(n)+'</span><button class="icon" data-act="rup" data-i="'+i+'" aria-label="Move '+esc(n)+' up">↑</button><button class="icon" data-act="rdown" data-i="'+i+'" aria-label="Move '+esc(n)+' down">↓</button><button class="icon" data-act="rrm" data-i="'+i+'" aria-label="Remove '+esc(n)+'">×</button></div>';
@@ -540,7 +540,7 @@ function viewWorkout(a){
   h+=a.items.map(function(it,i){
     var hx=IDX[key(it.name)],last=hx&&hx.log[hx.log.length-1];
     var s='<section class="card ex"><div class="row between"><h3 class="grow">'+esc(it.name)+(hx?' <span class="lv">Lv '+hx.st.level+'</span>':'')+'</h3><button class="icon" data-act="mvup" data-i="'+i+'" aria-label="Move '+esc(it.name)+' up">↑</button><button class="icon" data-act="mvdown" data-i="'+i+'" aria-label="Move '+esc(it.name)+' down">↓</button><button class="icon" data-act="rmex" data-i="'+i+'" aria-label="Remove '+esc(it.name)+'">×</button></div>';
-    s+=UI.swap===i?'<div class="row"><input class="text grow" id="swapin" list="exnames" placeholder="Swap for which exercise?" autocomplete="off"><button class="btn primary" data-act="swapdo" data-i="'+i+'">Swap</button></div>':'<div class="row between"><button class="link" data-act="swapopen" data-i="'+i+'">Swap exercise</button><button class="link" data-act="bar" data-i="'+i+'">'+(isBar(it.name)?'Hide the bar':'Show plates on a bar')+'</button></div>';
+    s+=UI.swap===i?'<div class="row"><input class="text grow" id="swapin" list="exnames" placeholder="Swap for which exercise?" autocomplete="off"><button class="btn primary" data-act="swapdo" data-i="'+i+'">Swap</button><button class="btn" data-act="swapopen" data-i="'+i+'">Cancel</button></div>':'<div class="row between"><button class="link" data-act="swapopen" data-i="'+i+'">Swap exercise</button><button class="link" data-act="bar" data-i="'+i+'">'+(isBar(it.name)?'Hide the bar':'Show plates on a bar')+'</button></div>';
     if(isBar(it.name))s+='<div class="barbox" id="bar-'+i+'">'+barSVG(curW(it))+'</div>';
     s+='<p class="last">'+(last?'Last time, '+dshort(last.t)+': '+setsText(last.sets):'First time logging this')+'</p><div class="sets">';
     s+=it.sets.map(function(st,j){
@@ -585,9 +585,9 @@ function spark(vals){
 function viewProgress(){
   var ks=Object.keys(IDX);
   if(UI.ex&&IDX[UI.ex])return viewExercise(IDX[UI.ex]);
-  if(!ks.length)return '<h2>Progress</h2><div class="card empty">Finish your first workout and each exercise shows up here with a chart of your weights over time.</div>';
+  if(!ks.length)return '<div class="row"><button class="btn" data-act="tab" data-t="train" aria-label="Back to Train">‹ Back</button><h2 class="grow">Progress</h2></div><div class="card empty">Finish your first workout and each exercise shows up here with a chart of your weights over time.</div>';
   ks.sort(function(a,b){var la=IDX[a].log,lb=IDX[b].log;return lb[lb.length-1].t-la[la.length-1].t});
-  return '<h2>Progress</h2><section class="card"><div class="list">'+ks.map(function(k){
+  return '<div class="row"><button class="btn" data-act="tab" data-t="train" aria-label="Back to Train">‹ Back</button><h2 class="grow">Progress</h2></div><section class="card"><div class="list">'+ks.map(function(k){
     var e=IDX[k],tops=e.log.map(function(l){return top(l.sets)}),now=tops[tops.length-1],diff=now-tops[0];
     return '<button class="item" data-act="ex" data-k="'+esc(k)+'"><span class="grow"><b>'+esc(e.name)+'</b> <span class="lv">Lv '+e.st.level+'</span><br><span class="small muted">'+e.log.length+(e.log.length===1?' session':' sessions')+(diff>0?' · <span class="up">+'+f(diff)+' kg</span>':'')+'</span></span>'+spark(tops)+'<span class="num">'+f(now)+'<small>kg</small></span></button>';
   }).join('')+'</div></section>';
@@ -595,7 +595,7 @@ function viewProgress(){
 function viewExercise(e){
   var log=e.log,tops=log.map(function(l){return top(l.sets)}),best=Math.max.apply(null,tops),m=UI.metric;
   var pts=log.map(function(l){return {t:l.t,v:m==='vol'?vol(l.sets):top(l.sets)}});
-  var h='<div class="row"><button class="btn" data-act="exback" aria-label="Back to all exercises">‹ All</button><h2 class="grow">'+esc(e.name)+'</h2></div>';
+  var h='<div class="row"><button class="btn" data-act="exback" aria-label="Back to all exercises">‹ Back</button><h2 class="grow">'+esc(e.name)+'</h2></div>';
   h+='<div class="stats"><div class="stat"><b>'+f(tops[tops.length-1])+'</b><span>Latest kg</span></div><div class="stat"><b>'+f(best)+'</b><span>Best kg</span></div><div class="stat"><b>'+e.st.level+'</b><span>Level</span></div></div>';
   h+='<div class="row between small muted"><span>'+xpBar(e.st)+' &nbsp;'+(50-e.st.into)+' XP to level '+(e.st.level+1)+'</span><span>Session 10 XP, new best 30</span></div>';
   h+='<section class="card"><div class="row between"><span class="small muted">'+(m==='vol'?'Total kg lifted per session':'Heaviest set per session, kg')+'</span><div class="seg"><button data-act="metric" data-m="top" aria-pressed="'+(m!=='vol')+'">Weight</button><button data-act="metric" data-m="vol" aria-pressed="'+(m==='vol')+'">Volume</button></div></div>'+chart(pts)+'</section>';
@@ -604,8 +604,8 @@ function viewExercise(e){
 }
 function viewHistory(){
   var d=done().reverse();
-  if(!d.length)return '<h2>History</h2><div class="card empty">No workouts logged yet. Start one from the Train tab.</div>';
-  return '<h2>History</h2>'+d.map(function(s){
+  if(!d.length)return '<div class="row"><button class="btn" data-act="tab" data-t="train" aria-label="Back to Train">‹ Back</button><h2 class="grow">History</h2></div><div class="card empty">No workouts logged yet. Start one from the Train tab.</div>';
+  return '<div class="row"><button class="btn" data-act="tab" data-t="train" aria-label="Back to Train">‹ Back</button><h2 class="grow">History</h2></div>'+d.map(function(s){
     var n=0,v=0;s.items.forEach(function(it){n+=it.sets.length;v+=vol(it.sets)});var open=UI.open===s.id;
     var h='<section class="card"><button class="item" style="padding:0" data-act="open" data-id="'+esc(s.id)+'" aria-expanded="'+open+'"><span class="grow"><h3>'+esc(s.routine)+'</h3><span class="small muted">'+dlong(s.start)+' · '+s.items.length+' exercises · '+n+' sets</span></span><span class="num">'+f(Math.round(v))+'<small>kg</small></span></button>';
     if(open){
