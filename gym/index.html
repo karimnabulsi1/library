@@ -87,6 +87,7 @@ h3{font-family:var(--display);font-weight:700;font-size:23px;text-transform:uppe
 .set .n{font-family:var(--display);font-weight:900;font-size:20px;color:var(--muted);text-align:center}
 .step{display:grid;grid-template-columns:30px 1fr 30px;align-items:center;background:var(--field);border:1px solid var(--line);border-radius:8px;height:52px;position:relative}
 .step button{border:0;background:transparent;height:100%;font-size:21px;color:var(--muted);padding:0}
+.step input::placeholder{color:var(--danger);opacity:.8}
 .step input{border:0;background:transparent;width:100%;min-width:0;text-align:center;font-family:var(--display);font-weight:900;font-size:30px;font-variant-numeric:tabular-nums;padding:0 0 10px;height:100%;color:var(--accent)}
 .step input:focus{outline:none}
 .step:focus-within{border-color:var(--accent)}
@@ -94,6 +95,8 @@ h3{font-family:var(--display);font-weight:700;font-size:23px;text-transform:uppe
 .tick{width:48px;height:52px;border-radius:8px;border:2px solid var(--line);background:transparent;font-size:22px;font-weight:700;color:transparent}
 .tick[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .set.done .step input{color:var(--ink)}
+.fail{grid-column:3;justify-self:center;border:1px dashed var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:3px 12px;min-height:30px;font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase}
+.fail[aria-pressed="true"]{border:1px solid var(--danger);color:var(--danger);background:rgba(255,122,102,.08)}
 .pr{grid-column:2 / -1;justify-self:start;font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:1px 8px}
 .note,.text{width:100%;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:8px;padding:10px 12px;min-height:46px}
 .note:focus,.text:focus{outline:none;border-color:var(--accent)}
@@ -255,7 +258,8 @@ function buildIndex(){
 }
 function top(sets){return Math.max.apply(null,sets.map(function(x){return +x.w||0}))}
 function vol(sets){return sets.reduce(function(a,x){return a+(+x.w||0)*(+x.r||0)},0)}
-function setsText(sets){return sets.map(function(x){return f(+x.w||0)+'×'+x.r}).join(' · ')}
+function repTxt(x){return x.f?((+x.r>0?x.r:'')+' to failure').trim():String(x.r)}
+function setsText(sets){return sets.map(function(x){return f(+x.w||0)+'×'+(x.f?(+x.r>0?x.r+'F':'F'):x.r)}).join(' · ')+(sets.some(function(x){return x.f})?' (F = to failure)':'')}
 
 /* ---------- actions ---------- */
 function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove('show')},2600)}
@@ -266,7 +270,7 @@ function startWorkout(r){
 }
 function newItem(n){
   var h=IDX[key(n)],last=h&&h.log[h.log.length-1];
-  return {name:n,note:last?last.note:'',sets:last?last.sets.map(function(x){return {w:x.w,r:x.r,ok:false}}):[{w:'',r:'',ok:false},{w:'',r:'',ok:false},{w:'',r:'',ok:false}]};
+  return {name:n,note:last?last.note:'',sets:last?last.sets.map(function(x){var o={w:x.w,r:x.r,ok:false};if(x.f)o.f=true;return o}):[{w:'',r:'',ok:false},{w:'',r:'',ok:false},{w:'',r:'',ok:false}]};
 }
 function checkPR(a,i,j){
   var it=a.items[i],st=it.sets[j],h=IDX[key(it.name)];delete st.pr;
@@ -314,11 +318,12 @@ document.addEventListener('click',function(e){
       st=a.items[i].sets[j];var fld=b.dataset.f,stepv=fld==='w'?2.5:1;
       v=(+st[fld]||0)+(act==='inc'?stepv:-stepv);if(v<0)v=0;
       setField(a,i,j,fld,v);touch(a.id);return;
+    case 'fail':st=a.items[i].sets[j];if(st.f)delete st.f;else st.f=true;if(st.ok)checkPR(a,i,j);touch(a.id);break;
     case 'tick':
       st=a.items[i].sets[j];
-      if(!st.ok){if(!(+st.r>0)){toast('Enter the reps first');return}st.w=+st.w||0;st.ok=true;checkPR(a,i,j)}else{st.ok=false;delete st.pr}
+      if(!st.ok){if(!(+st.r>0)&&!st.f){toast('Enter the reps, or tap To failure');return}st.w=+st.w||0;st.ok=true;checkPR(a,i,j)}else{st.ok=false;delete st.pr}
       touch(a.id);break;
-    case 'addset':it=a.items[i];st=it.sets[it.sets.length-1];it.sets.push({w:st?st.w:'',r:st?st.r:'',ok:false});touch(a.id);break;
+    case 'addset':it=a.items[i];st=it.sets[it.sets.length-1];var ns={w:st?st.w:'',r:st?st.r:'',ok:false};if(st&&st.f)ns.f=true;it.sets.push(ns);touch(a.id);break;
     case 'rmset':it=a.items[i];if(it.sets.length>1){it.sets.pop();touch(a.id)}break;
     case 'rmex':a.items.splice(i,1);touch(a.id);break;
     case 'mvup':case 'mvdown':var q=act==='mvup'?i-1:i+1;if(q>=0&&q<a.items.length){it=a.items[i];a.items[i]=a.items[q];a.items[q]=it;touch(a.id)}break;
@@ -536,10 +541,10 @@ function viewEdit(){
   if(UI.confirm!=='rdel:'+r.id)h+='<button class="btn ghost danger" data-act="ask" data-c="rdel:'+esc(r.id)+'">Delete this routine</button>';
   return h;
 }
-function stepper(fld,i,j,v,unit){
+function stepper(fld,i,j,v,unit,ph){
   var id=fld+'-'+i+'-'+j,lab=(fld==='w'?'Weight':'Reps')+', set '+(j+1);
   return '<div class="step"><button data-act="dec" data-f="'+fld+'" data-i="'+i+'" data-j="'+j+'" aria-label="Less">−</button>'+
-    '<input id="'+id+'" data-f="'+fld+'" data-i="'+i+'" data-j="'+j+'" inputmode="'+(fld==='w'?'decimal':'numeric')+'" autocomplete="off" aria-label="'+lab+'" value="'+(v===''||v==null?'':f(v))+'">'+
+    '<input id="'+id+'" data-f="'+fld+'" data-i="'+i+'" data-j="'+j+'" inputmode="'+(fld==='w'?'decimal':'numeric')+'" autocomplete="off"'+(ph?' placeholder="'+ph+'"':'')+' aria-label="'+lab+'" value="'+(v===''||v==null?'':f(v))+'">'+
     '<button data-act="inc" data-f="'+fld+'" data-i="'+i+'" data-j="'+j+'" aria-label="More">+</button><span class="u">'+unit+'</span></div>';
 }
 function viewWorkout(a){
@@ -552,8 +557,9 @@ function viewWorkout(a){
     if(isBar(it.name))s+='<div class="barbox" id="bar-'+i+'">'+barSVG(curW(it))+'</div>';
     s+='<p class="last">'+(last?'Last time, '+dshort(last.t)+': '+setsText(last.sets):'First time logging this')+'</p><div class="sets">';
     s+=it.sets.map(function(st,j){
-      return '<div class="set'+(st.ok?' done':'')+'"><span class="n">'+(j+1)+'</span>'+stepper('w',i,j,st.w,'kg')+stepper('r',i,j,st.r,'reps')+
+      return '<div class="set'+(st.ok?' done':'')+'"><span class="n">'+(j+1)+'</span>'+stepper('w',i,j,st.w,'kg')+stepper('r',i,j,st.r,st.f?'to failure':'reps',st.f?'F':'')+
         '<button class="tick" data-act="tick" data-i="'+i+'" data-j="'+j+'" aria-pressed="'+(st.ok?'true':'false')+'" aria-label="Set '+(j+1)+' done">✓</button>'+
+        '<button class="fail" data-act="fail" data-i="'+i+'" data-j="'+j+'" aria-pressed="'+(st.f?'true':'false')+'">To failure</button>'+
         (st.pr?'<span class="pr">★ '+esc(st.pr)+'</span>':'')+'</div>';
     }).join('');
     s+='</div><div class="row"><button class="btn grow" data-act="addset" data-i="'+i+'">+ Set</button>'+(it.sets.length>1?'<button class="btn" data-act="rmset" data-i="'+i+'">− Set</button>':'')+'</div>';
