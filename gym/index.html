@@ -217,19 +217,25 @@ async function connect(){
 }
 function authMsg(e){var c=(e&&e.code)||'';
   if(/invalid-credential|wrong-password|user-not-found/.test(c))return 'That email and password don\'t match. Try again.';
-  if(/invalid-email|missing-email/.test(c))return 'Enter the email you use for the Library app.';
+  if(/email-already-in-use/.test(c))return 'That email already has an account. Sign in instead.';
+  if(/weak-password/.test(c))return 'Use a password of at least 6 characters.';
+  if(/operation-not-allowed/.test(c))return 'New accounts are switched off for this app.';
+  if(/invalid-email|missing-email/.test(c))return 'Enter a valid email address.';
   if(/missing-password/.test(c))return 'Enter your password.';
   if(/too-many-requests/.test(c))return 'Too many tries. Wait a minute, then try again.';
   if(/network/.test(c))return 'No connection. Check your internet and try again.';
-  return 'Couldn\'t sign in. Try again.'}
+  return 'That didn\'t work. Try again.'}
 function viewAuth(){
   if(UI.auth==='offline')return '<div class="card"><h2>No connection</h2><div class="muted">The app needs the internet the first time it opens. Check your connection, then try again.</div><button class="btn primary" data-act="reload">Try again</button></div>';
   if(UI.auth!=='out')return '<div class="card empty">Loading</div>';
-  return '<div class="card"><h2>Sign in</h2><div class="muted small">Use the same email and password as your Library app.</div>'+
+  var up=UI.mode==='signup';
+  return '<div class="card"><h2>'+(up?'Create account':'Sign in')+'</h2><div class="muted small">'+(up?'Pick an email and a password of at least 6 characters. Your workouts are private to your account.':'Already use the Library app? The same email and password work here.')+'</div>'+
     '<label class="label" for="email">Email</label><input class="text" id="email" type="email" autocomplete="username" inputmode="email" value="'+esc(UI.emailIn||'')+'">'+
-    '<label class="label" for="pw">Password</label><input class="text" id="pw" type="password" autocomplete="current-password">'+
+    '<label class="label" for="pw">Password</label><input class="text" id="pw" type="password" autocomplete="'+(up?'new-password':'current-password')+'">'+
     (UI.authErr?'<div class="small" style="color:var(--danger)">'+esc(UI.authErr)+'</div>':'')+(UI.authNote?'<div class="small" style="color:var(--accent)">'+esc(UI.authNote)+'</div>':'')+
-    '<button class="btn primary big" data-act="signin">'+(UI.busy?'Signing in':'Sign in')+'</button><button class="link" data-act="reset">Forgot your password? Email me a reset link</button></div>';
+    '<button class="btn primary big" data-act="'+(up?'signup':'signin')+'">'+(UI.busy?'One moment':up?'Create account':'Sign in')+'</button>'+
+    '<button class="btn" data-act="authmode">'+(up?'I already have an account':'New here? Create an account')+'</button>'+
+    (up?'':'<button class="link" data-act="reset">Forgot your password? Email me a reset link</button>')+'</div>';
 }
 
 /* ---------- derived ---------- */
@@ -293,11 +299,13 @@ document.addEventListener('click',function(e){
   if(act!=='swapopen'&&act!=='swapdo')UI.swap=null;
   switch(act){
     case 'reload':location.reload();return;
-    case 'signin':case 'reset':
+    case 'authmode':UI.mode=UI.mode==='signup'?'signin':'signup';UI.authErr=UI.authNote=null;var e0=$('#email');if(e0)UI.emailIn=e0.value.trim();break;
+    case 'signin':case 'signup':case 'reset':
       var em=$('#email').value.trim(),pw=$('#pw').value;UI.emailIn=em;UI.authErr=UI.authNote=null;
       if(act==='reset'){if(!em){UI.authErr='Enter your email first, then tap the reset link.';break}
         FB.A.sendPasswordResetEmail(FB.auth,em).then(function(){UI.authNote='Reset link sent. Check your email.';render()},function(e){UI.authErr=authMsg(e);render()});break}
-      UI.busy=true;FB.A.signInWithEmailAndPassword(FB.auth,em,pw).catch(function(e){UI.busy=false;UI.authErr=authMsg(e);render()});break;
+      if(act==='signup'&&pw.length<6){UI.authErr='Use a password of at least 6 characters.';break}
+      UI.busy=true;(act==='signup'?FB.A.createUserWithEmailAndPassword(FB.auth,em,pw):FB.A.signInWithEmailAndPassword(FB.auth,em,pw)).catch(function(e){UI.busy=false;UI.authErr=authMsg(e);render()});break;
     case 'signout':Object.keys(timers).forEach(push);FB.A.signOut(FB.auth);return;
     case 'tab':UI.tab=b.dataset.t;UI.ex=null;UI.editing=null;window.scrollTo(0,0);break;
     case 'start':startWorkout(routine(b.dataset.id));break;
@@ -365,7 +373,7 @@ document.addEventListener('input',function(e){
 });
 document.addEventListener('keydown',function(e){
   if(e.key!=='Enter')return;
-  if(e.target.id==='pw'||e.target.id==='email'){e.preventDefault();$('[data-act="signin"]').click()}
+  if(e.target.id==='pw'||e.target.id==='email'){e.preventDefault();($('[data-act="signin"]')||$('[data-act="signup"]')).click()}
   else if(e.target.id==='addex'){e.preventDefault();$('[data-act="addex"]').click()}
   else if(e.target.id==='swapin'){e.preventDefault();$('[data-act="swapdo"]').click()}
   else if(e.target.id==='radd'){e.preventDefault();$('[data-act="radd"]').click()}
