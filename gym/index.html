@@ -28,12 +28,14 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--on-bg);font-family:var(--body);font-size:16px;line-height:1.4;padding-bottom:84px}
+html{-webkit-text-size-adjust:100%;background:var(--bg);overflow-x:hidden}
+body{margin:0;overflow-x:hidden;background:var(--bg);color:var(--on-bg);font-family:var(--body);font-size:16px;line-height:1.4;padding-bottom:84px}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .wrap{max-width:520px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+.wrap>*,#app>*{min-width:0}
+#app{width:100%}
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .brand{font-family:var(--display);font-weight:900;font-size:34px;letter-spacing:.03em;text-transform:uppercase;line-height:.95;margin:0;white-space:nowrap}
 .brand em{font-style:normal;color:var(--accent)}
@@ -151,7 +153,7 @@ nav .dot{position:absolute;top:4px;right:4px;min-width:16px;height:16px;border-r
 .h2h small{color:var(--muted)}
 nav button[aria-current="page"]{color:var(--accent);border-top-color:var(--accent)}
 .ib{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-left:6px;border-radius:50%;border:1px solid var(--muted);background:transparent;color:var(--muted);font-family:Georgia,serif;font-style:italic;font-weight:700;font-size:12px;line-height:1;padding:0;vertical-align:middle;flex:none;position:relative}
-.ib::after{content:"";position:absolute;inset:-12px}
+.ib::after{content:"";position:absolute;inset:-8px;clip-path:inset(0)}
 .ib.new{border-color:var(--accent);color:var(--accent);animation:ibp 1.4s ease-in-out 3}
 @keyframes ibp{0%,100%{box-shadow:0 0 0 0 rgba(255,178,31,.6)}50%{box-shadow:0 0 0 6px rgba(255,178,31,0)}}
 .sheetbg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20}
@@ -206,6 +208,31 @@ nav button[aria-current="page"]{color:var(--accent);border-top-color:var(--accen
 @keyframes popin{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
 #confetti{position:fixed;inset:0;z-index:1;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.spinwrap .medal,.ulbox{animation:none}}
+.av{position:relative;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#1d1a16;box-shadow:inset 0 0 0 2.5px var(--ring);line-height:1;flex:none}
+.av.ghosty{opacity:.35;filter:grayscale(1)}
+.hat{position:absolute;top:-38%;left:50%;transform:translateX(-50%) rotate(-12deg);line-height:1;filter:drop-shadow(0 2px 1px rgba(0,0,0,.5))}
+.duel .dvs{display:flex;align-items:center;justify-content:space-around;padding-top:10px}
+.duel .dvs>div{display:flex;flex-direction:column;align-items:center;gap:4px}
+.vs{font-family:var(--display);font-weight:900;font-size:22px;color:var(--muted)}
+.dbar{height:8px;border-radius:4px;background:#3a352b;overflow:hidden}
+.dbar i{display:block;height:100%;background:var(--accent);transition:width .6s}
+.ddays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-family:var(--display);font-size:12px;color:var(--muted)}
+.ddays span{display:flex;align-items:flex-end;justify-content:center;gap:2px;height:34px}
+.ddays i{display:block;width:6px;border-radius:2px 2px 0 0;background:var(--accent);min-height:2px}
+.ddays i.o{background:var(--ink);opacity:.7}
+.chip{border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:999px;padding:6px 11px;font-size:13px;min-height:34px}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.betline{display:flex;align-items:center;gap:8px;background:var(--field);border:1px solid var(--dim);border-radius:8px;padding:8px 10px;font-size:14px}
+.lastduel{font-size:13px;line-height:1.5;border-top:1px solid var(--line);padding-top:10px}
+.coform{display:flex;flex-direction:column;gap:6px}
+.picks{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.pick{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--field);font-size:24px;line-height:1}
+.pick.on{border:2px solid var(--accent)}
+.pick.ring{background:var(--ring);width:34px;height:34px}
+.pick.ring.on{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--ring)}
+.sharepre{margin:0;background:var(--field);border:1px solid var(--line);border-radius:8px;padding:12px;font-family:ui-monospace,Menlo,monospace;font-size:15px;line-height:1.5;white-space:pre-wrap;color:var(--ink)}
+.awards{border-color:var(--accent)}
+.hd.vs{font-size:26px}
 #toast{position:fixed;left:16px;right:16px;bottom:80px;margin:0 auto;max-width:420px;background:var(--ink);color:var(--bg);border-radius:8px;padding:12px 16px;font-weight:500;text-align:center;z-index:9;opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s;pointer-events:none}
 #toast.show{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){#toast{transition:none}}
@@ -463,6 +490,26 @@ document.addEventListener('click',function(e){
     case 'info':UI.info=b.dataset.k;var sn=lsGet('gymlog.info',{});sn[UI.info]=1;lsSet('gymlog.info',sn);break;
     case 'infoclose':UI.info=null;break;
     case 'tinspect':UI.tsheet=b.dataset.id;break;
+    case 'bet':addDoc(activeCrew(),'bets',{by:me,a:me,b:b.dataset.o,stake:b.dataset.s,week:weekStart(Date.now()),t:Date.now(),accepted:false,paid:false}).then(function(){toast('Bet sent')},function(){toast('Couldn\'t send the bet')});return;
+    case 'betok':FB.updateDoc(FB.doc(FB.db,'gymCrews',activeCrew(),'bets',b.dataset.id),{accepted:true}).then(function(){toast('Bet accepted. No backing out.')},function(){toast('Couldn\'t accept')});return;
+    case 'paid':FB.updateDoc(FB.doc(FB.db,'gymCrews',activeCrew(),'bets',b.dataset.id),{paid:true}).catch(function(){toast('Couldn\'t update')});return;
+    case 'taunt':addDoc(activeCrew(),'taunts',{from:me,to:b.dataset.o,text:TAUNTS[+b.dataset.i],t:Date.now()}).then(function(){toast('Sent. They\'ll see it next time they open the app.')},function(){toast('Couldn\'t send')});return;
+    case 'moretaunts':UI.allTaunts=true;break;
+    case 'hat':var hws=weekStart(Date.now())-7*864e5;FB.setDoc(FB.doc(FB.db,'gymCrews',activeCrew(),'hats',hws+'_'+b.dataset.o),{by:me,to:b.dataset.o,hat:b.dataset.h,t:Date.now()}).then(function(){toast('Hat chosen '+b.dataset.h)},function(){toast('Couldn\'t set the hat')});return;
+    case 'newcallout':UI.newCallout=!UI.newCallout;break;
+    case 'sendcallout':var lid=$('#colift').value,to=$('#coto').value,hx=myStats().ranked[lid].h90;addDoc(activeCrew(),'callouts',{by:me,to:to,lift:lid,w:hx.w,r:hx.r,v:hx.v,t:Date.now()}).then(function(){toast('Called out. 7 days on the clock.')},function(){toast('Couldn\'t send')});UI.newCallout=false;break;
+    case 'sendoracle':var ol=$('#orlift').value,okg=num($('#orkg').value),wks=+$('#orweeks').value;if(!(okg>0)){toast('Enter a target in kg');return}
+      addDoc(activeCrew(),'oracle',{by:me,target:b.dataset.u,lift:ol,kg:okg,t:Date.now(),until:Date.now()+wks*7*864e5,votes:{}}).then(function(){toast('Prediction posted to the crew')},function(){toast('Couldn\'t post')});return;
+    case 'vote':var vv={};vv['votes.'+me]=b.dataset.v==='1';FB.updateDoc(FB.doc(FB.db,'gymCrews',activeCrew(),'oracle',b.dataset.id),vv).catch(function(){toast('Couldn\'t vote')});return;
+    case 'spot':var sref=FB.doc(FB.db,'gymCrews',activeCrew(),'spots',b.dataset.e),so={},had2=(((X[activeCrew()]||{}).spots||{})[b.dataset.e]||{})[me];
+      if(had2){so[me]=FB.deleteField();FB.updateDoc(sref,so).catch(function(){})}else{so[me]=Date.now();FB.setDoc(sref,so,{merge:true}).then(function(){toast('Spotted ✓')},function(){toast('Couldn\'t spot')})}return;
+    case 'setav':var pa=prof();pa.avatar=Object.assign({c:'#ffb21f'},pa.avatar||{},{a:b.dataset.a});touch('profile');publishSoon();break;
+    case 'setring':var pr=prof();pr.avatar=Object.assign({a:'🐻'},pr.avatar||{},{c:b.dataset.c});touch('profile');publishSoon();break;
+    case 'share':UI.share=!UI.share;break;
+    case 'shareclose':UI.share=false;break;
+    case 'sharecopy':if(navigator.clipboard)navigator.clipboard.writeText(shareText()).then(function(){toast('Copied. Paste it anywhere.')},function(){toast('Couldn\'t copy')});return;
+    case 'sharenative':if(navigator.share)navigator.share({text:shareText()}).catch(function(){});else toast('Use WhatsApp or Copy');return;
+    case 'savage':var scid=activeCrew(),nv=!savage(scid);FB.updateDoc(FB.doc(FB.db,'gymCrews',scid),{savage:nv}).then(function(){CREW[scid].savage=nv;toast(nv?'Savage mode on':'Wholesome mode on');render()},function(){toast('Only the crew owner can change this')});return;
     case 'tsclose':UI.tsheet=null;break;
     case 'tpin':var pp2=prof(),tid=b.dataset.id,sc=(pp2.showcase||[]).slice();
       if(sc.indexOf(tid)>=0){sc=sc.filter(function(x){return x!==tid});toast('Unpinned')}else{sc.unshift(tid);sc=sc.slice(0,3);toast('Pinned to your showcase')}
@@ -524,6 +571,7 @@ function bearState(){
     if(n>=tot)return {m:'happy',t:'Every set ticked. Hit finish.'};
     return {m:'ok',t:n+' of '+tot+' sets done. Keep moving.'}}
   var un=unseenCount();if(un)return {m:'happy',t:un+' new in your crew. Check the Crew tab.'};
+  var ro=roast();if(ro)return {m:'sleep',t:ro};
   if(!last)return {m:'ok',t:'Ready when you are.'};
   var days=Math.round((day0(now)-day0(last.start))/864e5);
   if(days<=0)return {m:'happy',t:'Good work today. Go eat.'};
@@ -681,6 +729,7 @@ function viewProfile(){
     RANKED.map(function(r){var b=bests[r.id];
       return '<div class="item"><span class="grow"><b>'+esc(r.name)+'</b><br><span class="small muted">'+(b?'From '+f(b.w)+(r.bw?' kg added':' kg')+' × '+b.r+', '+dshort(b.t)+(ratioTxt(b)?' · '+ratioTxt(b):''):'Not logged yet')+'</span></span>'+(b?'<span class="num">'+Math.round(b.v)+'<small>kg</small></span>':'<span class="muted">–</span>')+'</div>'}).join('')+
     '</div><div class="small muted">Pull-ups and dips count your bodyweight plus any added weight. Reps above 12 count as 12.</div></section>';
+  h+=avatarPicker();
   h+='<div class="row between small muted"><span>'+esc(UI.email||'')+'</span><button class="link" data-act="signout">Sign out</button></div>';
   return h;
 }
@@ -710,7 +759,8 @@ function rankSelect(e){
     '<div class="small muted">Only barbell versions and pull-ups or dips count, so everyone in a crew compares the same movement. Change it here if the app guessed wrong.</div></section>';
 }
 document.addEventListener('change',function(ev){
-  var t=ev.target;if(t.id!=='rankmap')return;
+  var t=ev.target;if(t.id==='muteroast'){prof().muteRoast=t.checked;touch('profile');render();return}
+  if(t.id!=='rankmap')return;
   S.config.rankMap=S.config.rankMap||{};S.config.rankMap[t.dataset.k]=t.value;touch('config');render();
 });
 
@@ -742,7 +792,11 @@ function myStats(){
   done().forEach(function(s){var v=0;s.items.forEach(function(it){v+=vol(it.sets)});tot.sessions++;tot.volume+=v;if(s.start>=ws){wk.sessions++;wk.volume+=v}});
   (p.events||[]).forEach(function(e){if(e.type==='pr'&&e.t>=ws)wk.prs++});
   wk.volume=Math.round(wk.volume);tot.volume=Math.round(tot.volume);
-  return {name:p.username,ranked:ranked,week:wk,total:tot,feed:(p.events||[]).slice(-20),trophies:Object.keys(p.trophies||{}).slice(0,60),shame:(p.shame||[]).slice(0,10),showcase:(p.showcase||[]).slice(0,3)};
+  wk.days=dayPoints(ws);var lws=ws-7*864e5,lw={start:lws,days:dayPoints(lws),sessions:0,volume:0,prs:0};
+  done().forEach(function(s){if(s.start>=lws&&s.start<ws){lw.sessions++;s.items.forEach(function(it){lw.volume+=vol(it.sets)})}});lw.volume=Math.round(lw.volume);
+  (p.events||[]).forEach(function(e){if(e.type==='pr'&&e.t>=lws&&e.t<ws)lw.prs++});
+  var dd=done(),dt=duelTotals();
+  return {avatar:p.avatar||{a:'🐻',c:'#ffb21f'},last:dd.length?dd[dd.length-1].start:0,lastWeek:lw,duels:dt,name:p.username,ranked:ranked,week:wk,total:tot,feed:(p.events||[]).slice(-20),trophies:Object.keys(p.trophies||{}).slice(0,60),shame:(p.shame||[]).slice(0,10),showcase:(p.showcase||[]).slice(0,3)};
 }
 var pubTimer=null;
 function publishSoon(){clearTimeout(pubTimer);pubTimer=setTimeout(publishStats,1200)}
@@ -769,8 +823,8 @@ function subCrew(cid){
   c.unsub.push(FB.onSnapshot(FB.collection(FB.db,'gymCrews',cid,'stats'),function(s){var m={};s.forEach(function(d){m[d.id]=d.data()});c.stats=m;render();checkTrophiesSoon()},err));
   c.unsub.push(FB.onSnapshot(FB.collection(FB.db,'gymCrews',cid,'respect'),function(s){var m={};s.forEach(function(d){m[d.id]=d.data()});c.respect=m;render();checkTrophiesSoon()},err));
 }
-function unsubCrew(cid){var c=CREW[cid];if(!c)return;c.unsub.forEach(function(f){try{f()}catch(e){}});delete CREW[cid]}
-function startCrews(){myCrews().forEach(subCrew);publishStats();checkJoinLink();checkTrophiesSoon()}
+function unsubCrew(cid){unsubExtras(cid);var c=CREW[cid];if(!c)return;c.unsub.forEach(function(f){try{f()}catch(e){}});delete CREW[cid]}
+function startCrews(){myCrews().forEach(function(cid){subCrew(cid);subExtras(cid)});publishStats();checkJoinLink();checkTrophiesSoon()}
 function stopCrews(){Object.keys(CREW).forEach(unsubCrew)}
 function memberStats(cid){var c=CREW[cid];if(!c)return [];var l=Object.keys(c.stats).filter(function(u){return c.members[u]&&u!==me}).map(function(u){var s=c.stats[u];return {uid:u,name:s.name||'someone',s:s}});
   if(prof().username)l.push({uid:me,name:prof().username,s:myStats()});return l}
@@ -790,6 +844,12 @@ function crownKey(cid){return 'gymlog.crowns.'+me+'.'+cid}
 function inboxItems(cid){
   var seen=lsGet(seenKey(cid),0),items=[];
   crewFeed(cid).forEach(function(f){if(f.uid!==me&&f.e.t>seen)items.push({t:f.e.t,text:'@'+f.name+': '+f.e.text})});
+  var xx=X[cid]||{};
+  Object.keys(xx.taunts||{}).forEach(function(k){var t=xx.taunts[k];if(t.to===me&&t.t>seen)items.push({t:t.t,hot:true,text:'@'+nameOf(cid,t.from)+' says: "'+t.text+'"'})});
+  Object.keys(xx.callouts||{}).forEach(function(k){var t=xx.callouts[k];if(t.to===me&&t.t>seen){var rr=rankedById(t.lift)||{name:t.lift};items.push({t:t.t,hot:true,text:'@'+nameOf(cid,t.by)+' called you out: beat '+rr.name+' '+f(t.w)+' × '+t.r+' within 7 days.'})}});
+  Object.keys(xx.bets||{}).forEach(function(k){var t=xx.bets[k];if(t.b===me&&!t.accepted&&t.t>seen)items.push({t:t.t,text:'@'+nameOf(cid,t.a)+' bet '+t.stake+' on your duel. Accept it on the duel card.'})});
+  Object.keys(xx.hats||{}).forEach(function(k){var t=xx.hats[k];if(t.to===me&&t.t>seen)items.push({t:t.t,hot:true,text:'@'+nameOf(cid,t.by)+' picked your hat this week: '+t.hat})});
+  Object.keys(xx.spots||{}).forEach(function(k){if(k.indexOf(me+'_')!==0)return;var t=xx.spots[k];Object.keys(t).forEach(function(u){if(u!==me&&t[u]>seen)items.push({t:t[u],text:'@'+nameOf(cid,u)+' spotted your new best ✓'})})});
   var prev=lsGet(crownKey(cid),null),now=titleHolders(cid);
   if(prev&&prev._v===2)RANKED.forEach(function(r){TITLES.forEach(function(T){var k=T.id+':'+r.id,p=prev[k],x=now[r.id][T.id],n=x&&x.uid;
     if(p===me&&n&&n!==me)items.push({t:Date.now(),hot:true,text:'@'+x.name+' took your '+r.name+' '+T.name+'. Your move.'});
@@ -817,7 +877,7 @@ function checkJoinLink(){
 async function joinCrew(){
   var j=UI.join;if(!j)return;UI.crewBusy=true;UI.crewErr=null;render();
   try{await FB.setDoc(FB.doc(FB.db,'gymCrews',j.cid,'members',me),{code:j.k,at:Date.now()});
-    myCrews().push(j.cid);touch('profile');UI.crew=j.cid;UI.join=null;sessionStorage.removeItem('gymlog.join');subCrew(j.cid);PUBLISHED={};publishStats();say('You\'re in '+(j.name||'the crew')+'. Go take a crown.');
+    myCrews().push(j.cid);touch('profile');UI.crew=j.cid;UI.join=null;sessionStorage.removeItem('gymlog.join');subCrew(j.cid);subExtras(j.cid);PUBLISHED={};publishStats();say('You\'re in '+(j.name||'the crew')+'. Go take a crown.');
   }catch(e){UI.crewErr=e&&e.code==='permission-denied'?'That invite link doesn\'t work any more. Ask for a new one.':'Couldn\'t join. Check your connection and try again.'}
   UI.crewBusy=false;render();
 }
@@ -828,7 +888,7 @@ async function createCrew(){
   try{await FB.setDoc(FB.doc(FB.db,'gymCrews',cid),{name:nm,owner:me,at:Date.now()});
     await FB.setDoc(FB.doc(FB.db,'gymCrews',cid,'secret','join'),{code:code});
     await FB.setDoc(FB.doc(FB.db,'gymCrews',cid,'members',me),{code:code,at:Date.now()});
-    myCrews().push(cid);touch('profile');UI.crew=cid;subCrew(cid);PUBLISHED={};publishStats();UI.showInvite=true;
+    myCrews().push(cid);touch('profile');UI.crew=cid;subCrew(cid);subExtras(cid);PUBLISHED={};publishStats();UI.showInvite=true;
   }catch(e){UI.crewErr='Couldn\'t create the crew. Check your connection and try again.'}
   UI.crewBusy=false;render();
 }
@@ -884,22 +944,26 @@ function viewCrew(){
   if(c.lost||c.gone)return h+'<section class="card"><h3>You\'re no longer in this crew</h3><div class="small muted">It was deleted or you were removed.</div><button class="btn" data-act="forgetcrew" data-c="'+esc(cid)+'">Remove it from my list</button></section>';
   if(myCrews().length>1)h+='<div class="row" style="flex-wrap:wrap">'+myCrews().map(function(x){var n=CREW[x]&&CREW[x].name||'Crew';return '<button class="btn'+(x===cid?' primary':'')+'" data-act="pickcrew" data-c="'+esc(x)+'">'+esc(n)+'</button>'}).join('')+'</div>';
   var ms=memberStats(cid),nm=Object.keys(c.members).length;
-  h+='<section class="card"><div class="row between"><div class="grow"><h2>'+esc(c.name||'Crew')+'</h2><div class="small muted">'+nm+(nm===1?' member':' members')+ib('crew')+'</div></div><button class="btn primary" data-act="invite">Invite</button></div>';
+  h+='<section class="card"><div class="row between"><div class="grow"><h2 style="font-size:clamp(20px,6.5vw,30px);overflow-wrap:anywhere">'+esc(c.name||'Crew')+'</h2><div class="small muted">'+nm+(nm===1?' member':' members')+ib('crew')+'</div></div><button class="btn primary" data-act="invite">Invite</button></div>';
   if(UI.showInvite){var link=inviteLink(cid);
     h+=link?'<div class="small muted">Send this link. Anyone with it can join, so only share it with friends.</div><input class="text" id="invlink" readonly value="'+esc(link)+'"><div class="row"><a class="btn primary grow" style="font-size:15px;padding:10px 8px;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center" href="https://wa.me/?text='+encodeURIComponent('Join my crew "'+(c.name||'')+'" on Gym Log: '+link)+'" target="_blank" rel="noopener">WhatsApp</a><button class="btn grow" style="font-size:15px;padding:10px 8px" data-act="sharelink">Share</button><button class="btn grow" style="font-size:15px;padding:10px 8px" data-act="copylink">Copy</button></div>':'<div class="small muted">Getting the invite link…</div>';
   }
   h+='</section>';
   var inbox=UI.inbox&&UI.inbox.cid===cid?UI.inbox.items:[];
   if(inbox.length)h+='<section class="card" style="border-color:var(--accent)"><span class="label">While you were away</span><div class="list">'+inbox.map(function(x){return '<div class="item"'+(x.hot?' style="color:var(--accent)"':'')+'><span class="grow">'+esc(x.text)+'</span><span class="small muted">'+agoShort(x.t)+'</span></div>'}).join('')+'</div></section>';
-  h+=titlesCard(cid);
+  h+=mondayAwards(cid)+duelCard(cid)+titlesCard(cid)+ledgerCard(cid)+calloutsCard(cid)+oracleCard(cid);
   var ws=weekStart(Date.now()),board=ms.map(function(m){var w=m.s.week&&m.s.week.start===ws?m.s.week:{sessions:0,volume:0,prs:0};return {m:m,w:w}}).sort(function(a,b){return b.w.sessions-a.w.sessions||b.w.volume-a.w.volume});
   h+='<section class="card"><div class="row between"><span class="label">This week'+ib('week')+'</span><span class="small muted">Resets Monday</span></div><div class="list">'+board.map(function(x,i){
-    return '<button class="item" data-act="member" data-u="'+esc(x.m.uid)+'"><span class="num" style="font-size:20px;width:22px">'+(i+1)+'</span><span class="grow"><b>@'+esc(x.m.name)+(x.m.uid===me?' (you)':'')+'</b><br><span class="small muted">'+x.w.sessions+(x.w.sessions===1?' session':' sessions')+' · '+nfmt(x.w.volume)+' kg · '+x.w.prs+(x.w.prs===1?' new best':' new bests')+'</span></span></button>'}).join('')+'</div>'+
+    return '<button class="item" data-act="member" data-u="'+esc(x.m.uid)+'"><span class="num" style="font-size:20px;width:22px">'+(i+1)+'</span>'+avatar(cid,x.m.uid,36)+'<span class="grow"><b>@'+esc(x.m.name)+(x.m.uid===me?' (you)':'')+'</b><br><span class="small muted">'+x.w.sessions+(x.w.sessions===1?' session':' sessions')+' · '+nfmt(x.w.volume)+' kg · '+x.w.prs+(x.w.prs===1?' new best':' new bests')+'</span></span></button>'}).join('')+'</div>'+
     (nm<2?'<div class="small muted">Invite a friend to start competing.</div>':'')+'</section>';
   var feed=crewFeed(cid).slice(0,UI.feedAll?60:15);
   h+='<section class="card"><span class="label">Crew feed'+ib('feed')+'</span>'+(feed.length?'<div class="list">'+feed.map(function(f){var eid=f.e.id,rs=c.respect[eid]||{},n=Object.keys(rs).length,mineR=!!rs[me];
-    return '<div class="item"><span class="grow"><b>@'+esc(f.name)+'</b> <span class="small muted">'+agoShort(f.e.t)+'</span><br>'+esc(f.e.text)+(f.e.flag?' <span class="small" style="color:var(--danger)">big jump</span>':'')+'</span>'+
+    var sp=((X[cid]||{}).spots||{})[eid]||{},spN=Object.keys(sp),spMine=!!sp[me];
+    return '<div class="item">'+avatar(cid,f.uid,34)+'<span class="grow"><b>@'+esc(f.name)+'</b> <span class="small muted">'+agoShort(f.e.t)+'</span><br>'+esc(f.e.text)+(f.e.flag?' <span class="small" style="color:var(--danger)">big jump</span>':'')+
+      (spN.length?'<br><span class="small win">✓ Spotted by '+spN.map(function(u){return '@'+esc(nameOf(cid,u))}).join(', ')+'</span>':'')+
+      (f.e.type==='pr'&&f.uid!==me&&Date.now()-f.e.t<3*864e5?'<br><button class="link" data-act="spot" data-e="'+esc(eid)+'">'+(spMine?'Un-spot':'I saw it ✓ Spot')+'</button>':'')+'</span>'+
       (f.uid===me?(n?'<span class="small muted">'+n+' respect</span>':''):'<button class="respect" data-act="respect" data-e="'+esc(eid)+'" aria-pressed="'+mineR+'">Respect'+(n?' '+n:'')+'</button>')+'</div>'}).join('')+'</div>'+(crewFeed(cid).length>15?'<button class="link" data-act="feedall">'+(UI.feedAll?'Show less':'Show more')+'</button>':''):'<div class="small muted">Nothing yet. Finish a workout and it shows up here.</div>')+'</section>';
+  if(c.owner===me)h+='<section class="card"><div class="row between"><span class="label">Savage mode'+ib('savage')+'</span><button class="chip'+(savage(cid)?' on':'')+'" data-act="savage">'+(savage(cid)?'On':'Off')+'</button></div><div class="small muted">'+(savage(cid)?'Shame trophies, hats, roasts and Ghost of the week are on.':'Wholesome mode: only the nice stuff.')+'</div></section>';
   h+=confirmBox('leave:'+cid,'Leave '+esc(c.name||'this crew')+'? Your stats disappear from it. You can rejoin with a new invite.','Leave crew');
   if(UI.confirm!=='leave:'+cid)h+='<button class="btn ghost danger" data-act="ask" data-c="leave:'+esc(cid)+'">Leave this crew</button>';
   return h;
@@ -923,6 +987,7 @@ function pct(h){if(!h||h.length<2)return null;return Math.round((h[h.length-1][1
 function viewMember(){
   var cid=activeCrew(),c=CREW[cid],m=c&&c.stats[UI.member];if(!m)return viewCrew();
   var mine=myStats(),them=m,name=them.name||'someone',h='<div class="row"><button class="btn" data-act="memberback" aria-label="Back to crew">‹ Back</button><h2 class="grow">You vs @'+esc(name)+'</h2></div>';
+  var rv=duelRecordVs(UI.member);h+='<div class="row" style="justify-content:center;gap:18px">'+avatar(cid,me,64)+'<span class="hd vs">VS</span>'+avatar(cid,UI.member,64)+'</div><div class="small muted" style="text-align:center">Duels: '+rv.w+' W · '+rv.l+' L'+(them.duels?' · @'+esc(name)+' overall '+them.duels.w+' W · '+them.duels.l+' L':'')+'</div>';
   var you=0,they=0,rows=RANKED.map(function(r){var a=mine.ranked[r.id],b=them.ranked&&them.ranked[r.id];
     var wa=a&&b&&(a.ratio||0)>(b.ratio||0),wb=a&&b&&(b.ratio||0)>(a.ratio||0);if(wa)you++;if(wb)they++;
     function cell(x,win){return x?'<span class="'+(win?'win':'')+'"><b>'+Math.round(x.v)+'</b> kg'+(x.ratio?'<br><small>'+r2(x.ratio)+'×</small>':'')+'</span>':'<span class="muted">–</span>'}
@@ -936,6 +1001,7 @@ function viewMember(){
   if(pa!=null||pb!=null)h+='<div class="small">'+(pa!=null?'You: <b class="'+(pa>=(pb||-1e9)?'win':'')+'">'+(pa>=0?'+':'')+pa+'%</b> since '+dshort(ha[0][0]):'')+(pa!=null&&pb!=null?' · ':'')+(pb!=null?'@'+esc(name)+': <b class="'+(pb>(pa==null?-1e9:pa)?'win':'')+'">'+(pb>=0?'+':'')+pb+'%</b> since '+dshort(hb[0][0]):'')+'</div>';
   h+='</section>';
   h+='<section class="card"><div class="row between"><span class="label">@'+esc(name)+'\'s showcase</span><span class="small muted">'+((them.trophies||[]).length)+' trophies'+((them.shame||[]).length?' · '+(them.shame||[]).length+' shame':'')+'</span></div>'+(showcaseRow(them.showcase,true)||'<div class="small muted">Nothing pinned yet.</div>')+((them.shame||[]).length?'<div class="small" style="color:var(--danger)">On the shame shelf: '+(them.shame||[]).map(function(id){var T=trophyById(id);return T?T.e+' '+esc(T.name):''}).join(', ')+'</div>':'')+'</section>';
+  h+=oracleForm(cid,UI.member);
   var tt=them.total||{sessions:0,volume:0};
   h+='<section class="card"><span class="label">All time</span><div class="detail" style="border-top:0;padding-top:0"><div><span>Workouts</span><span>You '+mine.total.sessions+' · @'+esc(name)+' '+tt.sessions+'</span></div><div><span>Total lifted</span><span>You '+nfmt(mine.total.volume)+' kg · @'+esc(name)+' '+nfmt(tt.volume)+' kg</span></div></div></section>';
   return h;
@@ -973,6 +1039,11 @@ var INFO={
  bar:['Plates on a bar','Shows the plates to load for the weight you typed, per side, on a 20 kg bar.','Colours follow the usual gym plates: red 25, blue 20, yellow 15, green 10, white 5.'],
  muscles:['Muscle map','Lights up what you trained in the last 7 days. Bright means 4+ sets, dim means some.','It guesses from exercise names, so unusual names may not light anything up.'],
  bw:['Bodyweight','Used to rank your lifts fairly against people of different sizes.','Only you see your weigh-ins. Your crew sees × bodyweight scores, not this log.'],
+ duel:['Weekly duel','Every Monday you\'re paired with someone in your crew. You score up to 500 points a day: 100 for training, 10 per set (up to 20), and 100 per new best (up to 2).','The daily cap means one monster session can\'t win the week, so show up. Odd number in the crew? You face The Bear, which scores 150 a day.'],
+ ledger:['The ledger','Bets you accepted on duels, and who owes what. Just for keeping score. No money goes through the app.','Winner taps Mark paid once the knafeh has been handed over.'],
+ callout:['Call-outs','Pick one of your ranked sets and dare someone to beat it. They have 7 days.','Beat it and they earn Answered the Call. Let it run out and they get 🐔 Chickened Out on their shame shelf.'],
+ oracle:['Predictions','Bet on a crew mate\'s next milestone, like 100 kg bench in 4 weeks. Everyone votes yes or no.','Call it right and you earn the Oracle trophy. They get the pressure.'],
+ savage:['Savage mode','On: shame trophies, losers\' hats, bear roasts and Ghost of the week. Off: only the nice stuff.','Only the crew owner can switch it. Anyone can mute the bear\'s roasts for themselves in Profile.'],
  showcase:['Showcase','Your three favourite trophies. Your crew sees them on your profile.','Tap a trophy you own, then Pin to showcase. Rarity is worked out inside your crew: a trophy only you have is Very rare.'],
  shame:['Shame shelf','Shame trophies are earned by slacking: skipping legs, ghosting the gym, coming last. Your crew can see them.','Each one tells you how to escape. Do that and it disappears.'],
  trophies:['Trophies','Milestones for workouts and kg lifted, and a cup for each exercise\'s best lift.','Cups turn silver at level 3 and gold at level 6. More trophies are on the way.']
@@ -1058,6 +1129,12 @@ var TROPHIES=[
  {id:'revenge_arc',e:'⚔️',kind:'crew',name:'Revenge Arc',desc:'Took back a title that was stolen from you.'},
  {id:'hype_man',e:'📣',kind:'crew',name:'Hype Man',desc:'Gave 50 Respects. The crew\'s biggest fan.'},
  {id:'fan_fav',e:'🌟',kind:'crew',name:'Fan Favourite',desc:'Got 25 Respects from your crew.'},
+ {id:'underdog',e:'🐕',kind:'crew',name:'Underdog',desc:'Won a weekly duel against someone stronger than you.'},
+ {id:'answered',e:'📞',kind:'crew',name:'Answered the Call',desc:'Someone called you out and you beat their set in time.'},
+ {id:'oracle',e:'🔮',kind:'crew',name:'Oracle',desc:'Called a crew mate\'s milestone right.'},
+ {id:'witness',e:'👀',kind:'crew',name:'Witness',desc:'Spotted 5 of your crew\'s new bests.'},
+ {id:'verified',e:'✅',kind:'crew',name:'Verified',desc:'A crew mate spotted one of your new bests. It really happened.'},
+ {id:'chicken',e:'🐔',kind:'shame',name:'Chickened Out',desc:'You were called out and let the 7 days run out.',out:'Escape: wait a week, or beat the set late and earn back some pride.'},
  {id:'ghosted',e:'🫥',kind:'shame',name:'Ghosted',desc:'You gave someone 10 Respects and got none back. Awkward.',out:'Escape: they give you a Respect.'},
  {id:'skip_legs',e:'🍗',kind:'shame',name:'Skipped Leg Day',desc:'Your last three workouts had no legs in them.',out:'Escape: train legs.'},
  {id:'ghost_member',e:'👻',kind:'shame',name:'Ghost Member',desc:'No workout in 14 days. Are you still with us?',out:'Escape: log any workout.'},
@@ -1118,6 +1195,13 @@ function evalTrophies(){
     Object.keys(cr.respect||{}).forEach(function(eid){var rs=cr.respect[eid],owner=eid.split('_')[0];
       if(rs[me]&&owner!==me){given++;perGiven[owner]=(perGiven[owner]||0)+1}
       if(owner===me)Object.keys(rs).forEach(function(u){if(u!==me){got++;perBack[u]=(perBack[u]||0)+1}})})});
+  var ans=false,chk=false,orc=false,wit=0,ver=false;
+  myCrews().forEach(function(cid){var xx=X[cid];if(!xx)return;
+    Object.keys(xx.callouts||{}).forEach(function(k){var co=xx.callouts[k];if(co.to!==me)return;var st=calloutState(cid,co);if(st==='answered')ans=true;if(st==='chicken'&&now-(co.t+7*864e5)<7*864e5)chk=true});
+    Object.keys(xx.oracle||{}).forEach(function(k){var o=xx.oracle[k],v=(o.votes||{})[me];if(v===undefined)return;var st=oracleState(cid,o);if(st!=='open'&&(st==='yes')===!!v)orc=true});
+    Object.keys(xx.spots||{}).forEach(function(k){var t=xx.spots[k];if(t[me]&&k.indexOf(me+'_')!==0)wit++;if(k.indexOf(me+'_')===0&&Object.keys(t).some(function(u){return u!==me}))ver=true})});
+  set('underdog',(c.underdog||0)>=1);set('answered',ans);set('oracle',orc);set('witness',wit>=5,0,'',[Math.min(wit,5),5]);set('verified',ver);
+  var sv=myCrews().some(function(cid){return savage(cid)});set('chicken',chk&&sv);
   set('gym_buddies',gb,gb&&gb.t,gb?gb.txt:'');set('copycat',cc,cc&&cc.t,cc?cc.txt:'');
   set('hype_man',given>=50,0,'',[Math.min(given,50),50]);set('fan_fav',got>=25,0,'',[Math.min(got,25),25]);
   /* shame: live */
@@ -1130,7 +1214,9 @@ function evalTrophies(){
     var wkOf=function(m){var w=m.s.week&&m.s.week.start===ws?m.s.week:{sessions:0,volume:0};return w.sessions*1e7+w.volume};
     var mineS=myStats().week.sessions;if(!mineS&&dow>=2&&ms.length>=2)part=true;
     if(ms.length>=3&&dow>=3){var sc=wkOf({s:myStats()});if(ms.every(function(m){return m.uid===me||wkOf(m)>sc}))spoon=true}});
-  set('wooden_spoon',spoon);set('participation',part);
+  var savageAny=!myCrews().length||myCrews().some(function(cid){return savage(cid)});
+  set('wooden_spoon',spoon&&savageAny);set('participation',part&&savageAny);
+  if(!savageAny){r.ghosted.got=false;r.skip_legs.got=false;r.ghost_member.got=false}
   return r;
 }
 /* Rarity inside your crew(s) */
@@ -1143,6 +1229,7 @@ var trophyTimer=null;
 function checkTrophiesSoon(){clearTimeout(trophyTimer);trophyTimer=setTimeout(checkTrophies,900)}
 function checkTrophies(){
   if(UI.auth!=='in'||!S.config)return;buildIndex();
+  recordDuels();
   var p=prof(),ev=evalTrophies(),had=p.trophies||{},fresh=[],first=!p.trophyInit,changed=false;
   TROPHIES.forEach(function(T){var x=ev[T.id];if(T.kind==='shame')return;
     if(x&&x.got&&!had[T.id]){had[T.id]={t:x.t||Date.now(),d:x.detail||''};changed=true;if(!first)fresh.push(T.id)}});
@@ -1213,6 +1300,214 @@ function confetti(){
     if(t-t0<2600&&document.getElementById('confetti')===c)requestAnimationFrame(step);else x.clearRect(0,0,W,H)})(t0);
 }
 
+/* ---------- stage 3 round 3: rivalries and chaos ---------- */
+var ANIMALS=['🐻','🐺','🦍','🐊','🦁','🐯','🦏','🐂','🦅','🐗','🦈','🐼'];
+var RINGS=['#ffb21f','#ff7a66','#7398ff','#7fc77a','#c58af0','#e9e4d8'];
+var HATS=[['🐣','Chick'],['🎀','Pink bow'],['👒','Sun hat'],['🧁','Cupcake'],['🪿','Goose'],['🎩','Fancy loser']];
+var TAUNTS=['Your move','Light weight','See you Monday','Who hurt you?','Legs called. They miss you.','Nice warm-up set','Respectfully, no','Is that the bar or the bar plus air?'];
+var STAKES=[['knafeh','🧀','knafeh'],['coffee','☕','coffee'],['shawarma','🌯','shawarma'],['juice','🥤','juice'],['dinner','🍽','dinner']];
+var ROASTS=['Your legs filed a missing person report.','Day {d}. I\'ve started talking to the squat rack.','The dumbbells asked about you. I lied.','Your gym bag is getting comfortable in the corner.','Remember the gym? Big room, heavy things?','I\'m not mad. I\'m just doing curls alone.','Your bench misses you. It told me.'];
+var X={};  /* extra live crew collections: cid -> {hats,bets,callouts,spots,oracle,taunts} */
+
+/* --- your own duel points: up to 500 a day (train 100, 10 per set up to 200, 100 per new best up to 200) --- */
+function dayPoints(from){
+  var days=[0,0,0,0,0,0,0],p=prof();
+  done().forEach(function(s){if(s.start<from||s.start>=from+7*864e5)return;var di=Math.floor((day0(s.start)-from)/864e5);if(di<0||di>6)return;
+    var n=0;s.items.forEach(function(it){n+=it.sets.length});days[di]+=100+Math.min(n,20)*10});
+  (p.events||[]).forEach(function(e){if(e.type!=='pr'||e.t<from||e.t>=from+7*864e5)return;var di=Math.floor((day0(e.t)-from)/864e5);if(di>=0&&di<7)days[di]+=100});
+  return days.map(function(v){return Math.min(v,500)});
+}
+function sum(a){return (a||[]).reduce(function(x,y){return x+(+y||0)},0)}
+/* Round-robin pairing everyone can work out on their own: same members + same week = same pairs */
+function duelPairs(cid,ws){
+  var c=CREW[cid];if(!c)return {};var ids=Object.keys(c.members).sort();if(ids.length<2)return {};
+  if(ids.length%2)ids.push('bear');
+  var n=ids.length,r=Math.round(ws/(7*864e5))%(n-1),fixed=ids[0],rest=ids.slice(1),rot=rest.slice(r).concat(rest.slice(0,r)),list=[fixed].concat(rot),out={};
+  for(var i=0;i<n/2;i++){var a=list[i],b=list[n-1-i];out[a]=b;out[b]=a}
+  return out;
+}
+function bearDays(ws){var d=[],now=Date.now();for(var i=0;i<7;i++)d.push(ws+i*864e5<now?150:0);return d}
+function oppDays(cid,uid,ws){
+  if(uid==='bear')return bearDays(ws);if(uid===me)return dayPoints(ws);
+  var s=CREW[cid]&&CREW[cid].stats[uid];if(!s)return [0,0,0,0,0,0,0];
+  if(s.week&&s.week.start===ws&&s.week.days)return s.week.days;
+  if(s.lastWeek&&s.lastWeek.start===ws&&s.lastWeek.days)return s.lastWeek.days;
+  return [0,0,0,0,0,0,0];
+}
+function nameOf(cid,uid){if(uid==='bear')return 'The Bear';if(uid===me)return prof().username||'you';var s=CREW[cid]&&CREW[cid].stats[uid];return s?s.name:'someone'}
+function duelResult(cid,ws){
+  var opp=duelPairs(cid,ws)[me];if(!opp)return null;var a=sum(oppDays(cid,me,ws)),b=sum(oppDays(cid,opp,ws));
+  return {opp:opp,me:a,them:b,res:a>b?'W':a<b?'L':'D'};
+}
+/* Your record lives in your profile and is shared with the crew */
+function recordDuels(){
+  var p=prof(),hist=p.duels=p.duels||{},changed=false,lws=weekStart(Date.now())-7*864e5;
+  myCrews().forEach(function(cid){var k=cid+':'+lws;if(hist[k])return;var c=CREW[cid];if(!c||!Object.keys(c.stats).length)return;
+    var r=duelResult(cid,lws);if(!r)return;if(r.opp!=='bear'&&!(c.stats[r.opp]&&(c.stats[r.opp].lastWeek||{}).start===lws||c.stats[r.opp]&&(c.stats[r.opp].week||{}).start>lws))return;
+    hist[k]={opp:r.opp,name:nameOf(cid,r.opp),me:r.me,them:r.them,res:r.res};changed=true;
+    if(r.res==='W'&&r.opp!=='bear'){var os=c.stats[r.opp],mine=myStats(),ss=function(st){var t=0;Object.keys(st.ranked||{}).forEach(function(k){t+=(st.ranked[k].h90||{}).v||0});return t};if(os&&ss(os)>ss(mine))p.cnt=Object.assign(p.cnt||{},{underdog:((p.cnt||{}).underdog||0)+1})}
+  });
+  var keys=Object.keys(hist).sort();if(keys.length>60){keys.slice(0,keys.length-60).forEach(function(k){delete hist[k]});changed=true}
+  if(changed)touch('profile');
+}
+function duelRecordVs(uid){var w=0,l=0,st=0,last=null;Object.keys(prof().duels||{}).sort().forEach(function(k){var d=prof().duels[k];if(d.opp!==uid)return;if(d.res==='W'){w++;st=last==='W'?st+1:1}else if(d.res==='L'){l++;st=last==='L'?st+1:1}last=d.res});return {w:w,l:l,streak:st,last:last}}
+function duelTotals(){var w=0,l=0;Object.keys(prof().duels||{}).forEach(function(k){var d=prof().duels[k];if(d.res==='W')w++;if(d.res==='L')l++});return {w:w,l:l}}
+
+/* --- avatars and hats --- */
+function hatFor(cid,uid){
+  var lws=weekStart(Date.now())-7*864e5,c=CREW[cid];if(!c||!savage(cid))return null;
+  var opp=duelPairs(cid,lws)[uid];if(!opp)return null;
+  var a=sum(oppDays(cid,uid,lws)),b=sum(oppDays(cid,opp,lws));if(!(a<b))return null;
+  var x=X[cid]&&X[cid].hats&&X[cid].hats[lws+'_'+uid];return {hat:x?x.hat:'🐣',by:opp,chosen:!!x};
+}
+function avatar(cid,uid,sz){
+  sz=sz||40;var st=uid===me?myStats():(CREW[cid]&&CREW[cid].stats[uid])||{},av=st.avatar||{a:'🐻',c:'#ffb21f'};
+  var ghost=st.last&&Date.now()-st.last>=14*864e5,hat=cid?hatFor(cid,uid):null;
+  return '<span class="av'+(ghost?' ghosty':'')+'" style="width:'+sz+'px;height:'+sz+'px;font-size:'+Math.round(sz*.55)+'px;--ring:'+esc(av.c)+'">'+esc(av.a)+(hat?'<span class="hat" style="font-size:'+Math.round(sz*.5)+'px">'+esc(hat.hat)+'</span>':'')+'</span>';
+}
+function savage(cid){var c=CREW[cid];return !c||c.savage!==false}
+
+/* --- live extras for the crew --- */
+function subExtras(cid){
+  if(X[cid])return;var x=X[cid]={hats:{},bets:{},callouts:{},spots:{},oracle:{},taunts:{},unsub:[]};
+  ['hats','bets','callouts','spots','oracle','taunts'].forEach(function(col){
+    x.unsub.push(FB.onSnapshot(FB.collection(FB.db,'gymCrews',cid,col),function(s){var m={};s.forEach(function(d){m[d.id]=d.data()});x[col]=m;render();checkTrophiesSoon()},function(){}));
+  });
+  FB.getDoc(FB.doc(FB.db,'gymCrews',cid)).then(function(d){if(d.exists()&&CREW[cid])CREW[cid].savage=d.data().savage!==false;render()},function(){});
+}
+function unsubExtras(cid){var x=X[cid];if(!x)return;x.unsub.forEach(function(f){try{f()}catch(e){}});delete X[cid]}
+function addDoc(cid,col,data){var ref=FB.doc(FB.collection(FB.db,'gymCrews',cid,col));return FB.setDoc(ref,data)}
+
+/* --- call-outs: beat my set within 7 days --- */
+function calloutState(cid,co){
+  var target=co.to,st=target===me?myStats():(CREW[cid]&&CREW[cid].stats[target])||{},x=st.ranked&&st.ranked[co.lift],ans=false;
+  if(x&&x.h90&&x.h90.t>co.t&&x.h90.v>=co.v)ans=true;
+  (x&&x.hist||[]).forEach(function(h){if(h[0]>co.t&&h[1]>=co.v)ans=true});
+  return ans?'answered':Date.now()>co.t+7*864e5?'chicken':'open';
+}
+/* --- predictions --- */
+function oracleState(cid,o){
+  var st=o.target===me?myStats():(CREW[cid]&&CREW[cid].stats[o.target])||{},x=st.ranked&&st.ranked[o.lift],hit=false;
+  (x&&x.hist||[]).forEach(function(h){if(h[0]>=o.t&&h[0]<=o.until&&h[1]>=o.kg)hit=true});
+  if(x&&x.h90&&x.h90.t>=o.t&&x.h90.t<=o.until&&x.h90.v>=o.kg)hit=true;
+  return hit?'yes':Date.now()>o.until?'no':'open';
+}
+
+/* --- Monday awards (shown Monday and Tuesday) --- */
+function mondayAwards(cid){
+  var dow=(new Date().getDay()+6)%7;if(dow>1)return '';var lws=weekStart(Date.now())-7*864e5,ms=memberStats(cid);if(ms.length<2)return '';
+  var rows=ms.map(function(m){var lw=m.uid===me?{start:lws,days:dayPoints(lws),sessions:0,volume:0,prs:0}:(m.s.lastWeek&&m.s.lastWeek.start===lws?m.s.lastWeek:null);
+    if(m.uid===me){done().forEach(function(s){if(s.start>=lws&&s.start<lws+7*864e5){lw.sessions++;s.items.forEach(function(it){lw.volume+=vol(it.sets)})}});(prof().events||[]).forEach(function(e){if(e.type==='pr'&&e.t>=lws&&e.t<lws+7*864e5)lw.prs++})}
+    return {m:m,lw:lw||{sessions:0,volume:0,prs:0}}});
+  function top(f){var b=null;rows.forEach(function(r){if(f(r)>0&&(!b||f(r)>f(b)))b=r});return b}
+  function bot(f){var b=null;rows.forEach(function(r){if(!b||f(r)<f(b))b=r});return b}
+  var aw=[],a;
+  if(a=top(function(r){return r.lw.sessions}))aw.push(['🐀','Gym rat of the week',a,a.lw.sessions+' sessions']);
+  if(a=top(function(r){return r.lw.volume}))aw.push(['🏗','Human forklift',a,nfmt(a.lw.volume)+' kg']);
+  if(a=top(function(r){return r.lw.prs}))aw.push(['🚀','PR machine',a,a.lw.prs+' new bests']);
+  if(savage(cid)){var g=bot(function(r){return r.lw.sessions});if(g&&g.lw.sessions===0)aw.push(['👻','Ghost of the week',g,'0 sessions']);
+    ms.forEach(function(m){var sh=m.uid===me?prof().shame:m.s.shame;if((sh||[]).indexOf('skip_legs')>=0)aw.push(['🍗','Most likely to skip legs',{m:m},'certified'])})}
+  if(!aw.length)return '';
+  return '<section class="card awards"><span class="label">Monday awards</span><div class="list">'+aw.map(function(x){return '<div class="item"><span style="font-size:26px">'+x[0]+'</span><span class="grow"><b>'+esc(x[1])+'</b><br><span class="small muted">@'+esc(x[2].m.name)+' · '+esc(x[3])+'</span></span>'+avatar(cid,x[2].m.uid,36)+'</div>'}).join('')+'</div></section>';
+}
+
+/* --- the duel card on the crew tab --- */
+function duelCard(cid){
+  var ws=weekStart(Date.now()),opp=duelPairs(cid,ws)[me];if(!opp)return '<section class="card"><span class="label">Weekly duel'+ib('duel')+'</span><div class="small muted">Duels start when your crew has 2 or more people. Invite someone.</div></section>';
+  var md=oppDays(cid,me,ws),od=oppDays(cid,opp,ws),a=sum(md),b=sum(od),on=nameOf(cid,opp),rec=duelRecordVs(opp),pct=a+b?Math.round(a/(a+b)*100):50,end=Math.ceil((ws+7*864e5-Date.now())/864e5);
+  var h='<section class="card duel"><div class="row between"><span class="label">Weekly duel'+ib('duel')+'</span><span class="small muted">'+(end<=1?'Ends tonight':'Ends in '+end+' days')+'</span></div>';
+  h+='<div class="dvs"><div>'+avatar(cid,me,54)+'<b>You</b><span class="num">'+nfmt(a)+'</span></div><span class="vs">VS</span><div>'+avatar(cid,opp,54)+'<b>'+(opp==='bear'?'The Bear':'@'+esc(on))+'</b><span class="num" style="color:var(--ink)">'+nfmt(b)+'</span></div></div>';
+  h+='<div class="dbar"><i style="width:'+pct+'%"></i></div>';
+  h+='<div class="ddays">'+['M','T','W','T','F','S','S'].map(function(d,i){var mx=500;return '<div><span><i style="height:'+Math.round(md[i]/mx*100)+'%"></i><i class="o" style="height:'+Math.round(od[i]/mx*100)+'%"></i></span>'+d+'</div>'}).join('')+'</div>';
+  if(opp==='bear')h+='<div class="small muted">Odd number in the crew, so you\'re facing The Bear this week. It scores 150 a day. Beat it.</div>';
+  else{h+='<div class="small muted">All time vs @'+esc(on)+': '+rec.w+' W · '+rec.l+' L'+(rec.streak>1?' · '+rec.streak+'-week '+(rec.last==='W'?'win':'losing')+' streak':'')+'</div>';
+    var bet=Object.keys((X[cid]||{}).bets||{}).map(function(k){var x=X[cid].bets[k];x._id=k;return x}).filter(function(x){return x.week===ws&&((x.a===me&&x.b===opp)||(x.b===me&&x.a===opp))})[0];
+    if(bet){var st=STAKES.filter(function(s){return s[0]===bet.stake})[0]||STAKES[0];
+      h+='<div class="betline">'+st[1]+' <span class="grow">'+(bet.accepted?'Bet on: loser buys '+st[2]+'.':bet.by===me?'You bet '+st[2]+'. Waiting for @'+esc(on)+' to accept.':'@'+esc(on)+' bets '+st[2]+' on this duel.')+'</span>'+(!bet.accepted&&bet.by!==me?'<button class="btn primary" data-act="betok" data-id="'+esc(bet._id)+'">Accept</button>':'')+'</div>'}
+    else h+='<div class="row" style="flex-wrap:wrap;gap:6px"><span class="small muted">Bet on it:</span>'+STAKES.map(function(s){return '<button class="chip" data-act="bet" data-s="'+s[0]+'" data-o="'+esc(opp)+'">'+s[1]+' '+s[2]+'</button>'}).join('')+'</div>';
+    h+='<div class="row" style="flex-wrap:wrap;gap:6px"><span class="small muted">Taunt:</span>'+TAUNTS.slice(0,UI.allTaunts?TAUNTS.length:4).map(function(t,i){return '<button class="chip" data-act="taunt" data-i="'+i+'" data-o="'+esc(opp)+'">'+esc(t)+'</button>'}).join('')+(UI.allTaunts?'':'<button class="chip" data-act="moretaunts">More…</button>')+'</div>'}
+  var lr=duelResult(cid,ws-7*864e5);
+  if(lr){var lon=nameOf(cid,lr.opp);h+='<div class="lastduel">Last week: '+(lr.res==='W'?'<b class="win">You beat '+(lr.opp==='bear'?'The Bear':'@'+esc(lon))+'</b>':lr.res==='L'?'<b style="color:var(--danger)">'+(lr.opp==='bear'?'The Bear':'@'+esc(lon))+' beat you</b>':'<b>Draw with @'+esc(lon)+'</b>')+' '+nfmt(lr.me)+' to '+nfmt(lr.them)+'.';
+    if(lr.res==='W'&&lr.opp!=='bear'&&savage(cid)){var hx=hatFor(cid,lr.opp);h+='<br>Pick @'+esc(lon)+'\'s hat for the week: '+HATS.map(function(x){return '<button class="chip'+(hx&&hx.chosen&&hx.hat===x[0]?' on':'')+'" data-act="hat" data-h="'+x[0]+'" data-o="'+esc(lr.opp)+'">'+x[0]+'</button>'}).join('')}
+    if(lr.res==='L'&&savage(cid)){var mh=hatFor(cid,me);if(mh)h+='<br>You\'re wearing '+mh.hat+' this week. Rules are rules.'}
+    h+='</div>'}
+  return h+'</section>';
+}
+/* --- ledger of bets --- */
+function ledgerCard(cid){
+  var bets=Object.keys((X[cid]||{}).bets||{}).map(function(k){var x=X[cid].bets[k];x._id=k;return x}).filter(function(x){return x.accepted&&(x.a===me||x.b===me)&&x.week<weekStart(Date.now())});
+  if(!bets.length)return '';
+  var rows=bets.map(function(b){var opp=b.a===me?b.b:b.a,a=sum(oppDays(cid,me,b.week)),o=sum(oppDays(cid,opp,b.week)),st=STAKES.filter(function(s){return s[0]===b.stake})[0]||STAKES[0];
+    if(a===o)return '';var won=a>o,on=nameOf(cid,opp);
+    return '<div class="item"><span style="font-size:22px">'+st[1]+'</span><span class="grow">'+(won?'@'+esc(on)+' owes you '+st[2]:'You owe @'+esc(on)+' '+st[2])+'<br><span class="small muted">Week of '+dshort(b.week)+(b.paid?' · paid':'')+'</span></span>'+(won&&!b.paid?'<button class="chip" data-act="paid" data-id="'+esc(b._id)+'">Mark paid</button>':'')+'</div>'}).join('');
+  return rows?'<section class="card"><span class="label">The ledger'+ib('ledger')+'</span><div class="list">'+rows+'</div></section>':'';
+}
+/* --- call-outs and predictions --- */
+function calloutsCard(cid){
+  var l=Object.keys((X[cid]||{}).callouts||{}).map(function(k){var x=X[cid].callouts[k];x._id=k;return x}).filter(function(x){return Date.now()-x.t<14*864e5}).sort(function(a,b){return b.t-a.t});
+  var h='<section class="card"><div class="row between"><span class="label">Call-outs'+ib('callout')+'</span><button class="chip" data-act="newcallout">+ Call someone out</button></div>';
+  if(UI.newCallout)h+=calloutForm(cid);
+  if(!l.length&&!UI.newCallout)return h+'<div class="small muted">Post one of your best sets and dare someone to beat it within 7 days.</div></section>';
+  h+='<div class="list">'+l.map(function(co){var st=calloutState(cid,co),r=rankedById(co.lift)||{name:co.lift};
+    return '<div class="item"><span class="grow"><b>@'+esc(nameOf(cid,co.by))+'</b> → <b>@'+esc(nameOf(cid,co.to))+'</b>: beat '+esc(r.name)+' '+f(co.w)+' × '+co.r+' ('+Math.round(co.v)+' kg est.)<br><span class="small '+(st==='answered'?'win':st==='chicken'?'':'muted')+'"'+(st==='chicken'?' style="color:var(--danger)"':'')+'>'+(st==='answered'?'Answered the call':st==='chicken'?'🐔 Chickened out':'Open · '+Math.max(0,Math.ceil((co.t+7*864e5-Date.now())/864e5))+' days left')+'</span></span></div>'}).join('')+'</div>';
+  return h+'</section>';
+}
+function calloutForm(cid){
+  var mine=myStats().ranked,lifts=RANKED.filter(function(r){return mine[r.id]&&mine[r.id].h90}),others=memberStats(cid).filter(function(m){return m.uid!==me});
+  if(!lifts.length)return '<div class="small muted">Log a ranked lift first, then you can call people out with it.</div>';
+  if(!others.length)return '<div class="small muted">You need someone in the crew to call out.</div>';
+  return '<div class="coform"><label class="small muted" for="colift">Your set</label><select class="text" id="colift">'+lifts.map(function(r){var x=mine[r.id].h90;return '<option value="'+r.id+'">'+esc(r.name)+': '+f(x.w)+' × '+x.r+' ('+Math.round(x.v)+' kg est.)</option>'}).join('')+'</select>'+
+    '<label class="small muted" for="coto">Who</label><select class="text" id="coto">'+others.map(function(m){return '<option value="'+esc(m.uid)+'">@'+esc(m.name)+'</option>'}).join('')+'</select>'+
+    '<div class="row"><button class="btn primary grow" data-act="sendcallout">Send call-out</button><button class="btn" data-act="newcallout">Cancel</button></div></div>';
+}
+function oracleCard(cid){
+  var l=Object.keys((X[cid]||{}).oracle||{}).map(function(k){var x=X[cid].oracle[k];x._id=k;return x}).filter(function(x){return Date.now()-x.until<14*864e5}).sort(function(a,b){return a.until-b.until});
+  if(!l.length)return '';
+  return '<section class="card"><span class="label">Predictions'+ib('oracle')+'</span><div class="list">'+l.map(function(o){var st=oracleState(cid,o),r=rankedById(o.lift)||{name:o.lift},v=o.votes||{},yes=0,no=0;Object.keys(v).forEach(function(u){if(v[u])yes++;else no++});var my=v[me];
+    return '<div class="item" style="flex-wrap:wrap"><span class="grow"><b>Will @'+esc(nameOf(cid,o.target))+' hit '+esc(r.name)+' '+o.kg+' kg est. by '+dshort(o.until)+'?</b><br><span class="small muted">'+yes+' say yes · '+no+' say no'+(st!=='open'?' · <b class="'+(st==='yes'?'win':'')+'">'+(st==='yes'?'They did it':'Didn\'t happen')+'</b>':'')+'</span></span>'+
+      (st==='open'&&o.target!==me?'<span class="row" style="gap:6px"><button class="chip'+(my===true?' on':'')+'" data-act="vote" data-id="'+esc(o._id)+'" data-v="1">Yes</button><button class="chip'+(my===false?' on':'')+'" data-act="vote" data-id="'+esc(o._id)+'" data-v="0">No</button></span>':'')+'</div>'}).join('')+'</div></section>';
+}
+function oracleForm(cid,uid){
+  var st=CREW[cid]&&CREW[cid].stats[uid];if(!st)return '';var lifts=RANKED.filter(function(r){return st.ranked&&st.ranked[r.id]});if(!lifts.length)return '';
+  return '<section class="card"><span class="label">Make a prediction'+ib('oracle')+'</span><div class="small muted">Bet on their next milestone. If you call it right, you earn the Oracle trophy.</div>'+
+    '<select class="text" id="orlift">'+lifts.map(function(r){var x=st.ranked[r.id];return '<option value="'+r.id+'" data-v="'+x.v+'">'+esc(r.name)+' (now '+Math.round(x.v)+' kg est.)</option>'}).join('')+'</select>'+
+    '<div class="row"><input class="text grow" id="orkg" inputmode="decimal" placeholder="Target kg, e.g. 100"><select class="text" id="orweeks" style="width:auto"><option value="2">in 2 weeks</option><option value="4" selected>in 4 weeks</option><option value="8">in 8 weeks</option></select></div>'+
+    '<button class="btn primary" data-act="sendoracle" data-u="'+esc(uid)+'">Post prediction</button></section>';
+}
+
+/* --- your look --- */
+function avatarPicker(){
+  var av=prof().avatar||{a:'🐻',c:'#ffb21f'};
+  return '<section class="card"><span class="label">Your mascot</span><div class="small muted">How your crew sees you.</div><div class="row" style="justify-content:center">'+avatar(null,me,72)+'</div>'+
+    '<div class="picks">'+ANIMALS.map(function(a){return '<button class="pick'+(av.a===a?' on':'')+'" data-act="setav" data-a="'+a+'">'+a+'</button>'}).join('')+'</div>'+
+    '<div class="picks">'+RINGS.map(function(c){return '<button class="pick ring'+(av.c===c?' on':'')+'" data-act="setring" data-c="'+c+'" style="--ring:'+c+'" aria-label="Ring colour"></button>'}).join('')+'</div>'+
+    '<label class="row small" style="gap:8px"><input type="checkbox" id="muteroast"'+(prof().muteRoast?' checked':'')+'> Mute the bear\'s roasts</label></section>';
+}
+
+/* --- weekly share card, Wordle style --- */
+function shareText(){
+  var ws=weekStart(Date.now()),sq=[],sess=0,kg=0,prs=0,titles=0;
+  for(var i=0;i<7;i++){var from=ws+i*864e5,ss=done().filter(function(s){return s.start>=from&&s.start<from+864e5}),c='⬛';
+    if(ss.length){var m={};ss.forEach(function(s){sess++;s.items.forEach(function(it){kg+=vol(it.sets);var mm=muscles(it.name);Object.keys(mm).forEach(function(k){m[k]=(m[k]||0)+it.sets.length})})});
+      var legs=(m.quads||0)+(m.hams||0)+(m.calves||0),push=(m.chest||0)+(m.shoulders||0)+(m.triceps||0),pull=(m.back||0)+(m.biceps||0);
+      c=legs>=push&&legs>=pull&&legs>0?'🟥':push>=pull&&push>0?'🟧':pull>0?'🟦':'🟩'}sq.push(c)}
+  (prof().events||[]).forEach(function(e){if(e.type==='pr'&&e.t>=ws)prs++});
+  myCrews().forEach(function(cid){var th=titleHolders(cid);Object.keys(th).forEach(function(k){TITLES.forEach(function(T){if(th[k][T.id]&&th[k][T.id].uid===me)titles++})})});
+  return 'Gym Log · week of '+dshort(ws)+'\n'+sq.join('')+'\n'+sess+(sess===1?' session':' sessions')+' · '+nfmt(kg)+' kg · '+prs+(prs===1?' new best':' new bests')+(titles?' · 👑×'+titles:'')+'\n🟥 legs 🟧 push 🟦 pull';
+}
+function shareCard(){
+  var t=shareText();
+  return '<section class="card"><div class="row between"><span class="label">Your week</span><button class="btn ghost" data-act="shareclose">Close</button></div><pre class="sharepre">'+esc(t)+'</pre>'+
+    '<div class="row"><a class="btn primary grow" style="font-size:15px;text-decoration:none;display:flex;align-items:center;justify-content:center" href="https://wa.me/?text='+encodeURIComponent(t)+'" target="_blank" rel="noopener">WhatsApp</a><button class="btn grow" style="font-size:15px" data-act="sharecopy">Copy</button><button class="btn grow" style="font-size:15px" data-act="sharenative">Share</button></div></section>';
+}
+/* --- bear roasts --- */
+function roast(){
+  if(prof().muteRoast)return null;var cs=myCrews();if(cs.length&&!cs.some(savage))return null;
+  var d=done(),last=d.length?d[d.length-1].start:0,days=last?Math.floor((Date.now()-last)/864e5):0;
+  if((prof().shame||[]).indexOf('skip_legs')>=0)return 'Your legs filed a missing person report.';
+  if(days<3)return null;var r=ROASTS[Math.floor(Date.now()/864e5)%ROASTS.length];return r.replace('{d}',days);
+}
+
 /* ---------- views ---------- */
 function confirmBox(c,q,yes){
   return UI.confirm===c?'<div class="card" style="border-color:var(--danger)"><div>'+q+'</div><div class="row"><button class="btn danger grow" data-act="yes">'+yes+'</button><button class="btn grow" data-act="no">Keep</button></div></div>':'';
@@ -1221,7 +1516,7 @@ function weekStrip(){
   var d=new Date();d.setHours(0,0,0,0);var today=d.getTime();d.setDate(d.getDate()-((d.getDay()+6)%7));
   var on={},n=0;done().forEach(function(s){on[day0(s.start)]=1});
   var h='';for(var i=0;i<7;i++){var t=d.getTime();if(on[t])n++;h+='<div class="day'+(on[t]?' on':'')+(t===today?' today':'')+'"><i></i>'+'MTWTFSS'[i]+'</div>';d.setDate(d.getDate()+1)}
-  return '<section class="weekbox"><div class="row between"><span class="label">This week</span><span class="small"><b>'+n+'</b> '+(n===1?'workout':'workouts')+'</span></div><div class="week">'+h+'</div></section>';
+  return '<section class="weekbox"><div class="row between"><span class="label">This week</span><span class="small"><b>'+n+'</b> '+(n===1?'workout':'workouts')+(n?' · <button class="link" data-act="share">Share my week</button>':'')+'</span></div><div class="week">'+h+'</div></section>'+(UI.share?shareCard():'');
 }
 function viewHome(){
   var d=done(),lastBy={};d.forEach(function(s){lastBy[s.routine]=s.start});

@@ -64,7 +64,8 @@ service cloud.firestore {
       // Anyone signed in can see a crew's name (shown on its invite); nothing else.
       allow read: if signedIn();
       allow create: if signedIn() && request.resource.data.owner == request.auth.uid && okName(request.resource.data.name);
-      allow update: if crewOwner(cid) && request.resource.data.owner == resource.data.owner && okName(request.resource.data.name);
+      allow update: if crewOwner(cid) && request.resource.data.owner == resource.data.owner && okName(request.resource.data.name)
+        && (!('savage' in request.resource.data) || request.resource.data.savage is bool);
       allow delete: if crewOwner(cid);
 
       // The invite code: members can see it (to share the link), only the owner sets it.
@@ -84,6 +85,49 @@ service cloud.firestore {
         allow read: if crewMember(cid);
         allow create, update: if crewMember(cid) && request.auth.uid == uid && okStats(request.resource.data);
         allow delete: if signedIn() && request.auth.uid == uid;
+      }
+      // Hats: last week's duel winner picks the loser's hat.
+      match /hats/{id} {
+        allow read: if crewMember(cid);
+        allow create, update: if crewMember(cid) && request.resource.data.by == request.auth.uid
+          && request.resource.data.hat is string && request.resource.data.hat.size() <= 8;
+      }
+      // Duel bets: food only, both sides must agree, only the two players change it.
+      match /bets/{id} {
+        allow read: if crewMember(cid);
+        allow create: if crewMember(cid) && request.resource.data.by == request.auth.uid && request.resource.data.a == request.auth.uid
+          && request.resource.data.stake in ['knafeh', 'coffee', 'shawarma', 'juice', 'dinner'] && request.resource.data.accepted == false;
+        allow update: if crewMember(cid) && (request.auth.uid == resource.data.a || request.auth.uid == resource.data.b)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accepted', 'paid']);
+        allow delete: if crewMember(cid) && resource.data.by == request.auth.uid;
+      }
+      // Call-outs: post your own set as a challenge.
+      match /callouts/{id} {
+        allow read: if crewMember(cid);
+        allow create: if crewMember(cid) && request.resource.data.by == request.auth.uid
+          && request.resource.data.lift in ['bench', 'incline', 'squat', 'deadlift', 'ohp', 'row', 'pullup', 'dip'];
+        allow delete: if crewMember(cid) && resource.data.by == request.auth.uid;
+      }
+      // Predictions: anyone posts, everyone votes (only their own vote).
+      match /oracle/{id} {
+        allow read: if crewMember(cid);
+        allow create: if crewMember(cid) && request.resource.data.by == request.auth.uid && request.resource.data.votes.size() == 0;
+        allow update: if crewMember(cid) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes'])
+          && request.resource.data.votes.diff(resource.data.votes).affectedKeys().hasOnly([request.auth.uid]);
+        allow delete: if crewMember(cid) && resource.data.by == request.auth.uid;
+      }
+      // Spotted: like Respect, each member adds or removes only their own tick.
+      match /spots/{eid} {
+        allow read: if crewMember(cid);
+        allow create: if crewMember(cid) && request.resource.data.keys().hasOnly([request.auth.uid]);
+        allow update: if crewMember(cid) && request.resource.data.diff(resource.data).affectedKeys().hasOnly([request.auth.uid]);
+      }
+      // Taunts: only the preset lines, sent as yourself.
+      match /taunts/{id} {
+        allow read: if crewMember(cid);
+        allow create: if crewMember(cid) && request.resource.data.from == request.auth.uid
+          && request.resource.data.text in ['Your move', 'Light weight', 'See you Monday', 'Who hurt you?', 'Legs called. They miss you.', 'Nice warm-up set', 'Respectfully, no', 'Is that the bar or the bar plus air?'];
+        allow delete: if crewMember(cid) && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
       }
       // Respect: each member can only add or remove their own.
       match /respect/{eid} {
