@@ -16350,6 +16350,9 @@ function enterLibrary(code){
   subs.push(FB.onSnapshot(FB.collection(FB.db, base(), "meta"), snap => {
     const m = {}; snap.forEach(d => { m[d.id] = d.data(); }); S.meta = m; COVERS.fromServer(m.covers || {}); render(); if (!S._sweepT) S._sweepT = setTimeout(() => COVERS.startSweep(), 2500); try{ landRecs(); }catch(e){ console.warn("landRecs", e && e.message); }
   }, onErr("meta")));
+  subs.push(FB.onSnapshot(FB.collection(FB.db, base(), "invites"), snap => {
+    const m = {}; snap.forEach(d => { m[d.id] = d.data(); }); S.invites = m; render();
+  }, onErr("invites")));
   subs.push(FB.onSnapshot(FB.collection(FB.db, base(), "people"), snap => {
     const m = {}; snap.forEach(d => { m[d.id] = d.data(); }); S.people = m;
     if (m[uid] && m[uid].name && m[uid].name !== S.me){ S.me = m[uid].name; store.set("fs-me-" + uid, S.me); }
@@ -17402,6 +17405,14 @@ function personView(uid){
     ${secs.map(([s, d]) => `<div class="sec2"><span class="eyebrow">${SECTION_INFO[s].title}${d && d.visible ? ` · ${Object.keys(d.books||{}).length}` : ""}</span></div>
       ${d && d.visible ? (Object.keys(d.books||{}).length ? bookBlock(listBooks(d), []) : `<div class="card muted">Nothing here yet.</div>`) : `<div class="card muted">${esc(name)} keeps this private.</div>`}`).join("")}`;
 }
+function inviteCard(){
+  const inv = Object.entries(S.invites || {}).sort((a,b) => (b[1].at||"").localeCompare(a[1].at||""));
+  return `<div class="card stack-v"><div class="eyebrow">Invite someone</div>
+    <div class="muted" style="font-size:.88rem">Only invited emails can join. Add their email here, then send them the link and the family code. They create their own account with that email.</div>
+    <div class="row" style="flex-wrap:nowrap"><input type="email" id="invemail" placeholder="name@example.com" aria-label="Email to invite" autocapitalize="none" autocorrect="off" spellcheck="false" style="flex:1;min-width:0"><button class="btn" data-act="invite">Invite</button></div>
+    ${inv.length ? `<div class="list">${inv.map(([em, d]) => `<div class="row" style="justify-content:space-between;flex-wrap:nowrap;gap:8px"><span style="min-width:0;overflow-wrap:anywhere">${esc(em)}<br><small class="muted">Invited ${esc(d.at || "")}${d.byName ? " by " + esc(d.byName) : ""}</small></span><button class="linkbtn" data-act="uninvite" data-email="${esc(em)}">Remove</button></div>`).join("")}</div>` : ""}
+    <div class="muted" style="font-size:.82rem">Invites stay listed after someone joins. Removing one doesn't remove someone who already joined.</div></div>`;
+}
 function viewFamily(){
   if (S.famView === "club") return `<div class="famnarrow">${clubView()}</div>`;
   if (S.famView === "value") return valueView();
@@ -17436,7 +17447,7 @@ function viewFamily(){
     <div class="stack-v"><div class="eyebrow">People</div>
       <div class="peoplegrid">${people.map(([uid,p]) => { const me = uid === S.user?.uid; const r = countOf(uid,"read"), w = countOf(uid,"want");
         return `<button class="person" ${me?'data-goto="mine"':`data-person="${esc(uid)}"`}><span class="avatar">${esc((p.name||"?")[0].toUpperCase())}</span><span><b>${esc(p.name||"Someone")}${me?" (you)":""}</b><small>${r==null?"Read list private":`${r} read`} · ${w==null?"wishlist private":`${w} to read`}</small></span></button>`; }).join("")}</div>
-      <div class="muted" style="font-size:.82rem">To add someone, send them the link and the family code. They create their own account.</div></div>
+      ${inviteCard()}</div>
     ${yearPeople.length ? `<div class="stack-v"><div class="eyebrow">Year in books</div><div class="chips wrap">${yearPeople.map(([uid,p]) => `<button class="chip yearchip" data-famview="year:${esc(uid)}:${yr}">${uid===S.user?.uid?`Your ${yr}`:`${esc(p.name||"Someone")}'s ${yr}`}</button>`).join("")}</div></div>` : ""}
     <div class="stack-v"><div class="eyebrow">Reading now</div>${reading.length?`<div class="list">${reading.map(itemRow).join("")}</div>`:`<div class="card muted">Nobody is reading anything they've shared yet.</div>`}</div>
     ${late ? "" : outBlock}
@@ -18536,6 +18547,11 @@ document.addEventListener("click", async e => {
     case "resetpw": try{ await FB.A.sendPasswordResetEmail(FB.auth, S.user.email); toast("Reset link sent to " + S.user.email); }catch(e){ toast(authErr(e)); } break;
     case "backfamily": S.person = null; window.scrollTo(0,0); render(); break;
     case "feedmore": S.feedAll = !S.feedAll; render(); break;
+    case "invite": { const em = (document.getElementById("invemail")?.value || "").trim().toLowerCase();
+      if (!/^[^\s@/]+@[^\s@/]+\.[^\s@/]+$/.test(em)){ toast("Type a full email address."); break; }
+      writeDoc(base() + "/invites/" + em, {at: today(), by: S.user.uid, byName: S.me || ""}).then(() => toast("Invited " + em + ". Now send them the link and the family code."), () => {}); break; }
+    case "uninvite": { const em = actEl.dataset.email; if (!em) break;
+      FB.deleteDoc(FB.doc(FB.db, base() + "/invites/" + em)).then(() => toast("Invite removed"), () => toast("Couldn't remove that invite.")); break; }
     case "lang": { S.lang = S.lang === "ar" ? "en" : "ar"; store.set("fs-lang", S.lang); if (S.lang === "en"){ location.reload(); break; } const go2 = () => { I18N.apply(); render(); if (S.sheet) renderSheet(); };
       if (document.startViewTransition && !FX.rm()) document.startViewTransition(go2); else go2(); break; }
     case "printvalue": { const t0 = document.title; document.title = "Nabulsi Library - value list"; document.documentElement.classList.add("printing"); setTimeout(() => { try{ window.print(); }catch(e){} document.title = t0; document.documentElement.classList.remove("printing"); }, 50); break; }
