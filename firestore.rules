@@ -35,11 +35,20 @@ service cloud.firestore {
       match /added/{id} { allow read, write: if isFamily(); }
       match /meta/{id}  { allow read, write: if isFamily(); }
 
-      // Names: family can see, each person changes only their own. Creating your own
-      // record is how joining works, so that stays open to anyone with the family code.
+      // Names: family can see, each person changes only their own.
+      // Joining (creating your record) also needs an invite for your email, so the
+      // family code on its own is not enough to get in.
       match /people/{uid} {
         allow read: if isFamily();
-        allow write: if signedIn() && request.auth.uid == uid;
+        allow update, delete: if signedIn() && request.auth.uid == uid;
+        allow create: if signedIn() && request.auth.uid == uid
+          && request.auth.token.email != null
+          && exists(/databases/$(database)/documents/libraries/nabulsi-shelves-4817/invites/$(request.auth.token.email.lower()));
+      }
+
+      // Invites: one document per invited email (lowercase), added by a family member.
+      match /invites/{email} {
+        allow read, write: if isFamily();
       }
 
       // Reading lists, ratings and notes: visible to other family only when switched on.
