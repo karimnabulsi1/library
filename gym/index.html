@@ -177,6 +177,35 @@ nav button[aria-current="page"]{color:var(--accent);border-top-color:var(--accen
 .gl{display:flex;gap:8px;align-items:flex-start;margin-top:6px}
 .gl svg{flex:none;margin-top:1px}
 @media (prefers-reduced-motion:reduce){.ib.new,.sheet{animation:none}}
+.medal{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:radial-gradient(circle at 35% 30%,#2e2a22,#151310);box-shadow:inset 0 0 0 3px var(--ring),0 3px 0 rgba(0,0,0,.4);line-height:1;flex:none}
+.medal.locked{background:transparent;box-shadow:inset 0 0 0 2px #3a352b;color:#5a5446;font-family:var(--display);font-weight:900;border:2px dashed #3a352b}
+.tgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ttile{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 4px;color:var(--ink);min-width:0}
+.ttile b{font-family:var(--display);font-size:13px;letter-spacing:.01em;text-transform:uppercase;line-height:1.1;hyphens:auto;-webkit-hyphens:auto;max-width:100%}
+.ttile small{font-size:11px;color:var(--muted);line-height:1.25}
+.ttile.off .medal:not(.locked){filter:grayscale(1) brightness(.5)}
+.ttile.off b{color:var(--muted)}
+.ttile.shame{border-color:rgba(255,122,102,.5)}
+.tprog{width:80%;height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+.tprog i{display:block;height:100%;background:var(--accent)}
+.rare{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;padding:2px 6px}
+.rare.c{background:#2a2620;color:#c9c4b8}.rare.r{background:#3a2a06;color:#ffb21f}.rare.vr{background:#141c33;color:#9bb4ff}
+.showcase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;text-align:center}
+.showcase div{display:flex;flex-direction:column;align-items:center;gap:6px}
+.showcase b{font-family:var(--display);font-size:14px;text-transform:uppercase;letter-spacing:.03em}
+.shamecard{border-color:rgba(255,122,102,.45)}
+.spinwrap{display:flex;justify-content:center;perspective:600px;padding:6px 0}
+.spinwrap .medal{animation:spinin 1.1s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes spinin{from{transform:rotateY(540deg) scale(.3);opacity:0}to{transform:rotateY(0) scale(1);opacity:1}}
+.tsheet{align-items:stretch;text-align:left}
+.unlock{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:20px}
+.ulbox{position:relative;z-index:2;max-width:360px;width:100%;background:var(--surface);border:1px solid var(--accent);border-radius:16px;padding:22px 18px;text-align:center;display:flex;flex-direction:column;gap:10px;animation:popin .35s ease-out}
+.unlock.shame .ulbox{border-color:var(--danger)}
+.ulbox p{margin:0;line-height:1.45}
+.spinwrap.big .medal{animation-duration:1.5s;box-shadow:inset 0 0 0 4px var(--ring),0 0 40px rgba(255,178,31,.35)}
+@keyframes popin{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
+#confetti{position:fixed;inset:0;z-index:1;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.spinwrap .medal,.ulbox{animation:none}}
 #toast{position:fixed;left:16px;right:16px;bottom:80px;margin:0 auto;max-width:420px;background:var(--ink);color:var(--bg);border-radius:8px;padding:12px 16px;font-weight:500;text-align:center;z-index:9;opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s;pointer-events:none}
 #toast.show{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){#toast{transition:none}}
@@ -234,7 +263,7 @@ function setSync(s){var el=$('#sync');el.dataset.s=s;el.textContent={loading:'Lo
 function ref(id){return FB.doc(FB.db,'gym',me,'docs',id)}
 function track(p){pending++;setSync('saving');p.then(function(){pending--;if(!pending)setSync('saved')},function(e){pending--;UI.dbErr=(e&&e.code)||'error';setSync('error')})}
 function push(id){clearTimeout(timers[id]);delete timers[id];if(!me||!FB.ready)return;var body=id==='config'?S.config:id==='profile'?S.profile:S.sessions[id];if(body)track(FB.setDoc(ref(id),clone(body)))}
-function touch(id){saveLocal();if(typeof publishSoon==='function'&&id!=='config')publishSoon();if(!me||!FB.ready)return;clearTimeout(timers[id]);timers[id]=setTimeout(function(){push(id)},600)}
+function touch(id){saveLocal();if(typeof publishSoon==='function'&&id!=='config')publishSoon();if(typeof checkTrophiesSoon==='function'&&id!=='profile')checkTrophiesSoon();if(!me||!FB.ready)return;clearTimeout(timers[id]);timers[id]=setTimeout(function(){push(id)},600)}
 function remove(id){delete S.sessions[id];clearTimeout(timers[id]);delete timers[id];saveLocal();if(me&&FB.ready)track(FB.deleteDoc(ref(id)))}
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')Object.keys(timers).forEach(push)});
 async function loadFirebase(){
@@ -334,7 +363,7 @@ function finish(){
   a.items.forEach(function(it){it.sets=it.sets.filter(function(x){return x.ok})});
   a.items=a.items.filter(function(it){return it.sets.length});
   if(!a.items.length){remove(a.id);toast('Nothing ticked, so nothing was saved');return}
-  var before={},rb=rankedBests();a.items.forEach(function(it){var e=IDX[key(it.name)];before[key(it.name)]=e?e.st.level:0});
+  var before={},rb=rankedBests(),thBefore={};myCrews().forEach(function(cid){if(CREW[cid])thBefore[cid]=titleHolders(cid)});a.items.forEach(function(it){var e=IDX[key(it.name)];before[key(it.name)]=e?e.st.level:0});
   a.done=true;a.end=Date.now();touch(a.id);window.scrollTo(0,0);buildIndex();
   var ups=[];a.items.forEach(function(it){var k=key(it.name),e=IDX[k];if(e&&before[k]&&e.st.level>before[k])ups.push(it.name+' is now level '+e.st.level)});
   say(ups.length?'Level up. '+ups.join(', ')+'.':'Workout saved. Good session.');
@@ -342,7 +371,12 @@ function finish(){
   RANKED.forEach(function(r){var x=ra[r.id],y=rb[r.id];if(!x||x.t!==a.start||(y&&x.v<=y.v+0.01))return;
     var ev={id:me+'_'+now+'_'+r.id,type:'pr',lift:r.id,t:now,text:(y?'New ':'First ')+r.name+' best: '+f(x.w)+(r.bw?' kg added':' kg')+' × '+x.r+' ('+Math.round(x.v)+' kg est.)'};
     if(y&&x.v>y.v*1.3+5)ev.flag=1;evs.push(ev)});
-  evs.unshift({id:me+'_'+now+'_w',type:'workout',t:now,text:'Finished '+a.routine+': '+nset+(nset===1?' set':' sets')+', '+nfmt(wv)+' kg lifted'});
+  evs.unshift({id:me+'_'+now+'_w',type:'workout',t:now,routine:a.routine,ex:a.items.map(function(it){return it.name}).slice(0,10),text:'Finished '+a.routine+': '+nset+(nset===1?' set':' sets')+', '+nfmt(wv)+' kg lifted'});
+  var lost=prof().lost||{};Object.keys(thBefore).forEach(function(cid){var af=titleHolders(cid);RANKED.forEach(function(r){TITLES.forEach(function(T){
+    var b0=thBefore[cid][r.id][T.id],a0=af[r.id][T.id];if(!b0||!a0||b0.uid===me||a0.uid!==me)return;
+    evs.push({id:me+'_'+now+'_s'+T.id+r.id,type:'steal',t:now,text:'Took the '+r.name+' '+T.name+' from @'+b0.name+'.'});
+    if(b0.x&&b0.x.t&&now-b0.x.t<864e5)cnt('thief');
+    if(lost[T.id+':'+r.id]===b0.uid){cnt('revenge');delete lost[T.id+':'+r.id]}})})});
   ups.forEach(function(u,i){evs.push({id:me+'_'+now+'_l'+i,type:'level',t:now,text:u})});
   addEvents(evs);
   var r=a.rid&&routine(a.rid),names=a.items.map(function(it){return it.name});
@@ -396,7 +430,7 @@ document.addEventListener('click',function(e){
       if(!st.ok){if(!(+st.r>0)&&!st.f){toast('Enter the reps, or tap To failure');return}st.w=+st.w||0;st.ok=true;checkPR(a,i,j)}else{st.ok=false;delete st.pr}
       touch(a.id);break;
     case 'addset':it=a.items[i];st=it.sets[it.sets.length-1];var ns={w:st?st.w:'',r:st?st.r:'',ok:false};if(st&&st.f)ns.f=true;it.sets.push(ns);touch(a.id);break;
-    case 'rmset':it=a.items[i];if(it.sets.length>1){it.sets.pop();touch(a.id)}break;
+    case 'rmset':it=a.items[i];if(it.sets.length>1){it.sets.pop();touch(a.id);cnt('rmset')}break;
     case 'rmex':a.items.splice(i,1);touch(a.id);break;
     case 'mvup':case 'mvdown':var q=act==='mvup'?i-1:i+1;if(q>=0&&q<a.items.length){it=a.items[i];a.items[i]=a.items[q];a.items[q]=it;touch(a.id)}break;
     case 'swapopen':UI.swap=UI.swap===i?null:i;break;
@@ -412,11 +446,11 @@ document.addEventListener('click',function(e){
     case 'ask':UI.confirm=b.dataset.c;if(UI.confirm==='cancel')window.scrollTo(0,0);break;
     case 'back':if(!a)break;
       if(a.items.some(function(it){return it.sets.some(function(x){return x.ok})})){UI.confirm='cancel';window.scrollTo(0,0)}
-      else{remove(a.id);window.scrollTo(0,0)}break;
+      else{remove(a.id);cnt('discard');window.scrollTo(0,0)}break;
     case 'no':break;
     case 'yes':
       var c=UI.confirm||'';UI.confirm=null;
-      if(c==='cancel'&&a){remove(a.id);toast('Workout discarded')}
+      if(c==='cancel'&&a){remove(a.id);cnt('discard');toast('Workout discarded')}
       else if(c.indexOf('del:')===0){remove(c.slice(4));UI.open=null;toast('Workout deleted')}
       else if(c.indexOf('leave:')===0){leaveCrew(c.slice(6));return}
       else if(c.indexOf('rdel:')===0){S.config.routines=S.config.routines.filter(function(x){return x.id!==c.slice(5)});UI.editing=null;touch('config')}
@@ -428,6 +462,13 @@ document.addEventListener('click',function(e){
     case 'newrtpick':var ti=+b.dataset.i,tp=TEMPLATES[ti];r={id:uid('r'),name:tp?tp.name:'New routine',ex:tp?tp.ex.slice():[]};S.config.routines.push(r);UI.newRt=false;UI.editing=r.id;touch('config');window.scrollTo(0,0);break;
     case 'info':UI.info=b.dataset.k;var sn=lsGet('gymlog.info',{});sn[UI.info]=1;lsSet('gymlog.info',sn);break;
     case 'infoclose':UI.info=null;break;
+    case 'tinspect':UI.tsheet=b.dataset.id;break;
+    case 'tsclose':UI.tsheet=null;break;
+    case 'tpin':var pp2=prof(),tid=b.dataset.id,sc=(pp2.showcase||[]).slice();
+      if(sc.indexOf(tid)>=0){sc=sc.filter(function(x){return x!==tid});toast('Unpinned')}else{sc.unshift(tid);sc=sc.slice(0,3);toast('Pinned to your showcase')}
+      pp2.showcase=sc;touch('profile');publishSoon();break;
+    case 'ulpin':var pp3=prof(),uid3=b.dataset.id,sc3=(pp3.showcase||[]).filter(function(x){return x!==uid3});sc3.unshift(uid3);pp3.showcase=sc3.slice(0,3);touch('profile');publishSoon();(UI.unlocks||[]).shift();toast('Pinned to your showcase');break;
+    case 'uldone':(UI.unlocks||[]).shift();break;
     case 'rup':case 'rdown':r=routine(UI.editing);var k=act==='rup'?i-1:i+1;if(k>=0&&k<r.ex.length){v=r.ex[i];r.ex[i]=r.ex[k];r.ex[k]=v;touch('config')}break;
     case 'rrm':routine(UI.editing).ex.splice(i,1);touch('config');break;
     case 'radd':inp=$('#radd');v=inp.value.trim();if(!v){inp.focus();return}routine(UI.editing).ex.push(v);touch('config');break;
@@ -567,10 +608,10 @@ function cup(c){return '<svg viewBox="0 0 48 48" width="46" height="46" aria-hid
 function medal(c){return '<svg viewBox="0 0 48 48" width="46" height="46" aria-hidden="true"><circle cx="24" cy="24" r="19" fill="'+c+'"/><circle cx="24" cy="24" r="13" fill="none" stroke="#0e0d0b" stroke-width="2" opacity=".35"/><circle cx="24" cy="24" r="4.5" fill="#0e0d0b"/></svg>'}
 var LOCK='<svg viewBox="0 0 48 48" width="46" height="46" aria-hidden="true"><rect x="7" y="7" width="34" height="34" rx="6" fill="none" stroke="#5a5446" stroke-width="2" stroke-dasharray="4 4"/><text x="24" y="31" text-anchor="middle" font-size="18" fill="#5a5446" font-family="sans-serif">?</text></svg>';
 function nf(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,',')}
-function viewTrophies(){
+function viewTrophies(sub){
   var d=done(),total=0;d.forEach(function(s){s.items.forEach(function(it){total+=vol(it.sets)})});
-  var h='<div class="row"><button class="btn" data-act="tab" data-t="train" aria-label="Back to Train">‹ Back</button><h2 class="grow">Trophy room</h2></div>';
-  if(!d.length)return h+'<div class="card empty">Empty shelves for now. Finish a workout to earn your first trophy.</div>';
+  var h=sub?'':'<div class="row"><button class="btn" data-act="tab" data-t="train" aria-label="Back to Train">‹ Back</button><h2 class="grow">Trophy room</h2></div>';
+  if(!d.length)return h+(sub?'':'<div class="card empty">Empty shelves for now. Finish a workout to earn your first trophy.</div>');
   var cells='',next;
   function run(list,val,label,unit){var locked=false;list.forEach(function(n){if(val>=n)cells+='<div class="trophy">'+medal('#ffb21f')+'<b>'+nf(n)+'</b>'+label+'</div>';else if(!locked){locked=true;cells+='<div class="trophy locked">'+LOCK+'<b>'+nf(n)+'</b>'+label+'<span>'+nf(val)+' so far</span></div>'}})}
   run([1,5,10,25,50,100,200],d.length,'workouts');
@@ -701,7 +742,7 @@ function myStats(){
   done().forEach(function(s){var v=0;s.items.forEach(function(it){v+=vol(it.sets)});tot.sessions++;tot.volume+=v;if(s.start>=ws){wk.sessions++;wk.volume+=v}});
   (p.events||[]).forEach(function(e){if(e.type==='pr'&&e.t>=ws)wk.prs++});
   wk.volume=Math.round(wk.volume);tot.volume=Math.round(tot.volume);
-  return {name:p.username,ranked:ranked,week:wk,total:tot,feed:(p.events||[]).slice(-20)};
+  return {name:p.username,ranked:ranked,week:wk,total:tot,feed:(p.events||[]).slice(-20),trophies:Object.keys(p.trophies||{}).slice(0,60),shame:(p.shame||[]).slice(0,10),showcase:(p.showcase||[]).slice(0,3)};
 }
 var pubTimer=null;
 function publishSoon(){clearTimeout(pubTimer);pubTimer=setTimeout(publishStats,1200)}
@@ -725,11 +766,11 @@ function subCrew(cid){
   FB.getDoc(FB.doc(FB.db,'gymCrews',cid,'secret','join')).then(function(d){if(d.exists())c.code=d.data().code;render()},function(){});
   var err=function(e){if(e&&e.code==='permission-denied'){c.lost=true;render()}};
   c.unsub.push(FB.onSnapshot(FB.collection(FB.db,'gymCrews',cid,'members'),function(s){var m={};s.forEach(function(d){m[d.id]=d.data()});c.members=m;render()},err));
-  c.unsub.push(FB.onSnapshot(FB.collection(FB.db,'gymCrews',cid,'stats'),function(s){var m={};s.forEach(function(d){m[d.id]=d.data()});c.stats=m;render()},err));
-  c.unsub.push(FB.onSnapshot(FB.collection(FB.db,'gymCrews',cid,'respect'),function(s){var m={};s.forEach(function(d){m[d.id]=d.data()});c.respect=m;render()},err));
+  c.unsub.push(FB.onSnapshot(FB.collection(FB.db,'gymCrews',cid,'stats'),function(s){var m={};s.forEach(function(d){m[d.id]=d.data()});c.stats=m;render();checkTrophiesSoon()},err));
+  c.unsub.push(FB.onSnapshot(FB.collection(FB.db,'gymCrews',cid,'respect'),function(s){var m={};s.forEach(function(d){m[d.id]=d.data()});c.respect=m;render();checkTrophiesSoon()},err));
 }
 function unsubCrew(cid){var c=CREW[cid];if(!c)return;c.unsub.forEach(function(f){try{f()}catch(e){}});delete CREW[cid]}
-function startCrews(){myCrews().forEach(subCrew);publishStats();checkJoinLink()}
+function startCrews(){myCrews().forEach(subCrew);publishStats();checkJoinLink();checkTrophiesSoon()}
 function stopCrews(){Object.keys(CREW).forEach(unsubCrew)}
 function memberStats(cid){var c=CREW[cid];if(!c)return [];var l=Object.keys(c.stats).filter(function(u){return c.members[u]&&u!==me}).map(function(u){var s=c.stats[u];return {uid:u,name:s.name||'someone',s:s}});
   if(prof().username)l.push({uid:me,name:prof().username,s:myStats()});return l}
@@ -756,7 +797,10 @@ function inboxItems(cid){
   return items.sort(function(a,b){return b.t-a.t}).slice(0,12);
 }
 function markSeen(cid){
-  lsSet(seenKey(cid),Date.now());var h={_v:2},now=titleHolders(cid);RANKED.forEach(function(r){TITLES.forEach(function(T){var x=now[r.id][T.id];h[T.id+':'+r.id]=x?x.uid:null})});lsSet(crownKey(cid),h);
+  var prevH=lsGet(crownKey(cid),null),lostM=prof().lost=prof().lost||{},chg=false;
+  lsSet(seenKey(cid),Date.now());var h={_v:2},now=titleHolders(cid);
+  if(prevH&&prevH._v===2)RANKED.forEach(function(r){TITLES.forEach(function(T){var k=T.id+':'+r.id,x=now[r.id][T.id];if(prevH[k]===me&&x&&x.uid!==me){lostM[k]=x.uid;chg=true}})});
+  if(chg)touch('profile');RANKED.forEach(function(r){TITLES.forEach(function(T){var x=now[r.id][T.id];h[T.id+':'+r.id]=x?x.uid:null})});lsSet(crownKey(cid),h);
 }
 function unseenCount(){var n=0;myCrews().forEach(function(cid){if(CREW[cid]&&Object.keys(CREW[cid].stats).length)n+=inboxItems(cid).length});return n}
 
@@ -891,6 +935,7 @@ function viewMember(){
   var pa=pct(ha),pb=pct(hb);
   if(pa!=null||pb!=null)h+='<div class="small">'+(pa!=null?'You: <b class="'+(pa>=(pb||-1e9)?'win':'')+'">'+(pa>=0?'+':'')+pa+'%</b> since '+dshort(ha[0][0]):'')+(pa!=null&&pb!=null?' · ':'')+(pb!=null?'@'+esc(name)+': <b class="'+(pb>(pa==null?-1e9:pa)?'win':'')+'">'+(pb>=0?'+':'')+pb+'%</b> since '+dshort(hb[0][0]):'')+'</div>';
   h+='</section>';
+  h+='<section class="card"><div class="row between"><span class="label">@'+esc(name)+'\'s showcase</span><span class="small muted">'+((them.trophies||[]).length)+' trophies'+((them.shame||[]).length?' · '+(them.shame||[]).length+' shame':'')+'</span></div>'+(showcaseRow(them.showcase,true)||'<div class="small muted">Nothing pinned yet.</div>')+((them.shame||[]).length?'<div class="small" style="color:var(--danger)">On the shame shelf: '+(them.shame||[]).map(function(id){var T=trophyById(id);return T?T.e+' '+esc(T.name):''}).join(', ')+'</div>':'')+'</section>';
   var tt=them.total||{sessions:0,volume:0};
   h+='<section class="card"><span class="label">All time</span><div class="detail" style="border-top:0;padding-top:0"><div><span>Workouts</span><span>You '+mine.total.sessions+' · @'+esc(name)+' '+tt.sessions+'</span></div><div><span>Total lifted</span><span>You '+nfmt(mine.total.volume)+' kg · @'+esc(name)+' '+nfmt(tt.volume)+' kg</span></div></div></section>';
   return h;
@@ -928,6 +973,8 @@ var INFO={
  bar:['Plates on a bar','Shows the plates to load for the weight you typed, per side, on a 20 kg bar.','Colours follow the usual gym plates: red 25, blue 20, yellow 15, green 10, white 5.'],
  muscles:['Muscle map','Lights up what you trained in the last 7 days. Bright means 4+ sets, dim means some.','It guesses from exercise names, so unusual names may not light anything up.'],
  bw:['Bodyweight','Used to rank your lifts fairly against people of different sizes.','Only you see your weigh-ins. Your crew sees × bodyweight scores, not this log.'],
+ showcase:['Showcase','Your three favourite trophies. Your crew sees them on your profile.','Tap a trophy you own, then Pin to showcase. Rarity is worked out inside your crew: a trophy only you have is Very rare.'],
+ shame:['Shame shelf','Shame trophies are earned by slacking: skipping legs, ghosting the gym, coming last. Your crew can see them.','Each one tells you how to escape. Do that and it disappears.'],
  trophies:['Trophies','Milestones for workouts and kg lifted, and a cup for each exercise\'s best lift.','Cups turn silver at level 3 and gold at level 6. More trophies are on the way.']
 };
 function ib(k){var seen=lsGet('gymlog.info',{});return '<button class="ib'+(seen[k]?'':' new')+'" data-act="info" data-k="'+k+'" aria-label="What is '+esc((INFO[k]||[''])[0])+'?">i</button>'}
@@ -983,6 +1030,187 @@ function titlesCard(cid){
   var empty=RANKED.filter(function(r){var t=th[r.id];return !TITLES.some(function(T){return t[T.id]})}).map(function(r){return r.name});
   if(empty.length)h+='<div class="small muted">Up for grabs: '+esc(empty.join(', '))+'. Log one to claim all four titles.</div>';
   return h+'</section>';
+}
+
+/* ---------- stage 3 round 2: trophy overhaul ---------- */
+/* kind: proud | funny | crew | shame. Shame trophies are live: they sit on your shelf until you earn your way out. */
+var TROPHIES=[
+ {id:'day_one',e:'🎬',kind:'proud',name:'Day One',desc:'Logged your first workout. Everyone starts somewhere.'},
+ {id:'round_number',e:'💯',kind:'proud',name:'Round Number',desc:'Hit a round number on a lift: 60, 100 or 140 kg.'},
+ {id:'leg_survivor',e:'🦵',kind:'proud',name:'Leg Day Survivor',desc:'Squat or deadlift plus two more leg exercises in one session. Stairs are now optional.'},
+ {id:'chest_day',e:'📅',kind:'funny',name:'International Chest Day',desc:'Benched on a Monday, four weeks in a row. Tradition is tradition.'},
+ {id:'comeback',e:'🔁',kind:'proud',name:'Comeback Kid',desc:'Back in the gym after two weeks or more away. Welcome back.'},
+ {id:'failure_option',e:'💀',kind:'funny',name:'Failure Is an Option',desc:'Five sets to failure in one workout. Your muscles have filed a complaint.'},
+ {id:'rep_hoarder',e:'🐿',kind:'funny',name:'Rep Hoarder',desc:'A set of 20 reps or more. Were you counting or meditating?'},
+ {id:'specialist',e:'🎯',kind:'proud',name:'Specialist',desc:'Got any exercise to level 5.'},
+ {id:'creature_habit',e:'⏰',kind:'funny',name:'Creature of Habit',desc:'Five workouts started in the same hour of the day. The squat rack knows your schedule.'},
+ {id:'copy_paste',e:'📋',kind:'funny',name:'Copy Paste',desc:'The exact same exercises five workouts in a row. Change something. Anything.'},
+ {id:'snooze',e:'😴',kind:'funny',name:'Snooze Button',desc:'Started and discarded a workout three times. We all have those days.'},
+ {id:'negotiator',e:'🤝',kind:'funny',name:'The Negotiator',desc:'Deleted sets mid-workout five times. We saw that.'},
+ {id:'speedrun',e:'⚡',kind:'funny',name:'Speedrun',desc:'A full workout (8+ sets) in under 25 minutes. In and out.'},
+ {id:'early_bird',e:'🌅',kind:'funny',name:'Early Bird',mystery:'Nobody\'s here at 6am. Be nobody.',desc:'Started a workout before 7am. The gym was all yours.'},
+ {id:'night_owl',e:'🦉',kind:'funny',name:'Night Owl',mystery:'The gym is quieter after 11.',desc:'Started a workout after 11pm. Sleep is for people without gains.'},
+ {id:'marathon',e:'🐢',kind:'funny',name:'Marathon Session',mystery:'Were you training or chatting?',desc:'A workout longer than two and a half hours. Training, or socialising?'},
+ {id:'plate_phd',e:'🧮',kind:'funny',name:'Plate Math PhD',mystery:'Small plates, big brain.',desc:'Loaded the tiny 1.25 kg plates on a barbell lift. Precision.'},
+ {id:'gym_buddies',e:'👯',kind:'crew',name:'Gym Buddies',mystery:'Better together, within the hour.',desc:'You and a crew mate both finished a workout within the same hour. Trained together.'},
+ {id:'copycat',e:'🐈',kind:'crew',name:'Copycat',mystery:'Copy homework. Lift it too.',desc:'Did the exact workout a crew mate did this week.'},
+ {id:'crown_thief',e:'🦹',kind:'crew',name:'Crown Thief',desc:'Took a title less than 24 hours after someone set it. Cold.'},
+ {id:'revenge_arc',e:'⚔️',kind:'crew',name:'Revenge Arc',desc:'Took back a title that was stolen from you.'},
+ {id:'hype_man',e:'📣',kind:'crew',name:'Hype Man',desc:'Gave 50 Respects. The crew\'s biggest fan.'},
+ {id:'fan_fav',e:'🌟',kind:'crew',name:'Fan Favourite',desc:'Got 25 Respects from your crew.'},
+ {id:'ghosted',e:'🫥',kind:'shame',name:'Ghosted',desc:'You gave someone 10 Respects and got none back. Awkward.',out:'Escape: they give you a Respect.'},
+ {id:'skip_legs',e:'🍗',kind:'shame',name:'Skipped Leg Day',desc:'Your last three workouts had no legs in them.',out:'Escape: train legs.'},
+ {id:'ghost_member',e:'👻',kind:'shame',name:'Ghost Member',desc:'No workout in 14 days. Are you still with us?',out:'Escape: log any workout.'},
+ {id:'wooden_spoon',e:'🥄',kind:'shame',name:'Wooden Spoon',desc:'Last on this week\'s crew board.',out:'Escape: train more than someone this week.'},
+ {id:'participation',e:'🎗',kind:'shame',name:'Participation Trophy',desc:'In a crew, but no workout this week. Thanks for coming.',out:'Escape: log a workout this week.'}
+];
+function trophyById(id){for(var i=0;i<TROPHIES.length;i++)if(TROPHIES[i].id===id)return TROPHIES[i];return null}
+function cnt(k,n){var p=prof();p.cnt=p.cnt||{};p.cnt[k]=(p.cnt[k]||0)+(n||1);touch('profile')}
+function isLegEx(name){var m=muscles(name);return !!(m.quads||m.hams||m.calves)}
+function exSig(s){return s.items.map(function(it){return key(it.name)}).sort().join('|')}
+/* Evaluate every trophy from your own data and your crew's. Returns id -> {got, t, detail, prog:[n,goal]} */
+function evalTrophies(){
+  var d=done(),p=prof(),c=p.cnt||{},r={},now=Date.now();
+  function set(id,got,t,detail,prog){r[id]={got:!!got,t:t||now,detail:detail||'',prog:prog||null}}
+  set('day_one',d.length>0,d[0]&&d[0].start,'',[Math.min(d.length,1),1]);
+  var rn=null,leg=null,fo=null,rh=null,pp=null,sp=null,ma=null,eb=null,no=null,cb=null,mondays={},hours={},cp=null,run=1,best=0;
+  d.forEach(function(s,i){var dt=new Date(s.start),hr=dt.getHours(),legN=0,hasBig=false,fails=0,sets=0;
+    s.items.forEach(function(it){var rk=rankOf(it.name);if(isLegEx(it.name))legN++;if(/squat|deadlift/.test(key(it.name)))hasBig=true;
+      it.sets.forEach(function(x){sets++;var w=+x.w||0;if(x.f)fails++;
+        [140,100,60].forEach(function(n){if(w>=n&&(!rn||n>rn.n))rn={n:n,t:s.start,ex:it.name}});
+        if(+x.r>=20&&!rh)rh={t:s.start,txt:it.name+' × '+x.r};
+        if(rk&&!rk.bw&&w>=20&&Math.abs((w%2.5)-1.25)<0.01&&!pp)pp={t:s.start,txt:it.name+' '+f(w)+' kg'}});
+      if(rk&&rk.id==='bench'&&dt.getDay()===1)mondays[weekStart(s.start)]=1});
+    if(legN>=3&&hasBig&&!leg)leg={t:s.start,txt:s.routine};
+    if(fails>=5&&!fo)fo={t:s.start,txt:s.routine};
+    if(s.end&&sets>=8&&s.end-s.start<25*6e4&&!sp)sp={t:s.start,txt:Math.round((s.end-s.start)/6e4)+' min'};
+    if(s.end&&s.end-s.start>150*6e4&&!ma)ma={t:s.start,txt:Math.round((s.end-s.start)/6e4)+' min'};
+    if(hr>=4&&hr<7&&!eb)eb={t:s.start,txt:dt.getHours()+':'+String(dt.getMinutes()).padStart(2,'0')};
+    if((hr>=23||hr<4)&&!no)no={t:s.start,txt:dt.getHours()+':'+String(dt.getMinutes()).padStart(2,'0')};
+    if(i>0&&s.start-d[i-1].start>=14*864e5&&!cb)cb={t:s.start,txt:Math.round((s.start-d[i-1].start)/864e5)+' days off'};
+    hours[hr]=(hours[hr]||0)+1;
+    if(i>0&&exSig(s)===exSig(d[i-1])&&s.items.length>=2){run++;if(run>=5&&!cp)cp={t:s.start,txt:s.routine}}else run=1;
+  });
+  set('round_number',rn,rn&&rn.t,rn?rn.n+' kg on '+rn.ex:'');
+  set('leg_survivor',leg,leg&&leg.t,leg?leg.txt:'');
+  set('failure_option',fo,fo&&fo.t,fo?fo.txt:'');
+  set('rep_hoarder',rh,rh&&rh.t,rh?rh.txt:'');
+  set('plate_phd',pp,pp&&pp.t,pp?pp.txt:'');
+  set('speedrun',sp,sp&&sp.t,sp?sp.txt:'');
+  set('marathon',ma,ma&&ma.t,ma?ma.txt:'');
+  set('early_bird',eb,eb&&eb.t,eb?'Started at '+eb.txt:'');
+  set('night_owl',no,no&&no.t,no?'Started at '+no.txt:'');
+  set('comeback',cb,cb&&cb.t,cb?cb.txt:'');
+  set('copy_paste',cp,cp&&cp.t,cp?cp.txt:'',[Math.min(run,5),5]);
+  var wk=Object.keys(mondays).map(Number).sort(),streak=0,bs=0;wk.forEach(function(w,i){streak=i&&w-wk[i-1]<8*864e5&&w-wk[i-1]>6*864e5?streak+1:1;bs=Math.max(bs,streak)});
+  set('chest_day',bs>=4,0,'',[Math.min(bs,4),4]);
+  var hmax=0;Object.keys(hours).forEach(function(h){hmax=Math.max(hmax,hours[h])});set('creature_habit',hmax>=5,0,'',[Math.min(hmax,5),5]);
+  Object.keys(IDX).forEach(function(k){if(IDX[k].st.level>best)best=IDX[k].st.level});set('specialist',best>=5,0,'',[Math.min(best,5),5]);
+  set('snooze',(c.discard||0)>=3,0,'',[Math.min(c.discard||0,3),3]);
+  set('negotiator',(c.rmset||0)>=5,0,'',[Math.min(c.rmset||0,5),5]);
+  set('crown_thief',(c.thief||0)>=1);set('revenge_arc',(c.revenge||0)>=1);
+  /* crew-based */
+  var mine=(p.events||[]).filter(function(e){return e.type==='workout'}),gb=null,cc=null,given=0,got=0,perGiven={},perBack={};
+  myCrews().forEach(function(cid){var cr=CREW[cid];if(!cr)return;
+    memberStats(cid).forEach(function(m){if(m.uid===me)return;(m.s.feed||[]).forEach(function(e){if(e.type!=='workout')return;
+      mine.forEach(function(x){if(!gb&&Math.abs(x.t-e.t)<=60*6e4)gb={t:Math.max(x.t,e.t),txt:'with @'+m.name};
+        if(!cc&&e.ex&&x.ex&&e.ex.length>=3&&x.t>e.t&&x.t-e.t<=7*864e5&&e.ex.slice().sort().join('|')===x.ex.slice().sort().join('|'))cc={t:x.t,txt:'@'+m.name+'\'s '+(e.routine||'workout')}})})});
+    Object.keys(cr.respect||{}).forEach(function(eid){var rs=cr.respect[eid],owner=eid.split('_')[0];
+      if(rs[me]&&owner!==me){given++;perGiven[owner]=(perGiven[owner]||0)+1}
+      if(owner===me)Object.keys(rs).forEach(function(u){if(u!==me){got++;perBack[u]=(perBack[u]||0)+1}})})});
+  set('gym_buddies',gb,gb&&gb.t,gb?gb.txt:'');set('copycat',cc,cc&&cc.t,cc?cc.txt:'');
+  set('hype_man',given>=50,0,'',[Math.min(given,50),50]);set('fan_fav',got>=25,0,'',[Math.min(got,25),25]);
+  /* shame: live */
+  var gh=null;Object.keys(perGiven).forEach(function(u){if(perGiven[u]>=10&&!perBack[u]){var n=null;myCrews().forEach(function(cid){var cr=CREW[cid];if(cr&&cr.stats[u])n=cr.stats[u].name});gh=n||'someone'}});
+  set('ghosted',gh,0,gh?'@'+gh:'');
+  var last3=d.slice(-3);set('skip_legs',last3.length===3&&last3.every(function(s){return !s.items.some(function(it){return isLegEx(it.name)})}));
+  var lastT=d.length?d[d.length-1].start:0;set('ghost_member',d.length&&now-lastT>=14*864e5,0,d.length?Math.floor((now-lastT)/864e5)+' days':'');
+  var ws=weekStart(now),dow=(new Date().getDay()+6)%7,spoon=false,part=false;
+  myCrews().forEach(function(cid){var ms=memberStats(cid);if(ms.length<2)return;
+    var wkOf=function(m){var w=m.s.week&&m.s.week.start===ws?m.s.week:{sessions:0,volume:0};return w.sessions*1e7+w.volume};
+    var mineS=myStats().week.sessions;if(!mineS&&dow>=2&&ms.length>=2)part=true;
+    if(ms.length>=3&&dow>=3){var sc=wkOf({s:myStats()});if(ms.every(function(m){return m.uid===me||wkOf(m)>sc}))spoon=true}});
+  set('wooden_spoon',spoon);set('participation',part);
+  return r;
+}
+/* Rarity inside your crew(s) */
+function rarity(id){
+  var tot=0,have=0;myCrews().forEach(function(cid){memberStats(cid).forEach(function(m){tot++;var l=m.uid===me?Object.keys(prof().trophies||{}):(m.s.trophies||[]);if(l.indexOf(id)>=0)have++})});
+  if(tot<2)return null;
+  var lab=have<=1?'Very rare':have/tot<0.5?'Rare':'Common';return {lab:lab,txt:(have<=1?'Only '+(have?'you':'nobody')+' in your crew':have+' of '+tot+' in your crew'),cls:have<=1?'vr':have/tot<0.5?'r':'c'};
+}
+var trophyTimer=null;
+function checkTrophiesSoon(){clearTimeout(trophyTimer);trophyTimer=setTimeout(checkTrophies,900)}
+function checkTrophies(){
+  if(UI.auth!=='in'||!S.config)return;buildIndex();
+  var p=prof(),ev=evalTrophies(),had=p.trophies||{},fresh=[],first=!p.trophyInit,changed=false;
+  TROPHIES.forEach(function(T){var x=ev[T.id];if(T.kind==='shame')return;
+    if(x&&x.got&&!had[T.id]){had[T.id]={t:x.t||Date.now(),d:x.detail||''};changed=true;if(!first)fresh.push(T.id)}});
+  var shame=TROPHIES.filter(function(T){return T.kind==='shame'&&ev[T.id]&&ev[T.id].got}).map(function(T){return T.id}).sort();
+  if(JSON.stringify(shame)!==JSON.stringify(p.shame||[])){var newS=shame.filter(function(id){return (p.shame||[]).indexOf(id)<0});if(!first)fresh=fresh.concat(newS);p.shame=shame;changed=true}
+  if(first){p.trophyInit=1;changed=true}
+  p.trophies=had;UI.trophyEval=ev;
+  if(changed)touch('profile');
+  if(fresh.length){var showN=fresh.length>3?2:fresh.length;UI.unlocks=(UI.unlocks||[]).concat(fresh.slice(0,showN));if(fresh.length>showN)setTimeout(function(){toast('+'+(fresh.length-showN)+' more trophies. See the Trophy room.')},400);
+    addEvents(fresh.map(function(id,i){var T=trophyById(id);return {id:me+'_'+Date.now()+'_t'+i,type:'trophy',t:Date.now(),text:(T.kind==='shame'?'Earned a shame trophy: ':'Unlocked ')+T.e+' '+T.name}}))}
+  render();
+}
+function medal(T,sz,locked){sz=sz||56;
+  var ring=T.kind==='shame'?'#b5523f':T.kind==='crew'?'#7398ff':T.kind==='funny'?'#c9c4b8':'#ffb21f';
+  return '<span class="medal'+(locked?' locked':'')+'" style="width:'+sz+'px;height:'+sz+'px;font-size:'+Math.round(sz*.48)+'px;--ring:'+ring+'">'+(locked?'?':T.e)+'</span>';
+}
+function trophyTile(T,ev){
+  var p=prof(),has=T.kind==='shame'?(p.shame||[]).indexOf(T.id)>=0:!!(p.trophies||{})[T.id],x=ev[T.id]||{},myst=!has&&T.mystery,rr=has?rarity(T.id):null;
+  var h='<button class="ttile'+(has?'':' off')+(T.kind==='shame'&&has?' shame':'')+'" data-act="tinspect" data-id="'+T.id+'">'+medal(T,52,myst)+'<b>'+(myst?'???':esc(T.name))+'</b>';
+  if(myst)h+='<small>"'+esc(T.mystery)+'"</small>';
+  else if(!has&&x.prog)h+='<span class="tprog"><i style="width:'+Math.round(x.prog[0]/x.prog[1]*100)+'%"></i></span><small>'+x.prog[0]+' / '+x.prog[1]+'</small>';
+  if(rr)h+='<span class="rare '+rr.cls+'">'+rr.lab+'</span>';
+  return h+'</button>';
+}
+function showcaseRow(ids,crewView){
+  ids=(ids||[]).filter(function(id){return trophyById(id)}).slice(0,3);
+  if(!ids.length)return crewView?'':'<div class="small muted">Tap any trophy you have, then "Pin to showcase". Your crew sees your top 3.</div>';
+  return '<div class="showcase">'+ids.map(function(id){var T=trophyById(id);return '<div>'+medal(T,64)+'<b>'+esc(T.name)+'</b></div>'}).join('')+'</div>';
+}
+function viewTrophyRoom(){
+  var p=prof(),ev=UI.trophyEval||evalTrophies(),earned=Object.keys(p.trophies||{}).length,all=TROPHIES.filter(function(T){return T.kind!=='shame'}).length;
+  var h='<div class="row"><button class="btn" data-act="tab" data-t="train" aria-label="Back to Train">‹ Back</button><h2 class="grow">Trophy room</h2></div>';
+  h+='<section class="card"><div class="row between"><span class="label">Your showcase'+ib('showcase')+'</span><span class="small muted">'+earned+' of '+all+' trophies</span></div>'+showcaseRow(p.showcase)+'</section>';
+  var shame=TROPHIES.filter(function(T){return T.kind==='shame'&&(p.shame||[]).indexOf(T.id)>=0});
+  if(shame.length)h+='<section class="card shamecard"><span class="label" style="color:var(--danger)">Shame shelf'+ib('shame')+'</span><div class="tgrid">'+shame.map(function(T){return trophyTile(T,ev)}).join('')+'</div><div class="small muted">These stay until you earn your way out. Tap one to see how.</div></section>';
+  [['crew','Crew trophies'],['proud','Proud moments'],['funny','Funny ones']].forEach(function(g){
+    var l=TROPHIES.filter(function(T){return T.kind===g[0]});
+    var have=l.filter(function(T){return (p.trophies||{})[T.id]}).length;
+    h+='<section class="card"><div class="row between"><span class="label">'+g[1]+'</span><span class="small muted">'+have+' / '+l.length+'</span></div><div class="tgrid">'+l.map(function(T){return trophyTile(T,ev)}).join('')+'</div></section>';
+  });
+  h+='<section class="card"><span class="label">Shame trophies you could earn</span><div class="small muted">'+TROPHIES.filter(function(T){return T.kind==='shame'&&(p.shame||[]).indexOf(T.id)<0}).map(function(T){return T.e+' '+esc(T.name)}).join(' · ')+'</div></section>';
+  return h+viewTrophies(true);
+}
+function trophySheet(){
+  var id=UI.tsheet,T=id&&trophyById(id);if(!T)return '';
+  var p=prof(),has=T.kind==='shame'?(p.shame||[]).indexOf(T.id)>=0:!!(p.trophies||{})[T.id],rec=(p.trophies||{})[T.id],myst=!has&&T.mystery,rr=has?rarity(T.id):null,pinned=(p.showcase||[]).indexOf(T.id)>=0;
+  var h='<div class="sheetbg" data-act="tsclose"></div><div class="sheet tsheet" role="dialog" aria-label="'+esc(myst?'Mystery trophy':T.name)+'"><div class="row between"><span class="label">'+(T.kind==='shame'?'Shame trophy':T.kind==='crew'?'Crew trophy':'Trophy')+'</span><button class="icon" data-act="tsclose" aria-label="Close">×</button></div>';
+  h+='<div class="spinwrap">'+medal(T,110,myst)+'</div><h2 style="text-align:center">'+(myst?'???':esc(T.name))+'</h2>';
+  h+='<p style="text-align:center">'+(myst?'"'+esc(T.mystery)+'"':esc(T.desc))+'</p>';
+  if(has&&rec)h+='<p class="muted" style="text-align:center">Earned '+dlong(rec.t)+(rec.d?' · '+esc(rec.d):'')+'</p>';
+  if(T.kind==='shame')h+='<p class="win" style="text-align:center">'+esc(T.out)+'</p>';
+  if(rr)h+='<p style="text-align:center"><span class="rare '+rr.cls+'">'+rr.lab+'</span> <span class="muted">'+esc(rr.txt)+'</span></p>';
+  if(!has&&!myst)h+='<p class="muted" style="text-align:center">Not earned yet.</p>';
+  if(has&&T.kind!=='shame')h+='<button class="btn'+(pinned?'':' primary')+'" data-act="tpin" data-id="'+T.id+'">'+(pinned?'Unpin from showcase':'Pin to showcase')+'</button>';
+  return h+'</div>';
+}
+function unlockOverlay(){
+  var id=(UI.unlocks||[])[0],T=id&&trophyById(id);if(!T)return '';var rr=rarity(T.id),sh=T.kind==='shame';
+  return '<div class="unlock'+(sh?' shame':'')+'" role="dialog" aria-label="Trophy unlocked"><div class="ulbox"><div class="label" style="color:'+(sh?'var(--danger)':'var(--accent)')+'">'+(sh?'Shame trophy earned':'Trophy unlocked')+'</div>'+
+    '<div class="spinwrap big">'+medal(T,140)+'</div><h2>'+esc(T.name)+'</h2><p>'+esc(T.desc)+'</p>'+(sh?'<p class="win">'+esc(T.out)+'</p>':'')+(rr?'<p><span class="rare '+rr.cls+'">'+rr.lab+'</span> <span class="muted">'+esc(rr.txt)+'</span></p>':'')+
+    '<div class="row" style="justify-content:center">'+(sh?'':'<button class="btn" data-act="ulpin" data-id="'+T.id+'">Pin to showcase</button>')+'<button class="btn primary" data-act="uldone">'+(sh?'Fine':'Nice')+'</button></div></div>'+(sh?'':'<canvas id="confetti" aria-hidden="true"></canvas>')+'</div>';
+}
+function confetti(){
+  var c=document.getElementById('confetti');if(!c||window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var x=c.getContext('2d'),W=c.width=innerWidth,H=c.height=innerHeight,cols=['#ffb21f','#e9e4d8','#ff7a66','#7fc77a','#7398ff'],ps=[];
+  for(var i=0;i<120;i++)ps.push({x:W/2,y:H*0.38,vx:(Math.random()-.5)*14,vy:Math.random()*-14-4,s:4+Math.random()*6,c:cols[i%5],r:Math.random()*6});
+  var t0=performance.now();(function step(t){x.clearRect(0,0,W,H);ps.forEach(function(p){p.vy+=0.45;p.x+=p.vx;p.y+=p.vy;p.r+=0.2;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});
+    if(t-t0<2600&&document.getElementById('confetti')===c)requestAnimationFrame(step);else x.clearRect(0,0,W,H)})(t0);
 }
 
 /* ---------- views ---------- */
@@ -1126,14 +1354,15 @@ function render(){
   if(UI.tab==='profile')h=viewProfile();
   else if(UI.tab==='crew')h=UI.member?viewMember():viewCrew();
   else if(UI.tab==='progress')h=viewProgress();
-  else if(UI.tab==='trophies')h=viewTrophies();
+  else if(UI.tab==='trophies')h=viewTrophyRoom();
   else if(UI.tab==='history')h=viewHistory();
   else if(a)h=viewWorkout(a);
   else if(UI.editing)h=viewEdit();
   else h=viewHome();
   if(UI.dbErr)h='<div class="card" style="border-color:var(--danger)"><b>Your workouts aren\'t saving online yet.</b><div class="small muted">'+(UI.dbErr==='permission-denied'?'The database rule for Gym Log hasn\'t been added in Firebase.':'Check your connection. They\'re kept on this phone until it works.')+'</div></div>'+h;
   $('#app').innerHTML=h;
-  $('#sheet').innerHTML=infoSheet();
+  $('#sheet').innerHTML=infoSheet()+trophySheet()+unlockOverlay();
+  var ul=(UI.unlocks||[])[0];if(ul&&UI.confettiFor!==ul){UI.confettiFor=ul;setTimeout(confetti,60)}
   ['train','progress','trophies','crew','history'].forEach(function(t){var b=$('#nav-'+t);if(UI.tab===t)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   $('#nav-train').textContent=a?'Workout':'Train';
   var un=UI.tab==='crew'?0:unseenCount();$('#nav-crew').innerHTML='Crew'+(un?'<span class="dot">'+(un>9?'9+':un)+'</span>':'');
