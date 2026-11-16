@@ -9,6 +9,8 @@ self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
+  // The gym app in /gym/ has its own service worker; leave its pages alone.
+  if (url.origin === location.origin && /\/gym(\/|$)/.test(url.pathname)) return;
   // Never touch Firestore's live connections.
   if (url.hostname.endsWith("googleapis.com")) return;
   // Pages: network first, so updates show up straight away; cached copy when offline.
