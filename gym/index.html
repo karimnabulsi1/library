@@ -1549,7 +1549,7 @@ var CAT=[
   rank:function(v){if(v.eq!=='Barbell'||v.grip==='Close')return null;return v.angle==='Flat'?'bench':v.angle==='Incline'?'incline':null},
   mod:function(v,m){if(v.grip==='Close'){m.triceps=1;m.chest=.5}if(v.angle==='Incline')m.shoulders=1},bar:function(v){return v.eq==='Barbell'},a:/bench|chest press|incline press|decline press|\bdb press/},
  {n:'Chest Press Machine',m:{chest:1,triceps:.5,shoulders:.5},d:[['type','Type',['Seated','Plate-loaded','Iso-lateral','Cable']],['angle','Angle',['Flat','Incline','Decline']],['arms','Arms',['Both','Single']]],a:/chest press/},
- {n:'Chest Fly',m:{chest:1},d:[['eq','Equipment',['Cable','Dumbbell','Pec deck']],['angle','Angle',['Flat','Incline','Low to high','High to low']]],a:/fly|flye|pec deck|crossover/},
+ {n:'Chest Fly',m:{chest:1},d:[['eq','Equipment',['Cable','Dumbbell','Pec deck','Ergonomic','Plate-loaded']],['angle','Angle',['Flat','Incline','Low to high','High to low']]],a:/fly|flye|pec deck|pec fly|chest fly|crossover/},
  {n:'Push-up',m:{chest:1,triceps:.5,shoulders:.5,core:.5},d:[['type','Type',['Standard','Wide','Diamond','Incline','Decline','Weighted']]],a:/push.?up|press.?up/},
  {n:'Dip',m:{chest:1,triceps:1,shoulders:.5},d:[['load','Load',['Bodyweight','Weighted','Assisted','Machine']],['lean','Lean',['Chest (lean forward)','Triceps (upright)']]],
   rank:function(v){return v.load==='Bodyweight'||v.load==='Weighted'?'dip':null},a:/\bdips?\b/},
@@ -1623,8 +1623,12 @@ var SEP=' · ';
 function optsOf(e,k){var d=e.d.filter(function(x){return x[0]===k})[0],x=((S.config&&S.config.xopt)||{})[e.id]||{};return d?d[2].concat(x[k]||[]):[]}
 function fullName(e,v){return [e.n].concat(e.d.map(function(d){return v[d[0]]||e.def[d[0]]})).join(SEP)}
 /* "Lat Pulldown · Neutral · V-bar · Both" -> {e, v, partial} */
+var ALIASP={};
 function parseName(name){
-  var parts=String(name||'').split(SEP),e=CATK[key(parts[0])];if(!e)return null;
+  var parts=String(name||'').split(SEP),e=CATK[key(parts[0])];
+  if(!e&&parts.length===1){var kk=key(name);if(!(kk in ALIASP)){if(!S.config)return null;var g=null;try{g=guessVariant(name)}catch(x){}ALIASP[kk]=g}
+    var g2=ALIASP[kk];if(!g2||!g2.e.d.length)return null;return {e:g2.e,v:Object.assign({},g2.v),partial:true}}
+  if(!e)return null;
   var v={},partial=parts.length===1&&e.d.length>0;
   e.d.forEach(function(d,i){v[d[0]]=parts[i+1]!=null?parts[i+1]:e.def[d[0]]});
   return {e:e,v:v,partial:partial};
@@ -1643,7 +1647,7 @@ function otherVersionLast(name){
 }
 function variantChips(a,i){
   var it=a.items[i],p=parseName(it.name);if(!p||!p.e.d.length)return '';
-  if(!(UI.vopen||{})[i])return '<div class="vsum"><span class="grow">'+esc(variantLabel(it.name))+'</span><button class="vc" data-act="vopen" data-i="'+i+'">Change version</button></div>';
+  if(!(UI.vopen||{})[i])return '<div class="vsum"><span class="grow">'+esc(p.partial?(p.e.n!==it.name?p.e.n+': ':'')+'pick a version':variantLabel(it.name))+'</span><button class="vc" data-act="vopen" data-i="'+i+'">Change version</button></div>';
   return '<div class="vchips">'+p.e.d.map(function(d){var k=d[0];
     return '<div class="vrow"><span class="vl">'+esc(d[1])+'</span>'+optsOf(p.e,k).map(function(o){return '<button class="vc'+(p.v[k]===o?' on':'')+'" data-act="var" data-i="'+i+'" data-k="'+k+'" data-o="'+esc(o)+'">'+esc(o)+'</button>'}).join('')+
       (UI.addOpt===i+':'+k?'<span class="vadd"><input class="text" id="vaddin" placeholder="e.g. Hammer Strength" maxlength="24"><button class="vc on" data-act="vaddok" data-i="'+i+'" data-k="'+k+'">Add</button></span>':'<button class="vc" data-act="vadd" data-i="'+i+'" data-k="'+k+'" aria-label="Add your own '+esc(d[1])+' option">+</button>')+'</div>'}).join('')+'<button class="vc on" style="align-self:flex-start" data-act="vopen" data-i="'+i+'">Done</button></div>';
@@ -1658,7 +1662,7 @@ function setVariant(a,i,k,o){
 var KW=[[/\bng\b|neutral|hammer grip|parallel/,'Neutral'],[/\bwg\b|\bwide\b/,'Wide'],[/\bcg\b|close|narrow/,'Close'],[/underhand|supinat|reverse grip/,'Underhand'],[/overhand|pronat/,'Overhand'],
   [/rope/,'Rope'],[/v.?bar|v.?handle/,'V-bar'],[/single|one.?arm|unilateral/,'Single handle'],[/single|one.?arm|one.?leg|unilateral/,'Single'],[/\bdb\b|dumbbell/,'Dumbbell'],[/cable/,'Cable'],[/machine/,'Machine'],[/smith/,'Smith'],
   [/barbell|\bbb\b/,'Barbell'],[/\bez\b/,'EZ bar'],[/incline/,'Incline'],[/decline/,'Decline'],[/seated/,'Seated'],[/standing/,'Standing'],[/kneel/,'Kneeling'],[/lying/,'Lying'],[/straight bar/,'Straight bar'],
-  [/ergonomic/,'Ergonomic'],[/iso.?lateral/,'Iso-lateral'],[/chest.?supported/,'Chest-supported'],[/plate.?loaded|hammer strength/,'Plate-loaded'],[/sumo/,'Sumo'],[/trap bar|hex bar/,'Trap bar'],[/front/,'Front (barbell)'],
+  [/ergonomic/,'Ergonomic'],[/pec deck|pec fly|machine fly/,'Pec deck'],[/iso.?lateral/,'Iso-lateral'],[/chest.?supported/,'Chest-supported'],[/plate.?loaded|hammer strength/,'Plate-loaded'],[/sumo/,'Sumo'],[/trap bar|hex bar/,'Trap bar'],[/front/,'Front (barbell)'],
   [/goblet/,'Goblet'],[/hack/,'Hack squat machine'],[/pendlay/,'Pendlay'],[/weighted/,'Weighted'],[/assist/,'Assisted'],[/walking/,'Walking'],[/reverse/,'Reverse'],[/hanging/,'Hanging']];
 function guessVariant(raw){
   var k=key(raw),best=null;
